@@ -31,15 +31,19 @@ RUN  docker-php-ext-enable pdo_pgsql
 # add composer
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
+# install Node.js & npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs
+
 # set max memory_limit: 128M
 RUN echo "memory_limit=256M" >> "${PHP_INI_DIR}/php.ini"
 
 # set max_execution_time: 30s
 RUN echo "max_execution_time=30" >> "${PHP_INI_DIR}/php.ini"
 
-# add rights for nette dirs
-RUN mkdir /var/www/app /var/www/app/temp /var/www/app/log
-RUN chmod -R 777 /var/www/app/temp /var/www/app/log
+# add rights for symfony dirs
+#RUN mkdir -p var && chmod -R 777 var
 
 # clean
 RUN apt-get clean

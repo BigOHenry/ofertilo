@@ -1,0 +1,33 @@
+# Apache configuration file (see httpd.apache.org/docs/current/mod/quickreference.html)
+
+# disable directory listing
+<IfModule mod_autoindex.c>
+	Options -Indexes
+</IfModule>
+
+# enable cool URL
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+	# prevents files starting with dot to be viewed by browsera
+	RewriteRule /\.|^\. - [F]
+
+	# front controller
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule !\.(pdf|js|ico|gif|jpg|png|css|rar|zip|tar\.gz|map)$ index.php [L]
+
+    #RewriteRule ^(.*)(--)([0-9]+){4}\.(css|js)$ $1.$4
+</IfModule>
+
+# enable gzip compression
+<IfModule mod_deflate.c>
+	<IfModule mod_filter.c>
+		AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript text/javascript application/javascript application/json
+	</IfModule>
+</IfModule>
+
+php_value upload_max_filesize 60M
+php_value post_max_size 70M
+php_value memory_limit 256M
