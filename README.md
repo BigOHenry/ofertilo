@@ -16,3 +16,10 @@
 - PostgreSQL 17.4
 
 ## 📦 Instalace
+
+- vytvoření env.docker z env.docker.example a úprava hesla
+- spuštění docker compose up -d --build
+- vytvoření env.local z env.local.example
+- composer install
+- npm run dev
+- spuštění mígrací php bin/console doctrine:migrations:migrate
