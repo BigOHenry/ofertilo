@@ -9,6 +9,7 @@
 - Víceúrovňové výpočty a varianty provedení (plánováno)
 - Šablony cenových nabídek (plánováno)
 - Export do PDF (plánováno)
+- Link pro zobrazení nacenění klientovi (plánováno)
 
 ## 🛠️ Technologie
 - PHP 8.4.x

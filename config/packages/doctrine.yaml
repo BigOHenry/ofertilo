@@ -18,6 +18,12 @@ doctrine:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
         auto_mapping: true
         mappings:
+            AppDomain:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Domain'
+                prefix: 'App\Domain'
+                alias: AppDomain
             App:
                 type: attribute
                 is_bundle: false
