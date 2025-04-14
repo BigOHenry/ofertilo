@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{{ asset('img/favicon-96x96.png') }}" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="{{ asset('img/favicon.svg') }}" />
+        <link rel="shortcut icon" href="{{ asset('img/favicon.ico') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/apple-touch-icon.png') }}" />
+        <link rel="manifest" href="{{ asset('img/site.webmanifest') }}" />
+
+        <title>{% block title %}Ofertilo{% endblock %}</title>
+
+        {{ encore_entry_link_tags('app') }}
+        {% block stylesheets %}{% endblock %}
+
+        {{ encore_entry_script_tags('app') }}
+        {% block javascripts %}{% endblock %}
+
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg">
+            <div class="container-xxl">
+                <a class="navbar-brand" href="#">
+                    <img src="{{ asset('img/ofertilo_logo.webp') }}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                    OFERTILO
+                </a>
+            </div>
+        </nav>
+
+        <main class="container-xxl">
+            {% block body %}{% endblock %}
+        </main>
+    </body>
+</html>
