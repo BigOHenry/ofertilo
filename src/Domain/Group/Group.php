@@ -15,15 +15,19 @@ class Group
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $name = null;
+
+    #[ORM\Column(length: 200)]
+    private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: Permission::class)]
     private ArrayCollection $permissions;
 
-    public function __construct(string $name)
+    public function __construct(string $name, string $description)
     {
         $this->name = $name;
+        $this->description = $description;
         $this->permissions = new ArrayCollection();
     }
 
@@ -46,6 +50,16 @@ class Group
     public function getPermissions(): ArrayCollection
     {
         return $this->permissions;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
     }
 
     public function addPermission(Permission $permission): static

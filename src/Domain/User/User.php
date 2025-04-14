@@ -23,16 +23,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $name = null;
 
     #[ORM\Column]
-    private array $roles = [];
-
-    #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(type: 'boolean')]
-    private bool $needsPasswordChange = true;
+    private bool $forcePasswordChange = true;
 
     #[ORM\Column(type: "boolean")]
     private bool $forceEmailChange = true;
+
+    #[ORM\Column(type: "json")]
+    private array $roles = [];
 
     #[ORM\ManyToMany(targetEntity: Group::class)]
     private ArrayCollection $groups;
@@ -115,14 +115,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->name = $name;
     }
 
-    public function isNeedsPasswordChange(): bool
+    public function isForcePasswordChange(): bool
     {
-        return $this->needsPasswordChange;
+        return $this->forcePasswordChange;
     }
 
-    public function setNeedsPasswordChange(bool $needsPasswordChange): void
+    public function setForcePasswordChange(bool $forcePasswordChange): void
     {
-        $this->needsPasswordChange = $needsPasswordChange;
+        $this->forcePasswordChange = $forcePasswordChange;
     }
 
     public function isForceEmailChange(): bool

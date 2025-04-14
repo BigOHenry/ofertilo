@@ -45,7 +45,7 @@ final class Version20250409201225 extends AbstractMigration
             CREATE UNIQUE INDEX UNIQ_5373C966C065E6E4 ON country (alpha3)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE "group" (id SERIAL NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE "group" (id SERIAL NOT NULL, name VARCHAR(50) NOT NULL, description VARCHAR(200), PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             CREATE UNIQUE INDEX UNIQ_6DC044C55E237E06 ON "group" (name)
@@ -66,7 +66,7 @@ final class Version20250409201225 extends AbstractMigration
             CREATE UNIQUE INDEX UNIQ_E04992AA77153098 ON permission (code)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, needs_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, password VARCHAR(400) NOT NULL, force_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, roles JSON NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)
