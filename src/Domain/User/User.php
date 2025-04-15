@@ -1,8 +1,7 @@
 <?php
+
 namespace App\Domain\User;
 
-use App\Domain\Group\Group;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,16 +30,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "boolean")]
     private bool $forceEmailChange = true;
 
-    #[ORM\Column(type: "json")]
+    #[ORM\Column(type: "jsonb")]
     private array $roles = [];
-
-    #[ORM\ManyToMany(targetEntity: Group::class)]
-    private ArrayCollection $groups;
 
     public function __construct(string $email)
     {
         $this->email = $email;
-        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -75,34 +70,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function addGroup(Group $group): static
-    {
-        if (!$this->groups->contains($group)) {
-            $this->groups->add($group);
-        }
-        return $this;
-    }
-
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return array_map(static fn(Role $role) => $role->value, $this->roles);
     }
 
-    public function setRoles(array $roles): void
+    public function setRoles(array $roles): self
     {
+        foreach ($roles as $role) {
+            if (!$role instanceof Role) {
+                throw new \InvalidArgumentException('Each element must be an instance of the Role enum.');
+            }
+        }
+
         $this->roles = $roles;
-    }
-
-    public function getGroups(): ArrayCollection
-    {
-        return $this->groups;
-    }
-
-    public function setGroups(ArrayCollection $groups): void
-    {
-        $this->groups = $groups;
+        return $this;
     }
 
     public function getName(): ?string
@@ -133,12 +115,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setForceEmailChange(bool $forceEmailChange): static
     {
         $this->forceEmailChange = $forceEmailChange;
-        return $this;
-    }
-
-    public function removeGroup(Group $group): static
-    {
-        $this->groups->removeElement($group);
         return $this;
     }
 

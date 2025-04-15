@@ -23,4 +23,5 @@
 - vytvoření env.local z env.local.example
 - composer install
 - npm run dev
+- vygenerování migrací php bin/console make:migration
 - spuštění mígrací php bin/console doctrine:migrations:migrate

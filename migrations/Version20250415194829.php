@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250409201225 extends AbstractMigration
+final class Version20250415194829 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -45,56 +45,15 @@ final class Version20250409201225 extends AbstractMigration
             CREATE UNIQUE INDEX UNIQ_5373C966C065E6E4 ON country (alpha3)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE "group" (id SERIAL NOT NULL, name VARCHAR(50) NOT NULL, description VARCHAR(200), PRIMARY KEY(id))
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE UNIQUE INDEX UNIQ_6DC044C55E237E06 ON "group" (name)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE group_permission (group_id INT NOT NULL, permission_id INT NOT NULL, PRIMARY KEY(group_id, permission_id))
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_3784F318FE54D947 ON group_permission (group_id)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_3784F318FED90CCA ON group_permission (permission_id)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE permission (id SERIAL NOT NULL, code VARCHAR(100) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY(id))
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE UNIQUE INDEX UNIQ_E04992AA77153098 ON permission (code)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, password VARCHAR(400) NOT NULL, force_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, roles JSON NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, password VARCHAR(255) NOT NULL, force_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, roles JSONB NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE user_group (user_id INT NOT NULL, group_id INT NOT NULL, PRIMARY KEY(user_id, group_id))
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_8F02BF9DA76ED395 ON user_group (user_id)
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE INDEX IDX_8F02BF9DFE54D947 ON user_group (group_id)
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE client ADD CONSTRAINT FK_C7440455F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE group_permission ADD CONSTRAINT FK_3784F318FE54D947 FOREIGN KEY (group_id) REFERENCES "group" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE group_permission ADD CONSTRAINT FK_3784F318FED90CCA FOREIGN KEY (permission_id) REFERENCES permission (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE user_group ADD CONSTRAINT FK_8F02BF9DA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE user_group ADD CONSTRAINT FK_8F02BF9DFE54D947 FOREIGN KEY (group_id) REFERENCES "group" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE
-        SQL);
+
 
         $this->addSql("
                 INSERT INTO country (alpha2, alpha3, name) VALUES
@@ -163,37 +122,13 @@ final class Version20250409201225 extends AbstractMigration
             ALTER TABLE client DROP CONSTRAINT FK_C7440455F92F3E70
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE group_permission DROP CONSTRAINT FK_3784F318FE54D947
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE group_permission DROP CONSTRAINT FK_3784F318FED90CCA
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE user_group DROP CONSTRAINT FK_8F02BF9DA76ED395
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE user_group DROP CONSTRAINT FK_8F02BF9DFE54D947
-        SQL);
-        $this->addSql(<<<'SQL'
             DROP TABLE client
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE country
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE "group"
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE group_permission
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE permission
-        SQL);
-        $this->addSql(<<<'SQL'
             DROP TABLE "user"
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE user_group
         SQL);
     }
 }
