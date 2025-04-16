@@ -1,0 +1,12 @@
+title:
+  first_run: "První spuštění"
+  create_super_admin: "Nejprve je potřeba založit účet SuperAdmin, zadejte e-mail a heslo:"
+  login: "Přihlášení"
+
+field:
+  email: "E-mail"
+  password: "Heslo"
+  confirm_password: "Potvrdit heslo"
+
+button:
+  save: "Uložit"

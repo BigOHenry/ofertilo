@@ -34,7 +34,7 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
      */
     public function hasSuperAdmin(): bool
     {
-        $sql = 'SELECT 1 FROM "user" WHERE roles @> :role LIMIT 1';
+        $sql = 'SELECT 1 FROM appuser WHERE roles @> :role LIMIT 1';
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->bindValue('role', json_encode([Role::SUPER_ADMIN], JSON_THROW_ON_ERROR));

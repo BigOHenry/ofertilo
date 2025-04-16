@@ -2,6 +2,9 @@ framework:
     default_locale: cs
     translator:
         default_path: '%kernel.project_dir%/translations'
+        paths:
+            - '%kernel.project_dir%/vendor/symfony/validator/Resources/translations'
+            - '%kernel.project_dir%/vendor/symfony/form/Resources/translations'
         fallbacks:
             - en
         providers:

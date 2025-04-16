@@ -24,12 +24,15 @@
         "symfony/translation": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
         "symfony/ux-turbo": "^2.24",
+        "symfony/validator": "7.2.*",
         "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "symfony/maker-bundle": ">=1.62.1"
+        "symfony/maker-bundle": ">=1.62.1",
+        "symfony/stopwatch": "7.2.*",
+        "symfony/web-profiler-bundle": "7.2.*"
     },
     "config": {
         "allow-plugins": {

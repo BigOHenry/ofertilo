@@ -45,10 +45,10 @@ final class Version20250415194829 extends AbstractMigration
             CREATE UNIQUE INDEX UNIQ_5373C966C065E6E4 ON country (alpha3)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, password VARCHAR(255) NOT NULL, force_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, roles JSONB NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE appuser (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, name VARCHAR(200) NOT NULL, password VARCHAR(255) NOT NULL, force_password_change BOOLEAN NOT NULL, force_email_change BOOLEAN NOT NULL, roles JSONB NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)
+            CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON appuser (email)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE client ADD CONSTRAINT FK_C7440455F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id) NOT DEFERRABLE INITIALLY IMMEDIATE
@@ -128,7 +128,7 @@ final class Version20250415194829 extends AbstractMigration
             DROP TABLE country
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE "user"
+            DROP TABLE appuser
         SQL);
     }
 }

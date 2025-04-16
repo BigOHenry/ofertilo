@@ -14,13 +14,20 @@ class FirstRunSetupType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'E-mail administrátora',
+                'label' => 'field.email',
+                'translation_domain' => 'messages',
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options'  => ['label' => 'Nové heslo'],
-                'second_options' => ['label' => 'Potvrdit nové heslo'],
-                'invalid_message' => 'Hesla se musí shodovat.',
+                'first_options'  => [
+                    'label' => 'field.password',
+                    'translation_domain' => 'messages',
+                ],
+                'second_options' => [
+                    'label' => 'field.confirm_password',
+                    'translation_domain' => 'messages',
+                ],
+                'invalid_message' => 'password_mismatch',
             ]);
     }
 }
