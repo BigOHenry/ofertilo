@@ -10,3 +10,4 @@ field:
 
 button:
   save: "Uložit"
+  login: 'Přihlásit'

@@ -3,17 +3,23 @@
 {% block title %}{{ 'title.login'|trans }}{% endblock %}
 
 {% block body %}
-    <h1>{{ 'title.login'|trans }}</h1>
-
-    <form method="post">
-        <input type="email" name="_username" value="{{ last_username }}" required>
-        <input type="password" name="_password" required>
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-        <button type="submit">Přihlásit</button>
-    </form>
-{#    {{ form_start(form) }}#}
-{#    {{ form_row(form.email) }}#}
-{#    {{ form_row(form.password) }}#}
-{#    <button class="btn btn-primary">{{ 'button.login'|trans }}</button>#}
-{#    {{ form_end(form) }}#}
+    <div class="row">
+        <h1>{{ 'title.login'|trans }}</h1>
+        <div class="col-12 col-md-8 col-xl-6">
+            <form method="post" class="">
+                <div class="mb-3">
+                    <label for="_username" class="form-label">{{ 'field.email'|trans }}</label>
+                    <input type="email" name="_username" class="form-control" value="{{ last_username }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="_password" class="form-label">{{ 'field.password'|trans }}</label>
+                    <input type="password" name="_password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">{{ 'button.login'|trans }}</button>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            </form>
+        </div>
+    </div>
 {% endblock %}
