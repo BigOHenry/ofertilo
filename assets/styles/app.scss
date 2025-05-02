@@ -1,4 +1,19 @@
 @import "fonts";
+
+$border-radius: 0  !default;
+$border-radius-xs: 0  !default;
+$border-radius-sm: 0  !default;
+$border-radius-lg: 0  !default;
+$border-radius-xl: 0  !default;
+$border-radius-2xl: 0  !default;
+$border-radius-pill: 0  !default;
+$badge-border-radius: 3px  !default;
+$input-border-radius: 0  !default;
+$form-check-input-border-radius: 0  !default;
+$form-select-border-radius: 0  !default;
+$form-select-border-radius-sm: 0  !default;
+$form-select-border-radius-lg: 0  !default;
+
 @import "~bootstrap/scss/bootstrap";
 
 body {

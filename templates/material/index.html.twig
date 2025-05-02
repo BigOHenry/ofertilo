@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seznam materiálů{% endblock %}
+
+{% block body %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Materiály</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-end">
+{#                <a href="" class="btn btn-primary">{{ 'button.add'|trans }}</a>#}
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#materialModal">
+                    {{ 'button.add'|trans }}
+                </button>
+            </div>
+            <div id="materials-table"></div>
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modalId: 'materialModal',
+        title: 'title.material'|trans,
+        frameUrl: path('material_new')
+    } %}
+{% endblock %}
+
+{% block success_stream %}
+    <turbo-stream action="replace" targets="#my_div_id">
+        <template>
+            <div>The task "{{ material }}" has been created!</div>
+        </template>
+    </turbo-stream>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.materialTable = new Tabulator("#materials-table", {
+                ajaxURL: "{{ path('api_materials') }}",
+                layout: "fitColumns",
+                responsiveLayout: "collapse",
+                pagination: "remote",
+                paginationSize: 15,
+                paginationDataSent: {
+                    page: "page",
+                    size: "size",
+                    sorters: "sort"
+                },
+                paginationDataReceived: {
+                    last_page: "last_page",
+                    data: "data"
+                },
+                ajaxResponse: function(url, params, response) {
+                    return response.data;
+                },
+                columns: [
+                    { title: "Typ", field: "type", sorter: "string" },
+                    { title: "Název", field: "name", sorter: "string" },
+                    { title: "Popis", field: "description", sorter: "string" },
+                ]
+            });
+        });
+    </script>
+{% endblock %}

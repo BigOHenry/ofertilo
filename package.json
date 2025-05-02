@@ -25,5 +25,8 @@
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
     "webpack-notifier": "^1.15.0"
+  },
+  "dependencies": {
+    "tabulator-tables": "^6.3.1"
   }
 }

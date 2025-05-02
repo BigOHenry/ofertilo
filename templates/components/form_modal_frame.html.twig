@@ -1,0 +1,35 @@
+{# templates/components/form_modal_frame.html.twig #}
+
+{# Usage:
+   {% include 'components/form_modal_frame.html.twig' with {
+     modalId: 'materialModal',
+     title: 'modal.material.new'|trans,
+     frameUrl: path('material_new')
+   } %}
+#}
+
+<div class="modal fade" id="{{ modalId }}" tabindex="-1" aria-labelledby="{{ modalId }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ modalId }}Label">{{ title|default('Formulář') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'button.close'|trans }}"></button>
+            </div>
+            <div class="modal-body">
+                <turbo-frame id="{{ modalId }}_frame" target="_top">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">{{ 'label.loading'|trans }}</span>
+                        </div>
+                    </div>
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('[data-bs-target="#{{ modalId }}"]').addEventListener('click', () => {
+        Turbo.visit("{{ frameUrl }}", { frame: "{{ modalId }}_frame" });
+    });
+</script>

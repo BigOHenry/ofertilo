@@ -1,5 +1,6 @@
 import './styles/app.scss';
 import 'bootstrap';
 import './bootstrap';
-import { Turbo } from '@hotwired/turbo';
-Turbo.session.drive = true;
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import 'tabulator-tables/dist/css/tabulator_bootstrap5.min.css';
+window.Tabulator = Tabulator;
