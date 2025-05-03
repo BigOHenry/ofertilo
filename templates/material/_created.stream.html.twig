@@ -1,6 +1,17 @@
-<turbo-stream action="remove" target="materialModal"></turbo-stream>
-<turbo-stream action="dispatch" target="materials-table">
+<turbo-stream action="append" target="materialModal_stream_handler">
     <template>
-        <event name="refresh"></event>
+        <script>
+            // Zavře modal včetně backdropu
+            const modalEl = document.getElementById('materialModal');
+            const modal = window.bootstrap?.Modal.getInstance(modalEl);
+            if (modal) {
+                modal.hide();
+            }
+
+            // Obnoví datagrid
+            if (window.materialTable) {
+                window.materialTable.replaceData();
+            }
+        </script>
     </template>
 </turbo-stream>

@@ -23,7 +23,10 @@
         title: 'title.material'|trans,
         frameUrl: path('material_new')
     } %}
+
+    <turbo-frame id="materialModal_stream_handler"></turbo-frame>
 {% endblock %}
+
 
 {% block success_stream %}
     <turbo-stream action="replace" targets="#my_div_id">

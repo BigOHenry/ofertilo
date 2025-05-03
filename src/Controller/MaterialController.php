@@ -34,7 +34,11 @@ final class MaterialController extends AbstractController
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-                return $this->renderBlock('material/index.html.twig', 'success_stream', ['material' => $material->getDescription()]);
+
+                return $this->render('material/_created.stream.html.twig', [
+                    'modalId' => 'materialModal'
+                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
+//                return $this->renderBlock('material/index.html.twig', 'success_stream', ['material' => $material->getDescription()]);
             }
 
             // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
