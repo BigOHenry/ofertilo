@@ -25,7 +25,11 @@ final class MaterialController extends AbstractController
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
         $material = new Material();
-        $form = $this->createForm(MaterialType::class, $material);
+        $form = $this->createForm(MaterialType::class, $material, [
+            'action' => $this->generateUrl('material_new'),
+            'method' => 'POST',
+        ]);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -87,6 +91,40 @@ final class MaterialController extends AbstractController
             'data' => $data,
             'last_page' => ceil($total / $size),
             'total' => $total,
+        ]);
+    }
+
+    #[Route('/material/{id}/edit', name: 'material_edit')]
+    public function edit(
+        Request $request,
+        Material $material,
+        MaterialRepositoryInterface $materialRepository
+    ): Response {
+        $form = $this->createForm(MaterialType::class, $material, [
+            'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $materialRepository->save($material);
+
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('material/_update_stream.html.twig', [
+                    'modalId' => 'materialModal'
+                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
+            }
+
+            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
+            // Symfony UX Turbo is all about progressively enhancing your applications!
+            return $this->redirectToRoute('material_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('material/form_frame.html.twig', [
+            'form' => $form,
         ]);
     }
 

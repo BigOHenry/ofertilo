@@ -57,14 +57,21 @@
                     {
                         title: "Akce",
                         formatter: (cell) => {
-                            return `<button class="btn btn-sm btn-danger delete-btn" data-id="${cell.getRow().getData().id}">Smazat</button>`;
+                            return `<button class="btn btn-sm btn-outline-primary edit-material me-1" data-bs-target="#materialModal" data-id="${cell.getRow().getData().id}">E</button>
+                                <button class="btn btn-sm btn-outline-danger delete-material" data-id="${cell.getRow().getData().id}">D</button>`;
                         },
                         width: 100,
                         hozAlign: "center",
                         cellClick: function (e, cell) {
+                            const target = e.target;
                             const row = cell.getRow();
                             const id = row.getData().id;
-                            if (e.target.classList.contains('delete-btn')) {
+
+                            if (target.classList.contains('edit-material')) {
+                                Turbo.visit(`/material/${id}/edit`, { frame: "materialModal_frame" });
+                            }
+
+                            if (target.classList.contains('delete-material') && e.target.classList.contains('delete-btn')) {
                                 if (confirm('Opravdu chcete smazat tento materiál?')) {
                                     fetch(`/materials/${id}`, {
                                         method: 'DELETE',

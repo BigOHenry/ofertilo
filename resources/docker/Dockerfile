@@ -32,7 +32,7 @@ RUN  docker-php-ext-enable pdo_pgsql
 RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
 # install Node.js & npm
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
     apt-get update && \
     apt-get install -y nodejs
 
