@@ -89,4 +89,12 @@ final class MaterialController extends AbstractController
             'total' => $total,
         ]);
     }
+
+    #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
+    public function delete(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    {
+        $materialRepository->delete($material);
+
+        return new JsonResponse(['success' => true]);
+    }
 }

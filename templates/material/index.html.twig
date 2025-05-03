@@ -27,20 +27,11 @@
     <turbo-frame id="materialModal_stream_handler"></turbo-frame>
 {% endblock %}
 
-
-{% block success_stream %}
-    <turbo-stream action="replace" targets="#my_div_id">
-        <template>
-            <div>The task "{{ material }}" has been created!</div>
-        </template>
-    </turbo-stream>
-{% endblock %}
-
 {% block javascripts %}
     {{ parent() }}
     <script>
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener("turbo:load", () => {
             window.materialTable = new Tabulator("#materials-table", {
                 ajaxURL: "{{ path('api_materials') }}",
                 layout: "fitColumns",
@@ -63,6 +54,38 @@
                     { title: "Typ", field: "type", sorter: "string" },
                     { title: "Název", field: "name", sorter: "string" },
                     { title: "Popis", field: "description", sorter: "string" },
+                    {
+                        title: "Akce",
+                        formatter: (cell) => {
+                            return `<button class="btn btn-sm btn-danger delete-btn" data-id="${cell.getRow().getData().id}">Smazat</button>`;
+                        },
+                        width: 100,
+                        hozAlign: "center",
+                        cellClick: function (e, cell) {
+                            const row = cell.getRow();
+                            const id = row.getData().id;
+                            if (e.target.classList.contains('delete-btn')) {
+                                if (confirm('Opravdu chcete smazat tento materiál?')) {
+                                    fetch(`/materials/${id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'Content-Type': 'application/json'
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            // Reload datagrid
+                                            row.delete();
+                                        } else {
+                                            console.log(response);
+                                            alert("Chyba při mazání.");
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
                 ]
             });
         });

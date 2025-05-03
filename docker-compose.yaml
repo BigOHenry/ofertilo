@@ -23,7 +23,7 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/pgdata:rw
     healthcheck:
-        test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-app}", "-U", "${DATABASE_USER:-app}" ]
+        test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-ofertilo}", "-U", "${DATABASE_USER:-app}" ]
         timeout: 5s
         retries: 5
         start_period: 60s
