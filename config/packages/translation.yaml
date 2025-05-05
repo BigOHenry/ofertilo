@@ -6,5 +6,6 @@ framework:
             - '%kernel.project_dir%/vendor/symfony/validator/Resources/translations'
             - '%kernel.project_dir%/vendor/symfony/form/Resources/translations'
         fallbacks:
+            - cs
             - en
         providers:

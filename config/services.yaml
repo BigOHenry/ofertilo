@@ -25,8 +25,17 @@ services:
 
     App\EventListener\FirstRunListener:
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 110 }
+    App\EventListener\LocaleRedirectListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     App\Domain\User\UserRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
     App\Domain\Material\MaterialRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
+    App\Infrastructure\Persistence\Doctrine\DoctrineTranslationRepository:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    App\Domain\Translation\TranslationRepositoryInterface: '@App\Infrastructure\Persistence\Doctrine\DoctrineTranslationRepository'

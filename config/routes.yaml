@@ -3,9 +3,6 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
-
-index:
-    path: /{_locale}/
-    controller: App\Controller\DefaultController::index
+    prefix: /{_locale}
     requirements:
         _locale: cs|en

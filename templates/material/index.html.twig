@@ -68,11 +68,14 @@
                             const row = cell.getRow();
                             const id = row.getData().id;
 
-                            if (target.classList.contains('edit-material')) {
+                            const deleteBtn = e.target.closest('.delete-material');
+                            const editBtn = e.target.closest('.edit-material');
+
+                            if (editBtn) {
                                 Turbo.visit(`/material/${id}/edit`, { frame: "materialModal_frame" });
                             }
 
-                            if (target.classList.contains('delete-material') && e.target.classList.contains('delete-btn')) {
+                            if (deleteBtn) {
                                 if (confirm('Opravdu chcete smazat tento materiál?')) {
                                     fetch(`/materials/${id}`, {
                                         method: 'DELETE',
