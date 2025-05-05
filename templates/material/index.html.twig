@@ -3,6 +3,12 @@
 {% block title %}Seznam materiálů{% endblock %}
 
 {% block body %}
+    {% include 'components/form_modal_frame.html.twig' with {
+        modalId: 'materialModal',
+        title: 'title.material'|trans,
+        frameUrl: path('material_new')
+    } %}
+
     <div class="card shadow-sm">
         <div class="card-header bg-light">
             <h5 class="mb-0">Materiály</h5>
@@ -10,19 +16,13 @@
         <div class="card-body">
             <div class="d-flex flex-row justify-content-end">
 {#                <a href="" class="btn btn-primary">{{ 'button.add'|trans }}</a>#}
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#materialModal">
-                    {{ 'button.add'|trans }}
+                <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}">
+                    <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
                 </button>
             </div>
             <div id="materials-table"></div>
         </div>
     </div>
-
-    {% include 'components/form_modal_frame.html.twig' with {
-        modalId: 'materialModal',
-        title: 'title.material'|trans,
-        frameUrl: path('material_new')
-    } %}
 
     <turbo-frame id="materialModal_stream_handler"></turbo-frame>
 {% endblock %}
@@ -57,8 +57,9 @@
                     {
                         title: "Akce",
                         formatter: (cell) => {
-                            return `<button class="btn btn-sm btn-outline-primary edit-material me-1" data-bs-target="#materialModal" data-id="${cell.getRow().getData().id}">E</button>
-                                <button class="btn btn-sm btn-outline-danger delete-material" data-id="${cell.getRow().getData().id}">D</button>`;
+                            const id = cell.getRow().getData().id;
+                            return `<button class="btn btn-sm btn-primary edit-material me-1" data-modal-src="/material/${id}/edit" data-id="${id}"><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                         },
                         width: 100,
                         hozAlign: "center",
@@ -96,5 +97,54 @@
                 ]
             });
         });
+
+
+        document.addEventListener("turbo:load", () => {
+            const delegateModalOpener = (e) => {
+                const trigger = e.target.closest("[data-modal-src]");
+                if (!trigger) return;
+
+                const modalId = trigger.dataset.modalId || "materialModal";
+                const frameId = modalId + "_frame";
+                const url = trigger.dataset.modalSrc;
+
+                // Odlož provedení do konce event loopu, aby byl DOM jistě připraven
+                setTimeout(() => {
+                    let modalEl = document.getElementById(modalId);
+                    let frameEl = document.getElementById(frameId);
+
+                    if (!modalEl || !frameEl) {
+                        console.warn("Modal or frame not found:", modalEl, frameEl);
+                        return;
+                    }
+
+                    frameEl.removeAttribute("src");
+                    frameEl.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Načítání…</span>
+                    </div>
+                </div>
+            `;
+                    frameEl.setAttribute("src", url);
+
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                }, 0);
+            };
+
+            // zaregistruj delegovaný handler
+            document.body.addEventListener("click", delegateModalOpener);
+
+            // vyčisti obsah turbo-framu při zavření
+            document.getElementById("materialModal")?.addEventListener("hidden.bs.modal", () => {
+                const frame = document.getElementById("materialModal_frame");
+                if (frame) {
+                    frame.removeAttribute("src");
+                    frame.innerHTML = "";
+                }
+            });
+        });
+
     </script>
 {% endblock %}

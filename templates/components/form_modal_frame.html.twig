@@ -1,5 +1,3 @@
-{# templates/components/form_modal_frame.html.twig #}
-
 {# Usage:
    {% include 'components/form_modal_frame.html.twig' with {
      modalId: 'materialModal',
@@ -27,9 +25,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.querySelector('[data-bs-target="#{{ modalId }}"]').addEventListener('click', () => {
-        Turbo.visit("{{ frameUrl }}", { frame: "{{ modalId }}_frame" });
-    });
-</script>
