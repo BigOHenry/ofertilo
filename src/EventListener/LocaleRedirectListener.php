@@ -14,6 +14,12 @@ readonly class LocaleRedirectListener
         $request = $event->getRequest();
         $path = $request->getPathInfo();
 
+        // přeskočit interní Symfony routy
+        $excluded = ['/_wdt', '/_profiler', '/_fragment', '/_error', '/favicon.ico'];
+        if (array_any($excluded, static fn($prefix) => str_starts_with($path, $prefix))) {
+            return;
+        }
+
         // Pokud URL již obsahuje validní locale, nic nedělej
         if (preg_match('#^/(' . implode('|', $this->supportedLocales) . ')(/|$)#', $path)) {
             return;

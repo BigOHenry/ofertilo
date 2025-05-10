@@ -51,9 +51,13 @@
                     return response.data;
                 },
                 columns: [
-                    { title: "Typ", field: "type", sorter: "string" },
-                    { title: "Název", field: "name", sorter: "string" },
-                    { title: "Popis", field: "description", sorter: "string" },
+                    { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
+                    { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
+                    { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                    { title: "{{ 'field.latin_name'|trans }}", field: "latin_name", sorter: "string" },
+                    { title: "{{ 'field.place_of_origin'|trans }}", field: "place_of_origin", sorter: "string" },
+                    { title: "{{ 'field.dry_density'|trans }}", field: "dry_density", sorter: "int" },
+                    { title: "{{ 'field.hardness'|trans }}", field: "hardness", sorter: "int" },
                     {
                         title: "Akce",
                         formatter: (cell) => {

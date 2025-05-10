@@ -6,6 +6,7 @@ use App\Domain\Material\Material;
 use App\Domain\Material\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,6 +32,18 @@ class MaterialType extends AbstractType
                     array_map(fn($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
                     Type::cases()
                 ),
+            ])
+            ->add('latin_name', TextType::class, [
+                'label' => 'field.latin_name',
+            ])
+            ->add('place_of_origin', TextType::class, [
+                'label' => 'field.place_of_origin',
+            ])
+            ->add('dry_density', IntegerType::class, [
+                'label' => 'field.dry_density',
+            ])
+            ->add('hardness', IntegerType::class, [
+                'label' => 'field.hardness',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save'

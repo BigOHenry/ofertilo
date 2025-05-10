@@ -12,6 +12,10 @@ field:
   type: "Typ"
   name: "Název"
   description: "Popis"
+  latin_name: "Latinský název"
+  place_of_origin: "Původ"
+  dry_density: "Hustota suchého dřeva (kg/m³)"
+  hardness: "Tvrdost dřeva (Janka)"
 
 button:
   save: "Uložit"

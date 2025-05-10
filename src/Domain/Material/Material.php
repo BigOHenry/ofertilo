@@ -21,6 +21,18 @@ class Material
     #[ORM\Column(nullable: false, enumType: Type::class)]
     private ?Type $type = null;
 
+    #[ORM\Column(length: 300, nullable: true)]
+    private ?string $latin_name = null;
+
+    #[ORM\Column(length: 300, nullable: true)]
+    private ?string $place_of_origin = null;
+
+    #[ORM\Column(type: 'integer', length: 8, nullable: true)]
+    private ?string $dry_density = null;
+
+    #[ORM\Column(type: 'integer', length: 8, nullable: true)]
+    private ?string $hardness = null;
+
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
@@ -72,5 +84,45 @@ class Material
     public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
+    }
+
+    public function getLatinName(): ?string
+    {
+        return $this->latin_name;
+    }
+
+    public function setLatinName(?string $latin_name): void
+    {
+        $this->latin_name = $latin_name;
+    }
+
+    public function getPlaceOfOrigin(): ?string
+    {
+        return $this->place_of_origin;
+    }
+
+    public function setPlaceOfOrigin(?string $place_of_origin): void
+    {
+        $this->place_of_origin = $place_of_origin;
+    }
+
+    public function getDryDensity(): ?string
+    {
+        return $this->dry_density;
+    }
+
+    public function setDryDensity(?string $dry_density): void
+    {
+        $this->dry_density = $dry_density;
+    }
+
+    public function getHardness(): ?string
+    {
+        return $this->hardness;
+    }
+
+    public function setHardness(?string $hardness): void
+    {
+        $this->hardness = $hardness;
     }
 }

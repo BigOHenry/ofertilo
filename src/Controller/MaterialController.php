@@ -83,6 +83,10 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription(),
+                'latin_name' => $material->getLatinName(),
+                'place_of_origin' => $material->getPlaceOfOrigin(),
+                'dry_density' => $material->getDryDensity(),
+                'hardness' => $material->getHardness(),
                 'type' => $material->getType()->value,
             ];
         }
