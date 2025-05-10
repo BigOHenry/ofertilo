@@ -41,6 +41,8 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
     App\Domain\Material\MaterialRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
+    App\Domain\Material\MaterialPriceRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialPriceRepository
     App\Infrastructure\Persistence\Doctrine\DoctrineTranslationRepository:
         autowire: true
         autoconfigure: true

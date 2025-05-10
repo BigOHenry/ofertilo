@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.material'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="mt-4">{{ material.name }}</h1>
+
+        <p><strong>{{ 'field.type'|trans }}:</strong> {{ material.type.name }}</p>
+        <p><strong>{{ 'field.description'|trans }}:</strong> {{ material.description }}</p>
+
+{#        <h2 class="mt-5">{{ 'title.material_prices'|trans }}</h2>#}
+    </div>
+{% endblock %}

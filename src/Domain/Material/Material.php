@@ -2,6 +2,8 @@
 
 namespace App\Domain\Material;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -35,6 +37,14 @@ class Material
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
+
+    #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $prices;
+
+    public function __construct()
+    {
+        $this->prices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -124,5 +134,21 @@ class Material
     public function setHardness(?string $hardness): void
     {
         $this->hardness = $hardness;
+    }
+
+    public function getPrices(): Collection
+    {
+        return $this->prices;
+    }
+
+    public function addPrice(MaterialPrice $price): void
+    {
+        $this->prices[] = $price;
+        $price->setMaterial($this);
+    }
+
+    public function removePrice(MaterialPrice $price): void
+    {
+        $this->prices->removeElement($price);
     }
 }

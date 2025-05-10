@@ -99,9 +99,15 @@
                                     });
                                 }
                             }
+
+                            return false;
                         }
                     }
                 ]
+            });
+
+            window.materialTable.on("rowClick", function(e, row){
+                window.location.href = `/material/${row.getData().id}`;
             });
         });
 

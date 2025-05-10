@@ -139,4 +139,12 @@ final class MaterialController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+
+    #[Route('/material/{id}', name: 'material_show', methods: ['GET'])]
+    public function show(Material $material): Response
+    {
+        return $this->render('material/show.html.twig', [
+            'material' => $material,
+        ]);
+    }
 }
