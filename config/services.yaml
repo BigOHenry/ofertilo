@@ -4,7 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    app.supported_locales: ['cs', 'en']
+    app.default_locale: 'cs'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -27,8 +28,15 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 110 }
     App\EventListener\LocaleRedirectListener:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+            $defaultLocale: '%app.default_locale%'
         tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+    App\Controller\RedirectToLocaleController:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+            $defaultLocale: '%app.default_locale%'
     App\Domain\User\UserRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
     App\Domain\Material\MaterialRepositoryInterface:

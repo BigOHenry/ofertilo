@@ -2,42 +2,27 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\RouterInterface;
 
-class LocaleRedirectListener
+readonly class LocaleRedirectListener
 {
-    private array $supportedLocales = ['cs', 'en'];
-    private string $defaultLocale = 'cs';
+    public function __construct(private array $supportedLocales, private string $defaultLocale) {}
 
-    public function __construct(private RouterInterface $router)
-    {}
-
-    public function onKernelController(ControllerEvent $event): void
+    public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        $route = $request->attributes->get('_route');
+        $path = $request->getPathInfo();
 
-        // přeskakuj systémové routy (začínají _ nebo jsou z profilu/debugu)
-        if (str_starts_with($route, '_')) {
+        // Pokud URL již obsahuje validní locale, nic nedělej
+        if (preg_match('#^/(' . implode('|', $this->supportedLocales) . ')(/|$)#', $path)) {
             return;
         }
 
-        $locale = $request->attributes->get('_locale');
-        if (!$locale || !in_array($locale, ['cs', 'en'])) {
-            $preferred = $request->getPreferredLanguage(['cs', 'en']) ?? 'cs';
-            $uri = $request->getRequestUri();
-            $newUri = '/' . $preferred . $uri;
+        // Urči preferovaný jazyk
+        $locale = $request->getPreferredLanguage($this->supportedLocales) ?? $this->defaultLocale;
 
-            $event->setController(fn() => new RedirectResponse($newUri));
-        }
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [KernelEvents::CONTROLLER => 'onKernelController'];
+        // Přesměruj na locale-prefixed URL
+        $event->setResponse(new RedirectResponse('/' . $locale . $path));
     }
 }
