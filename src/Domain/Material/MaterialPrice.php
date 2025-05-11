@@ -14,7 +14,7 @@ class MaterialPrice
     private int $id;
 
     #[ORM\Column(type: 'integer')]
-    private float $thickness;
+    private int $thickness;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private string $price;
@@ -33,12 +33,12 @@ class MaterialPrice
         $this->id = $id;
     }
 
-    public function getThickness(): float
+    public function getThickness(): int
     {
         return $this->thickness;
     }
 
-    public function setThickness(float $thickness): void
+    public function setThickness(int $thickness): void
     {
         $this->thickness = $thickness;
     }

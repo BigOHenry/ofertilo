@@ -16,6 +16,8 @@ field:
   place_of_origin: "Původ"
   dry_density: "Hustota suchého dřeva (kg/m³)"
   hardness: "Tvrdost dřeva (Janka)"
+  thickness: "Tloušťka (mm)"
+  price: "Cena"
 
 button:
   save: "Uložit"

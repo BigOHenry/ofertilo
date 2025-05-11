@@ -30,10 +30,10 @@ class Material
     private ?string $place_of_origin = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
-    private ?string $dry_density = null;
+    private ?int $dry_density = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
-    private ?string $hardness = null;
+    private ?int $hardness = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
@@ -116,22 +116,22 @@ class Material
         $this->place_of_origin = $place_of_origin;
     }
 
-    public function getDryDensity(): ?string
+    public function getDryDensity(): ?int
     {
         return $this->dry_density;
     }
 
-    public function setDryDensity(?string $dry_density): void
+    public function setDryDensity(?int $dry_density): void
     {
         $this->dry_density = $dry_density;
     }
 
-    public function getHardness(): ?string
+    public function getHardness(): ?int
     {
         return $this->hardness;
     }
 
-    public function setHardness(?string $hardness): void
+    public function setHardness(?int $hardness): void
     {
         $this->hardness = $hardness;
     }

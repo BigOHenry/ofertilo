@@ -83,10 +83,10 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription(),
-                'latin_name' => $material->getLatinName(),
-                'place_of_origin' => $material->getPlaceOfOrigin(),
-                'dry_density' => $material->getDryDensity(),
-                'hardness' => $material->getHardness(),
+//                'latin_name' => $material->getLatinName(),
+//                'place_of_origin' => $material->getPlaceOfOrigin(),
+//                'dry_density' => $material->getDryDensity(),
+//                'hardness' => $material->getHardness(),
                 'type' => $material->getType()->value,
             ];
         }
@@ -145,6 +145,23 @@ final class MaterialController extends AbstractController
     {
         return $this->render('material/show.html.twig', [
             'material' => $material,
+        ]);
+    }
+
+    #[Route('/api/material_prices/{id}', name: 'api_material_prices')]
+    public function materialPricesApi(Material $material, Request $request): JsonResponse
+    {
+        $data = [];
+        foreach ($material->getPrices() as $price) {
+            $data[] = [
+                'id' => $price->getId(),
+                'thickness' => $price->getThickness(),
+                'price' => $price->getPrice(),
+            ];
+        }
+
+        return $this->json([
+            'data' => $data
         ]);
     }
 }
