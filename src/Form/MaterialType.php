@@ -35,15 +35,19 @@ class MaterialType extends AbstractType
             ])
             ->add('latin_name', TextType::class, [
                 'label' => 'field.latin_name',
+                'required' => false,
             ])
             ->add('place_of_origin', TextType::class, [
                 'label' => 'field.place_of_origin',
+                'required' => false,
             ])
             ->add('dry_density', IntegerType::class, [
                 'label' => 'field.dry_density',
+                'required' => false,
             ])
             ->add('hardness', IntegerType::class, [
                 'label' => 'field.hardness',
+                'required' => false,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save'

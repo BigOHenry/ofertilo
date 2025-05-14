@@ -58,5 +58,8 @@
         <main class="container-xxl">
             {% block body %}{% endblock %}
         </main>
+
+        {% include 'components/modal_delegate_script.html.twig' %}
+        <div id="modal-action-scripts"></div>
     </body>
 </html>

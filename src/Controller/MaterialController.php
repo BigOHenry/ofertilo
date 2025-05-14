@@ -39,10 +39,13 @@ final class MaterialController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('material/_created.stream.html.twig', [
-                    'modalId' => 'materialModal'
-                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
-//                return $this->renderBlock('material/index.html.twig', 'success_stream', ['material' => $material->getDescription()]);
+//                return $this->render('components/stream_close_modal.html.twig', [
+//                    'modal_id' => 'materialModal',
+//                ]);
+                return $this->render('components/stream_modal_cleanup.html.twig');
+//                return $this->render('material/_created.stream.html.twig', [
+//                    'modalId' => 'materialModal'
+//                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
             }
 
             // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
@@ -117,9 +120,12 @@ final class MaterialController extends AbstractController
                 // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('material/_update_stream.html.twig', [
-                    'modalId' => 'materialModal'
-                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
+                return $this->render('components/stream_close_modal.html.twig', [
+                    'modal_id' => 'materialModal',
+                ]);
+//                return $this->render('material/_update_stream.html.twig', [
+//                    'modalId' => 'materialModal'
+//                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
             }
 
             // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
