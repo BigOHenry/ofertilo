@@ -52,8 +52,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --no-scripts
 
-#      - name: Create empty tests directory
-#        run: mkdir -p tests
+      - name: Create empty tests directory
+        run: mkdir -p tests
 
       - name: Create var directory
         run: mkdir -p var

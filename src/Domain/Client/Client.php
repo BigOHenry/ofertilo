@@ -40,77 +40,93 @@ class Client
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    public function getId(): ?int {
+    public function getId(): ?int
+    {
         return $this->id;
     }
 
-    public function setId(?int $id): void {
+    public function setId(?int $id): void
+    {
         $this->id = $id;
     }
 
-    public function getName(): ?string {
+    public function getName(): ?string
+    {
         return $this->name;
     }
 
-    public function setName(?string $name): void {
+    public function setName(?string $name): void
+    {
         $this->name = $name;
     }
 
-    public function getCompany(): ?string {
+    public function getCompany(): ?string
+    {
         return $this->company;
     }
 
-    public function setCompany(?string $company): void {
+    public function setCompany(?string $company): void
+    {
         $this->company = $company;
     }
 
-    public function getEmail(): ?string {
+    public function getEmail(): ?string
+    {
         return $this->email;
     }
 
-    public function setEmail(?string $email): void {
+    public function setEmail(?string $email): void
+    {
         $this->email = $email;
     }
 
-    public function getPhone(): ?string {
+    public function getPhone(): ?string
+    {
         return $this->phone;
     }
 
-    public function setPhone(?string $phone): void {
+    public function setPhone(?string $phone): void
+    {
         $this->phone = $phone;
     }
 
-    public function getInstagram(): ?string {
+    public function getInstagram(): ?string
+    {
         return $this->instagram;
     }
 
-    public function setInstagram(?string $instagram): void {
+    public function setInstagram(?string $instagram): void
+    {
         $this->instagram = $instagram;
     }
 
-    public function getFacebook(): ?string {
+    public function getFacebook(): ?string
+    {
         return $this->facebook;
     }
 
-    public function setFacebook(?string $facebook): void {
+    public function setFacebook(?string $facebook): void
+    {
         $this->facebook = $facebook;
     }
 
-    public function getCountry(): ?Country {
+    public function getCountry(): ?Country
+    {
         return $this->country;
     }
 
-    public function setCountry(?Country $country): void {
+    public function setCountry(?Country $country): void
+    {
         $this->country = $country;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable {
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?\DateTimeImmutable $createdAt): void {
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): void
+    {
         $this->createdAt = $createdAt;
     }
-
-
 }

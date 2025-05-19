@@ -64,7 +64,8 @@ final class MaterialController extends AbstractController
 
         $qb = $materialRepository->createQueryBuilder('m')
                    ->setFirstResult($offset)
-                   ->setMaxResults($size);
+                   ->setMaxResults($size)
+        ;
 
         $sortField = $request->query->get('sort')['field'] ?? null;
         $sortDir = $request->query->get('sort')['dir'] ?? 'asc';

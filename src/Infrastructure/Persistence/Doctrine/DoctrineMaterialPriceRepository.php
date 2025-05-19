@@ -10,7 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @extends ServiceEntityRepository<MaterialPrice>
+ * @extends() ServiceEntityRepository<MaterialPrice>
  */
 class DoctrineMaterialPriceRepository extends ServiceEntityRepository implements MaterialPriceRepositoryInterface
 {
