@@ -21,7 +21,7 @@ jobs:
           tools: composer
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress --no-suggest --no-scripts
 
       - name: Run PHP_CodeSniffer
         run: vendor/bin/phpcs --standard=phpcs.xml.dist
