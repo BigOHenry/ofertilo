@@ -10,7 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends() ServiceEntityRepository<Material>
+ * @phpstan-extends ServiceEntityRepository<Material>
  */
 class DoctrineMaterialRepository extends ServiceEntityRepository implements MaterialRepositoryInterface
 {
