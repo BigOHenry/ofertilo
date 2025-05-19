@@ -12,7 +12,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends() ServiceEntityRepository<User>
+ * @phpstan-extends ServiceEntityRepository<User>
  */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
