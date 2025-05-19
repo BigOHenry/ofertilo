@@ -36,3 +36,27 @@ jobs:
         run: |
           export PHP_CS_FIXER_IGNORE_ENV=1
           vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
+  phpstan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-scripts
+
+#      - name: Create empty tests directory
+#        run: mkdir -p tests
+
+      - name: Create var directory
+        run: mkdir -p var
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress --no-interaction

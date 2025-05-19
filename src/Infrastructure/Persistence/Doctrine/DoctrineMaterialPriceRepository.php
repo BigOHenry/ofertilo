@@ -6,9 +6,13 @@ namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Material\MaterialPrice;
 use App\Domain\Material\MaterialPriceRepositoryInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class DoctrineMaterialPriceRepository implements MaterialPriceRepositoryInterface
+/**
+ * @extends ServiceEntityRepository<MaterialPrice>
+ */
+class DoctrineMaterialPriceRepository extends ServiceEntityRepository implements MaterialPriceRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $em)
     {

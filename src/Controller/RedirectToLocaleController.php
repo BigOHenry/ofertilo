@@ -10,7 +10,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 readonly class RedirectToLocaleController
 {
-    public function __construct(private array $supportedLocales, private string $defaultLocale)
+    /**
+     * @param string[] $supportedLocales
+     * @param string $defaultLocale
+     */
+    public function __construct(private array $supportedLocales = [], private string $defaultLocale = '')
     {
     }
 

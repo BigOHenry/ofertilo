@@ -32,12 +32,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $forceEmailChange = true;
 
+    /**
+     * @var string[]
+     */
     #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
     public function __construct(string $email)
     {
         $this->email = $email;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getId(): ?int
@@ -74,18 +82,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRoles(): array
     {
         return $this->roles;
     }
 
-    public function setRoles(array $roles): self
+    /**
+     * @param string[]|Role[] $roles
+     * @return User
+     */
+    public function setRoles(array $roles): User
     {
-        foreach ($roles as $role) {
-            if (!$role instanceof Role) {
-                throw new \InvalidArgumentException('Each element must be an instance of the Role enum.');
-            }
-        }
+//        foreach ($roles as $role) {
+//            if (!$role instanceof Role) {
+//                throw new \InvalidArgumentException('Each element must be an instance of the Role enum.');
+//            }
+//        }
 
         $this->roles = $roles;
 
