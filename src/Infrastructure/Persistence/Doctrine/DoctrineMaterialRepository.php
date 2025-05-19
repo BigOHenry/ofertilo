@@ -9,6 +9,9 @@ use App\Domain\Material\MaterialRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Material>
+ */
 class DoctrineMaterialRepository extends ServiceEntityRepository implements MaterialRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)

@@ -40,6 +40,9 @@ class Material
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
+    /**
+     * @var Collection<int, MaterialPrice>
+     */
     #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prices;
 
@@ -138,6 +141,9 @@ class Material
         $this->hardness = $hardness;
     }
 
+    /**
+     * @return Collection<int, MaterialPrice>
+     */
     public function getPrices(): Collection
     {
         return $this->prices;

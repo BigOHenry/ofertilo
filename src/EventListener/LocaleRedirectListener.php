@@ -9,6 +9,10 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly class LocaleRedirectListener
 {
+    /**
+     * @param string[] $supportedLocales
+     * @param string $defaultLocale
+     */
     public function __construct(private array $supportedLocales, private string $defaultLocale)
     {
     }
