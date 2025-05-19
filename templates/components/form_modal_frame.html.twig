@@ -1,0 +1,30 @@
+{# Usage:
+   {% include 'components/form_modal_frame.html.twig' with {
+     modalId: 'materialModal',
+     title: 'modal.material.new'|trans
+   } %}
+#}
+
+
+{% set modal_id = modal_id|default('universalModal') %}
+{% set frame_id = frame_id|default(modal_id ~ '_frame') %}
+
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-hidden="true" data-controller="modal" data-backdrop="static">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" data-modal-target="title">...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'label.loading'|trans }}"></button>
+            </div>
+
+            <div class="modal-body">
+                <turbo-frame id="{{ frame_id }}" target="_top" data-modal-target="frame">
+                    <div class="text-center py-5">
+                        <div class="spinner-border" role="status"></div>
+                    </div>
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+</div>

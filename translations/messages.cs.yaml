@@ -1,0 +1,26 @@
+title:
+  first_run: "První spuštění"
+  create_super_admin: "Nejprve je potřeba založit účet SuperAdmin, zadejte e-mail a heslo:"
+  login: "Přihlášení"
+  materials: 'Materiály'
+  material: 'Materiál'
+
+field:
+  email: "E-mail"
+  password: "Heslo"
+  confirm_password: "Potvrdit heslo"
+  type: "Typ"
+  name: "Název"
+  description: "Popis"
+  latin_name: "Latinský název"
+  place_of_origin: "Původ"
+  dry_density: "Hustota suchého dřeva (kg/m³)"
+  hardness: "Tvrdost dřeva (Janka)"
+  thickness: "Tloušťka (mm)"
+  price: "Cena"
+
+button:
+  save: "Uložit"
+  login: 'Přihlásit'
+  add: 'Přidat'
+  close: 'Zavřít'

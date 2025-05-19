@@ -1,0 +1,37 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: resources/docker/Dockerfile
+    container_name: ofertilo
+    env_file:
+      - .env.docker
+    ports:
+      - 8080:80
+    volumes:
+      - .:/var/www/app
+
+  database:
+    image: library/postgres:17.4-alpine
+    container_name: postgresql
+    env_file:
+      - .env.docker
+    ports:
+      - 5432:5432
+    environment:
+        PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - database_data:/var/lib/postgresql/pgdata:rw
+    healthcheck:
+        test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-ofertilo}", "-U", "${DATABASE_USER:-app}" ]
+        timeout: 5s
+        retries: 5
+        start_period: 60s
+
+networks:
+  default:
+    external: true
+    name: ofertilo_net
+
+volumes:
+  database_data:

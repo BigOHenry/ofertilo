@@ -1,0 +1,33 @@
+{
+  "name": "ofertilo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@hotwired/stimulus": "^3.0.0",
+    "@hotwired/turbo": "^7.3.0",
+    "@popperjs/core": "^2.11.8",
+    "@symfony/stimulus-bridge": "^3.2.0",
+    "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",
+    "@symfony/webpack-encore": "^4.7.0",
+    "babel-loader": "^10.0.0",
+    "bootstrap": "^5.3.3",
+    "core-js": "^3.34.1",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
+    "stimulus": "^3.2.2",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-notifier": "^1.15.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "tabulator-tables": "^6.3.1"
+  }
+}

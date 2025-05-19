@@ -1,0 +1,50 @@
+<script>
+    document.addEventListener("turbo:load", () => {
+        const delegateModalOpener = (e) => {
+            const trigger = e.target.closest("[data-modal-src]");
+            if (!trigger) return;
+
+            const modalId = trigger.dataset.modalId || "universalModal";
+            const frameId = modalId + "_frame";
+            const url = trigger.dataset.modalSrc;
+
+            setTimeout(() => {
+                const modalEl = document.getElementById(modalId);
+                const frameEl = document.getElementById(frameId);
+
+                if (!modalEl || !frameEl) {
+                    console.warn("Modal or frame not found:", modalEl, frameEl);
+                    return;
+                }
+
+                frameEl.removeAttribute("src");
+                frameEl.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Načítání…</span>
+                    </div>
+                </div>
+            `;
+                frameEl.setAttribute("src", url);
+
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+            }, 0);
+        };
+
+        document.body.addEventListener("click", delegateModalOpener);
+
+        document.querySelectorAll(".modal[data-modal-frame-cleanup]").forEach((modalEl) => {
+            const modalId = modalEl.id;
+            const frameId = modalId + "_frame";
+
+            modalEl.addEventListener("hidden.bs.modal", () => {
+                const frame = document.getElementById(frameId);
+                if (frame) {
+                    frame.removeAttribute("src");
+                    frame.innerHTML = "";
+                }
+            });
+        });
+    });
+</script>

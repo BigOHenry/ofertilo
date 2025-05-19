@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.first_run'|trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'title.first_run'|trans }}</h1>
+    <p>{{ 'title.create_super_admin'|trans }}</p>
+
+    {{ form_start(form) }}
+    {{ form_row(form.email) }}
+    {{ form_errors(form.password) }}
+    {{ form_row(form.password.first) }}
+    {{ form_row(form.password.second) }}
+    <button class="btn btn-primary">{{ 'button.save'|trans }}</button>
+    {{ form_end(form) }}
+{% endblock %}

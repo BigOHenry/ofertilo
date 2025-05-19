@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{{ asset('img/favicon-96x96.png') }}" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="{{ asset('img/favicon.svg') }}" />
+        <link rel="shortcut icon" href="{{ asset('img/favicon.ico') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/apple-touch-icon.png') }}" />
+        <link rel="manifest" href="{{ asset('img/site.webmanifest') }}" />
+
+        <title>{% block title %}Ofertilo{% endblock %}</title>
+
+        {{ encore_entry_link_tags('app') }}
+        {% block stylesheets %}{% endblock %}
+
+        {{ encore_entry_script_tags('app') }}
+        {% block javascripts %}{% endblock %}
+
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg">
+            <div class="container-xxl">
+                <a class="navbar-brand" href="{{ path('app_home_index') }}">
+                    <img src="{{ asset('img/ofertilo_logo.webp') }}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                    OFERTILO
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{{ path('app_home_index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('material_index') }}" data-turbo="true">{{ 'title.materials'|trans }}</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            {% if app.user %}
+                                <span class="nav-link" >{{ app.user.name }}</span>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            {% if app.user %}
+                                <a class="nav-link" href="{{ path('app_logout') }}">Odhlásit se</a>
+                            {% else %}
+                                <a class="nav-link" href="{{ path('app_login') }}">Přihlásit se</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container-xxl">
+            {% block body %}{% endblock %}
+        </main>
+
+        {% include 'components/modal_delegate_script.html.twig' %}
+        <div id="modal-action-scripts"></div>
+    </body>
+</html>

@@ -1,0 +1,32 @@
+name: Code Style
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code-style:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHP_CodeSniffer
+        run: vendor/bin/phpcs --standard=phpcs.xml.dist
+
+      - name: Run PHP-CS-Fixer (dry-run)
+        run: |
+          export PHP_CS_FIXER_IGNORE_ENV=1
+          vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
