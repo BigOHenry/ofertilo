@@ -92,16 +92,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @param string[]|Role[] $roles
-     * @return User
      */
     public function setRoles(array $roles): User
     {
-//        foreach ($roles as $role) {
-//            if (!$role instanceof Role) {
-//                throw new \InvalidArgumentException('Each element must be an instance of the Role enum.');
-//            }
-//        }
-
         $this->roles = $roles;
 
         return $this;
