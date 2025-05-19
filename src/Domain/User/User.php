@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\User;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -27,10 +29,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $forcePasswordChange = true;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: 'boolean')]
     private bool $forceEmailChange = true;
 
-    #[ORM\Column(type: "jsonb")]
+    #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
     public function __construct(string $email)
@@ -51,6 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -67,6 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -84,6 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->roles = $roles;
+
         return $this;
     }
 
@@ -115,6 +120,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setForceEmailChange(bool $forceEmailChange): static
     {
         $this->forceEmailChange = $forceEmailChange;
+
         return $this;
     }
 

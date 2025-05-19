@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Ofertilo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                  xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <config name="ignore_warnings_on_exit" value="1"/>
+    <arg name="basepath" value="."/>
+    <arg name="cache" value="var/.phpcs-cache"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <file>src/</file>
+    <file>tests/</file>
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+    <rule ref="PSR12"/>
+    <!-- additional rules -->
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="dd" value=""/>
+                <element key="var_dump" value=""/>
+                <element key="dump" value=""/>
+                <element key="exit" value=""/>
+                <element key="die" value=""/>
+                <element key="eval" value=""/>
+                <element key="sizeof" value="count"/>
+                <element key="delete" value="unset"/>
+                <element key="print" value="echo"/>
+                <element key="is_null" value=""/>
+                <element key="create_function" value=""/>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="150"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+</ruleset>

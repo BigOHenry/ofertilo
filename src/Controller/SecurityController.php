@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -19,7 +21,7 @@ class SecurityController extends AbstractController
     public function setup(
         Request $request,
         UserRepositoryInterface $userRepo,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         if ($userRepo->hasSuperAdmin()) {
             return $this->redirectToRoute('app_login');
@@ -42,6 +44,7 @@ class SecurityController extends AbstractController
             $userRepo->save($user);
 
             $this->addFlash('success', 'SuperAdmin has been successfully created.');
+
             return $this->redirectToRoute('app_login');
         }
 
@@ -60,7 +63,7 @@ class SecurityController extends AbstractController
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error'         => $error,
+            'error' => $error,
         ]);
     }
 

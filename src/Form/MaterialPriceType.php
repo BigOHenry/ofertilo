@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Domain\Material\MaterialPrice;
@@ -22,8 +24,9 @@ class MaterialPriceType extends AbstractType
                 'label' => 'field.price',
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'button.save'
-            ]);
+                'label' => 'button.save',
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

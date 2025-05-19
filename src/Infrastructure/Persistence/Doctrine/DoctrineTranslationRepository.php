@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Translation\TranslationRepositoryInterface;
@@ -7,14 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineTranslationRepository implements TranslationRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
-    /**
-     * @param object $entity
-     * @param string $field
-     * @param string $locale
-     * @return string|null
-     */
     public function find(object $entity, string $field, string $locale): ?string
     {
         $class = new \ReflectionClass($entity)->getShortName();
@@ -24,6 +22,7 @@ class DoctrineTranslationRepository implements TranslationRepositoryInterface
         }
 
         $repo = $this->em->getRepository(TranslationEntity::class);
+
         return $repo->findOneBy([
             'object_class' => $class,
             'object_id' => $id,
@@ -32,13 +31,6 @@ class DoctrineTranslationRepository implements TranslationRepositoryInterface
         ])?->getValue();
     }
 
-    /**
-     * @param object $entity
-     * @param string $field
-     * @param string $locale
-     * @param string $value
-     * @return void
-     */
     public function save(object $entity, string $field, string $locale, string $value): void
     {
         $class = new \ReflectionClass($entity)->getShortName();

@@ -1,0 +1,9 @@
+{{ form_start(form, {
+  attr: {
+    id: form_id|default(null),
+    class: form_class|default('needs-validation')
+  }
+}) }}
+  {{ form_errors(form) }}
+  {{ form_widget(form) }}
+{{ form_end(form) }}

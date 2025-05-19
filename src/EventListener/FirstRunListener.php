@@ -1,18 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\EventListener;
 
 use App\Domain\User\UserRepositoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 readonly class FirstRunListener
 {
     public function __construct(
         private UserRepositoryInterface $userRepo,
-        private RouterInterface $router
-    ) {}
+        private RouterInterface $router,
+    ) {
+    }
 
     public function onKernelRequest(RequestEvent $event): void
     {

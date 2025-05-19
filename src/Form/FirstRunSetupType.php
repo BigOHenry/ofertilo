@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -19,7 +21,7 @@ class FirstRunSetupType extends AbstractType
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options'  => [
+                'first_options' => [
                     'label' => 'field.password',
                     'translation_domain' => 'messages',
                 ],
@@ -28,6 +30,7 @@ class FirstRunSetupType extends AbstractType
                     'translation_domain' => 'messages',
                 ],
                 'invalid_message' => 'password_mismatch',
-            ]);
+            ])
+        ;
     }
 }

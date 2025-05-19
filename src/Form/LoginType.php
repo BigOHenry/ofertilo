@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -19,6 +21,7 @@ class LoginType extends AbstractType
             ->add('password', PasswordType::class, [
                 'label' => 'field.password',
                 'translation_domain' => 'messages',
-            ]);
+            ])
+        ;
     }
 }

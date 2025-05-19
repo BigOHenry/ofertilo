@@ -15,7 +15,6 @@
         </div>
         <div class="card-body">
             <div class="d-flex flex-row justify-content-end">
-{#                <a href="" class="btn btn-primary">{{ 'button.add'|trans }}</a>#}
                 <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}">
                     <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
                 </button>
@@ -23,8 +22,6 @@
             <div id="materials-table"></div>
         </div>
     </div>
-
-    <turbo-frame id="materialModal_stream_handler"></turbo-frame>
 {% endblock %}
 
 {% block javascripts %}
@@ -54,29 +51,47 @@
                     { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
                     { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
                     { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                    {#{ title: "{{ 'field.latin_name'|trans }}", field: "latin_name", sorter: "string" },#}
-                    {#{ title: "{{ 'field.place_of_origin'|trans }}", field: "place_of_origin", sorter: "string" },#}
-                    {#{ title: "{{ 'field.dry_density'|trans }}", field: "dry_density", sorter: "int" },#}
-                    {#{ title: "{{ 'field.hardness'|trans }}", field: "hardness", sorter: "int" },#}
                     {
                         title: "Akce",
                         formatter: (cell) => {
                             const id = cell.getRow().getData().id;
-                            return `<button class="btn btn-sm btn-primary edit-material me-1" data-modal-src="/material/${id}/edit" data-id="${id}"><i class="fa fa-edit"></i></button>
+                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                         },
                         width: 100,
                         hozAlign: "center",
                         cellClick: function (e, cell) {
+                            e.stopPropagation();
                             const target = e.target;
                             const row = cell.getRow();
                             const id = row.getData().id;
 
-                            const deleteBtn = e.target.closest('.delete-material');
-                            const editBtn = e.target.closest('.edit-material');
+                            const deleteBtn = target.closest('.delete-material');
+                            const editBtn = target.closest('.edit-material');
 
                             if (editBtn) {
-                                Turbo.visit(`/material/${id}/edit`, { frame: "materialModal_frame" });
+                                const modalId = "materialModal";
+                                const frameId = modalId + "_frame";
+                                const url = `/material/${id}/edit`;
+
+                                const modalEl = document.getElementById(modalId);
+                                const frameEl = document.getElementById(frameId);
+
+                                if (!modalEl || !frameEl) {
+                                    return;
+                                }
+
+                                frameEl.removeAttribute("src");
+                                frameEl.innerHTML = `<div class="text-center py-5">
+                                        <div class="spinner-border text-secondary" role="status">
+                                            <span class="visually-hidden">Načítání…</span>
+                                        </div></div>`;
+                                frameEl.setAttribute("src", url);
+
+                                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                                modal.show();
+
+                                return;
                             }
 
                             if (deleteBtn) {
@@ -112,56 +127,6 @@
                 }
             });
         });
-
-        // document.addEventListener("turbo:load", () => {
-        //     const delegateModalOpener = (e) => {
-        //         const trigger = e.target.closest("[data-modal-src]");
-        //         if (!trigger) return;
-        //
-        //         const modalId = trigger.dataset.modalId || "universalModal";
-        //         const frameId = modalId + "_frame";
-        //         const url = trigger.dataset.modalSrc;
-        //
-        //         setTimeout(() => {
-        //             const modalEl = document.getElementById(modalId);
-        //             const frameEl = document.getElementById(frameId);
-        //
-        //             if (!modalEl || !frameEl) {
-        //                 console.warn("Modal or frame not found:", modalEl, frameEl);
-        //                 return;
-        //             }
-        //
-        //             frameEl.removeAttribute("src");
-        //             frameEl.innerHTML = `
-        //         <div class="text-center py-5">
-        //             <div class="spinner-border text-secondary" role="status">
-        //                 <span class="visually-hidden">Načítání…</span>
-        //             </div>
-        //         </div>
-        //     `;
-        //             frameEl.setAttribute("src", url);
-        //
-        //             const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        //             modal.show();
-        //         }, 0);
-        //     };
-        //
-        //     document.body.addEventListener("click", delegateModalOpener);
-        //
-        //     // Vyčisti obsah všech modalů s atributem data-modal-frame-cleanup při zavření
-        //     document.querySelectorAll(".modal[data-modal-frame-cleanup]").forEach((modalEl) => {
-        //         const modalId = modalEl.id;
-        //         const frameId = modalId + "_frame";
-        //         modalEl.addEventListener("hidden.bs.modal", () => {
-        //             const frame = document.getElementById(frameId);
-        //             if (frame) {
-        //                 frame.removeAttribute("src");
-        //                 frame.innerHTML = "";
-        //             }
-        //         });
-        //     });
-        // });
-
 
     </script>
 {% endblock %}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\User\Role;
@@ -11,18 +13,11 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * @param string $email
-     * @return User|null
-     */
     public function findByEmail(string $email): ?User
     {
         return $this->findOneBy(['email' => $email]);
@@ -37,16 +32,12 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         $sql = 'SELECT 1 FROM appuser WHERE roles @> :role LIMIT 1';
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->bindValue('role', json_encode([Role::SUPER_ADMIN], JSON_THROW_ON_ERROR));
+        $stmt->bindValue('role', json_encode([Role::SUPER_ADMIN], \JSON_THROW_ON_ERROR));
         $result = $stmt->executeQuery();
 
         return $result->fetchOne() !== false;
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
     public function save(User $user): void
     {
         $this->getEntityManager()->persist($user);

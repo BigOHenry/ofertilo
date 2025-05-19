@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Material\MaterialPrice;
@@ -8,7 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineMaterialPriceRepository implements MaterialPriceRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     public function save(MaterialPrice $price): void
     {

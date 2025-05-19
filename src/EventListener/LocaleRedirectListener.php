@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventListener;
 
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly class LocaleRedirectListener
 {
-    public function __construct(private array $supportedLocales, private string $defaultLocale) {}
+    public function __construct(private array $supportedLocales, private string $defaultLocale)
+    {
+    }
 
     public function onKernelRequest(RequestEvent $event): void
     {
@@ -16,7 +20,7 @@ readonly class LocaleRedirectListener
 
         // přeskočit interní Symfony routy
         $excluded = ['/_wdt', '/_profiler', '/_fragment', '/_error', '/favicon.ico'];
-        if (array_any($excluded, static fn($prefix) => str_starts_with($path, $prefix))) {
+        if (array_any($excluded, static fn ($prefix) => str_starts_with($path, $prefix))) {
             return;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Material\Material;
@@ -9,28 +11,17 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class DoctrineMaterialRepository extends ServiceEntityRepository implements MaterialRepositoryInterface
 {
-    /**
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Material::class);
     }
 
-    /**
-     * @param Material $material
-     * @return void
-     */
     public function save(Material $material): void
     {
         $this->getEntityManager()->persist($material);
         $this->getEntityManager()->flush();
     }
 
-    /**
-     * @param Material $material
-     * @return void
-     */
     public function delete(Material $material): void
     {
         $this->getEntityManager()->remove($material);

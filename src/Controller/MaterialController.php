@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Domain\Material\Material;
@@ -34,28 +36,22 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $materialRepository->save($material);
-
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-//                return $this->render('components/stream_close_modal.html.twig', [
-//                    'modal_id' => 'materialModal',
-//                ]);
                 return $this->render('components/stream_modal_cleanup.html.twig');
-//                return $this->render('material/_created.stream.html.twig', [
-//                    'modalId' => 'materialModal'
-//                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
             }
 
-            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
-            // Symfony UX Turbo is all about progressively enhancing your applications!
             return $this->redirectToRoute('material_index', [], Response::HTTP_SEE_OTHER);
-
         }
 
-        return $this->render('material/form_frame.html.twig', [
-            'form' => $form,
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'materialModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'material-form',
+            ],
         ]);
     }
 
@@ -68,17 +64,17 @@ final class MaterialController extends AbstractController
 
         $qb = $materialRepository->createQueryBuilder('m')
                    ->setFirstResult($offset)
-                   ->setMaxResults($size);
+                   ->setMaxResults($size)
+        ;
 
-        // Volitelné: třídění
         $sortField = $request->query->get('sort')['field'] ?? null;
         $sortDir = $request->query->get('sort')['dir'] ?? 'asc';
-        if (in_array($sortField, ['name', 'type', 'pricePerUnit'])) {
-            $qb->orderBy("m.$sortField", strtoupper($sortDir));
+        if (\in_array($sortField, ['name', 'type', 'pricePerUnit'], true)) {
+            $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
         }
 
         $paginator = new Paginator($qb);
-        $total = count($paginator);
+        $total = \count($paginator);
 
         $data = [];
         foreach ($paginator as $material) {
@@ -86,10 +82,6 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription(),
-//                'latin_name' => $material->getLatinName(),
-//                'place_of_origin' => $material->getPlaceOfOrigin(),
-//                'dry_density' => $material->getDryDensity(),
-//                'hardness' => $material->getHardness(),
                 'type' => $material->getType()->value,
             ];
         }
@@ -105,7 +97,7 @@ final class MaterialController extends AbstractController
     public function edit(
         Request $request,
         Material $material,
-        MaterialRepositoryInterface $materialRepository
+        MaterialRepositoryInterface $materialRepository,
     ): Response {
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
@@ -116,25 +108,22 @@ final class MaterialController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $materialRepository->save($material);
 
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
-                // If the request comes from Turbo, set the content type as text/vnd.turbo-stream.html and only send the HTML to update
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('components/stream_close_modal.html.twig', [
-                    'modal_id' => 'materialModal',
-                ]);
-//                return $this->render('material/_update_stream.html.twig', [
-//                    'modalId' => 'materialModal'
-//                ], new Response('', 200, ['Content-Type' => 'text/vnd.turbo-stream.html']));
+                return $this->render('components/stream_modal_cleanup.html.twig');
             }
 
-            // If the client doesn't support JavaScript, or isn't using Turbo, the form still works as usual.
-            // Symfony UX Turbo is all about progressively enhancing your applications!
             return $this->redirectToRoute('material_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('material/form_frame.html.twig', [
-            'form' => $form,
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'materialModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'material-form',
+            ],
         ]);
     }
 
@@ -167,7 +156,12 @@ final class MaterialController extends AbstractController
         }
 
         return $this->json([
-            'data' => $data
+            'data' => $data,
         ]);
+    }
+
+    public function wrongStyle(): void
+    {
+        echo 'wrong style';
     }
 }

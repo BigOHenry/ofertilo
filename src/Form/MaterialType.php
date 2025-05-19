@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Domain\Material\Material;
@@ -15,7 +17,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MaterialType extends AbstractType
 {
-    public function __construct(private TranslatorInterface $translator) {}
+    public function __construct(private TranslatorInterface $translator)
+    {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -29,7 +33,7 @@ class MaterialType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
                 'choices' => array_combine(
-                    array_map(fn($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
+                    array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
                     Type::cases()
                 ),
             ])
@@ -50,7 +54,7 @@ class MaterialType extends AbstractType
                 'required' => false,
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'button.save'
+                'label' => 'button.save',
             ])
         ;
     }
