@@ -1,10 +1,10 @@
-name: Code Style
+name: Code Style and Static analysis
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 jobs:
   code-style:
