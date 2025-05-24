@@ -35,20 +35,19 @@ readonly class FirstRunListener
         // Do not redirect if we are already on the "create-super-admin" page
         $route = $request->attributes->get('_route');
 
-        if (\in_array($route, [
-            'app_first_run_setup',
-            '_wdt', '_profiler', '_profiler_home', '_profiler_exception', '_profiler_router',
-        ], true)) {
+        if (\in_array($route, ['app_first_run_setup', '_wdt', '_profiler', '_profiler_home', '_profiler_exception', '_profiler_router'], true)) {
             return;
         }
 
         $path = $request->getPathInfo();
 
-        if (str_starts_with($path, '/_') // profiler a debug
-            || str_starts_with($path, '/build') // encore assets
+        if (
+            str_starts_with($path, '/_')
+            || str_starts_with($path, '/build')
             || str_starts_with($path, '/favicon')
             || str_starts_with($path, '/apple-touch-icon')
-            || preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)) {
+            || preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)
+        ) {
             return;
         }
 

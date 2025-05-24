@@ -37,4 +37,9 @@
             <property name="absoluteLineLimit" value="0"/>
         </properties>
     </rule>
+    <rule ref="Squiz.ControlStructures.ControlSignature">
+        <properties>
+            <property name="allowMultilineCondition" value="true"/>
+        </properties>
+    </rule>
 </ruleset>
