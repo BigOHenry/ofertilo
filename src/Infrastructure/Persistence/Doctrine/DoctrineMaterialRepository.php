@@ -25,7 +25,7 @@ class DoctrineMaterialRepository extends ServiceEntityRepository implements Mate
         $this->getEntityManager()->flush();
     }
 
-    public function delete(Material $material): void
+    public function remove(Material $material): void
     {
         $this->getEntityManager()->remove($material);
         $this->getEntityManager()->flush();

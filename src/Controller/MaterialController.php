@@ -130,15 +130,15 @@ final class MaterialController extends AbstractController
     #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
     public function delete(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
     {
-        $materialRepository->delete($material);
+        $materialRepository->remove($material);
 
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route('/material/{id}', name: 'material_show', methods: ['GET'])]
-    public function show(Material $material): Response
+    #[Route('/material/{id}', name: 'material_detail', methods: ['GET'])]
+    public function detail(Material $material): Response
     {
-        return $this->render('material/show.html.twig', [
+        return $this->render('material/detail.html.twig', [
             'material' => $material,
         ]);
     }

@@ -1,7 +1,3 @@
-<script>
-    window.APP_LOCALE = "{{ app.request.locale }}";
-</script>
-
 <!DOCTYPE html>
 <html lang="cs">
     <head>
@@ -14,6 +10,10 @@
         <link rel="manifest" href="{{ asset('img/site.webmanifest') }}" />
 
         <title>{% block title %}Ofertilo{% endblock %}</title>
+
+        <script>
+            window.APP_LOCALE = "{{ app.request.locale }}";
+        </script>
 
         {{ encore_entry_link_tags('app') }}
         {% block stylesheets %}{% endblock %}

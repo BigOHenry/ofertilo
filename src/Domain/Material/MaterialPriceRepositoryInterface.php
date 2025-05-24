@@ -12,5 +12,5 @@ interface MaterialPriceRepositoryInterface
 
     public function save(MaterialPrice $price): void;
 
-    public function delete(MaterialPrice $price): void;
+    public function remove(MaterialPrice $price): void;
 }

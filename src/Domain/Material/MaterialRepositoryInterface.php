@@ -14,5 +14,5 @@ interface MaterialRepositoryInterface
 
     public function save(Material $material): void;
 
-    public function delete(Material $material): void;
+    public function remove(Material $material): void;
 }
