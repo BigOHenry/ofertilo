@@ -5,6 +5,8 @@ title:
   materials: 'Materiály'
   material: 'Materiál'
   new_material: 'Nový materiál'
+  material_price: 'Cena materiálu'
+  new_material_price: 'Nová cena materiálu'
 
 field:
   email: "E-mail"

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Domain\Material\Material;
+use App\Domain\Material\MaterialPrice;
+use App\Domain\Material\MaterialPriceRepositoryInterface;
 use App\Domain\Material\MaterialRepositoryInterface;
+use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -140,6 +143,38 @@ final class MaterialController extends AbstractController
     {
         return $this->render('material/detail.html.twig', [
             'material' => $material,
+        ]);
+    }
+
+    #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
+    public function newPrice(Request $request, Material $material, MaterialPriceRepositoryInterface $materialPriceRepository): Response
+    {
+        $materialPrice = new MaterialPrice($material);
+        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+            'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
+            'method' => 'POST',
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $materialPriceRepository->save($materialPrice);
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('components/stream_modal_cleanup.html.twig');
+            }
+
+            return $this->redirectToRoute('material_detail', ['id' => $material->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'materialPriceModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'material-price-form',
+            ],
         ]);
     }
 

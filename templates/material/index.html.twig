@@ -5,21 +5,22 @@
 {% block body %}
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'materialModal',
-        title: 'title.material'|trans,
-        frameUrl: path('material_new')
+        title: 'title.material'|trans
     } %}
 
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">Materiály</h5>
+            <h5 class="mb-0">{{ 'title.materials'|trans }}</h5>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-row justify-content-end">
-                <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}" data-modal-title="{{ 'title.new_material'|trans }}">
-                    <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
-                </button>
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end">
+                    <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}" data-modal-title="{{ 'title.new_material'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="materials-table"></div>
             </div>
-            <div id="materials-table"></div>
         </div>
     </div>
 {% endblock %}

@@ -3,20 +3,35 @@
 {% block title %}{{ 'title.material'|trans }}{% endblock %}
 
 {% block body %}
-    <h1 class="mt-3">{{ material.description }}</h1>
-    <div class="row pb-2">
-        <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ material.name }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.latin_name'|trans }}:</label> <span>{{ material.latinName }}</span></div>
-    </div>
-    <div class="row pb-2">
-        <div class="col"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('material.type.' ~ material.type.value)|trans({}, 'enum') }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.dry_density'|trans }}:</label> <span>{{ material.dryDensity }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.hardness'|trans }}:</label> <span>{{ material.hardness }}</span></div>
-    </div>
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'materialPriceModal',
+        title: 'title.material_price'|trans
+    } %}
 
-    <div class="row">
-        <div id="material-prices-table"></div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{{ material.description }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row pb-2">
+                <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ material.name }}</span></div>
+                <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description }}</span></div>
+                <div class="col"><label class="fw-semibold">{{ 'field.latin_name'|trans }}:</label> <span>{{ material.latinName }}</span></div>
+            </div>
+            <div class="row pb-2">
+                <div class="col"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('material.type.' ~ material.type.value)|trans({}, 'enum') }}</span></div>
+                <div class="col"><label class="fw-semibold">{{ 'field.dry_density'|trans }}:</label> <span>{{ material.dryDensity }}</span></div>
+                <div class="col"><label class="fw-semibold">{{ 'field.hardness'|trans }}:</label> <span>{{ material.hardness }}</span></div>
+            </div>
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end">
+                    <button class="btn btn-primary" data-modal-id="materialPriceModal" data-modal-src="{{ path('material_price_new', {'id': material.id}) }}" data-modal-title="{{ 'title.new_material_price'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="material-prices-table"></div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
@@ -35,51 +50,51 @@
                 columns: [
                     { title: "{{ 'field.thickness'|trans }}", field: "thickness", sorter: "int" },
                     { title: "{{ 'field.price'|trans }}", field: "price", sorter: "string" },
-                    {
-                        title: "Akce",
-                        formatter: (cell) => {
-                            const id = cell.getRow().getData().id;
-                            return `<button class="btn btn-sm btn-primary edit-item me-1" data-modal-src="/material_price/${id}/edit" data-id="${id}"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger delete-item" data-id="${id}"><i class="fa fa-trash"></i></button>`;
-                        },
-                        width: 100,
-                        hozAlign: "center",
-                        cellClick: function (e, cell) {
-                            const target = e.target;
-                            const row = cell.getRow();
-                            const id = row.getData().id;
-
-                            const deleteBtn = e.target.closest('.delete-item');
-                            const editBtn = e.target.closest('.edit-item');
-
-                            if (editBtn) {
-                                Turbo.visit(`/material_price/${id}/edit`, { frame: "materialPriceModal_frame" });
-                            }
-
-                            if (deleteBtn) {
-                                if (confirm('Opravdu chcete smazat tuto cenu?')) {
-                                    fetch(`/material_prices/${id}`, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Content-Type': 'application/json'
-                                        }
-                                    })
-                                        .then(response => {
-                                            if (response.ok) {
-                                                // Reload datagrid
-                                                row.delete();
-                                            } else {
-                                                console.log(response);
-                                                alert("Chyba při mazání.");
-                                            }
-                                        });
-                                }
-                            }
-
-                            return false;
-                        }
-                    }
+                    // {
+                    //     title: "Akce",
+                    //     formatter: (cell) => {
+                    //         const id = cell.getRow().getData().id;
+                    //         return `<button class="btn btn-sm btn-primary edit-item me-1" data-modal-src="/material_price/${id}/edit" data-id="${id}"><i class="fa fa-edit"></i></button>
+                    //             <button class="btn btn-sm btn-danger delete-item" data-id="${id}"><i class="fa fa-trash"></i></button>`;
+                    //     },
+                    //     width: 100,
+                    //     hozAlign: "center",
+                    //     cellClick: function (e, cell) {
+                    //         const target = e.target;
+                    //         const row = cell.getRow();
+                    //         const id = row.getData().id;
+                    //
+                    //         const deleteBtn = e.target.closest('.delete-item');
+                    //         const editBtn = e.target.closest('.edit-item');
+                    //
+                    //         if (editBtn) {
+                    //             Turbo.visit(`/material_price/${id}/edit`, { frame: "materialPriceModal_frame" });
+                    //         }
+                    //
+                    //         if (deleteBtn) {
+                    //             if (confirm('Opravdu chcete smazat tuto cenu?')) {
+                    //                 fetch(`/material_prices/${id}`, {
+                    //                     method: 'DELETE',
+                    //                     headers: {
+                    //                         'X-Requested-With': 'XMLHttpRequest',
+                    //                         'Content-Type': 'application/json'
+                    //                     }
+                    //                 })
+                    //                     .then(response => {
+                    //                         if (response.ok) {
+                    //                             // Reload datagrid
+                    //                             row.delete();
+                    //                         } else {
+                    //                             console.log(response);
+                    //                             alert("Chyba při mazání.");
+                    //                         }
+                    //                     });
+                    //             }
+                    //         }
+                    //
+                    //         return false;
+                    //     }
+                    // }
                 ]
             });
 
