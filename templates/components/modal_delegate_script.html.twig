@@ -40,8 +40,10 @@
             }, 0);
         };
 
-        document.addEventListener("click", delegateModalOpener);
-
+        if (!window.__ofertilo_modal_delegate_bound) {
+            document.addEventListener("click", delegateModalOpener);
+            window.__ofertilo_modal_delegate_bound = true;
+        }
         document.querySelectorAll(".modal[data-modal-frame-cleanup]").forEach((modalEl) => {
             const modalId = modalEl.id;
             const frameId = modalId + "_frame";

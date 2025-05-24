@@ -57,7 +57,7 @@
                             const row = cell.getRow().getData()
                             const id = row.id;
                             const description = row.description;
-                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/${window.APP_LOCALE}/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                         },
                         width: 100,
