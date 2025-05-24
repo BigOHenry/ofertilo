@@ -78,7 +78,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
@@ -87,7 +86,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        if (in_array(Role::SUPER_ADMIN->value, $roles, true)) {
+            $roles[] = Role::ADMIN->value;
+            $roles[] = Role::WRITER->value;
+            $roles[] = Role::READER->value;
+        }
+
+        if (in_array(Role::ADMIN->value, $roles, true)) {
+            $roles[] = Role::WRITER->value;
+            $roles[] = Role::READER->value;
+        }
+
+        if (in_array(Role::WRITER->value, $roles, true)) {
+            $roles[] = Role::READER->value;
+        }
+
+        return array_unique(array_map(static fn ($r) => $r, $roles));
     }
 
     /**
@@ -96,7 +111,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): User
     {
         $this->roles = $roles;
-
         return $this;
     }
 

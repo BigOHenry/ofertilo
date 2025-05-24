@@ -11,9 +11,9 @@
 
         <title>{% block title %}Ofertilo{% endblock %}</title>
 
-        <script>
-            window.APP_LOCALE = "{{ app.request.locale }}";
-        </script>
+{#        <script>#}
+{#            window.APP_LOCALE = "{{ app.request.locale }}";#}
+{#        </script>#}
 
         {{ encore_entry_link_tags('app') }}
         {% block stylesheets %}{% endblock %}

@@ -8,6 +8,7 @@ use App\Domain\Material\Material;
 use App\Domain\Material\MaterialPrice;
 use App\Domain\Material\MaterialPriceRepositoryInterface;
 use App\Domain\Material\MaterialRepositoryInterface;
+use App\Domain\User\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -16,17 +17,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
 
 final class MaterialController extends AbstractController
 {
     #[Route('/materials', name: 'material_index')]
+    #[IsGranted(Role::READER->value)]
     public function index(): Response
     {
         return $this->render('material/index.html.twig');
     }
 
     #[Route('/materials/new', name: 'material_new', methods: ['GET', 'POST'])]
+    #[IsGranted(Role::WRITER->value)]
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
         $material = new Material();
@@ -59,6 +63,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/api/materials', name: 'api_materials')]
+    #[IsGranted(Role::READER->value)]
     public function materialsApi(Request $request, MaterialRepositoryInterface $materialRepository): JsonResponse
     {
         $page = max((int) $request->query->get('page', 1), 1);
@@ -97,6 +102,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/material/{id}/edit', name: 'material_edit')]
+    #[IsGranted(Role::WRITER->value)]
     public function edit(
         Request $request,
         Material $material,
@@ -131,6 +137,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
     public function delete(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
     {
         $materialRepository->remove($material);
@@ -139,6 +146,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/material/{id}', name: 'material_detail', methods: ['GET'])]
+    #[IsGranted(Role::READER->value)]
     public function detail(Material $material): Response
     {
         return $this->render('material/detail.html.twig', [
@@ -147,6 +155,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
+    #[IsGranted(Role::WRITER->value)]
     public function newPrice(Request $request, Material $material, MaterialPriceRepositoryInterface $materialPriceRepository): Response
     {
         $materialPrice = new MaterialPrice($material);
@@ -179,6 +188,7 @@ final class MaterialController extends AbstractController
     }
 
     #[Route('/api/material_prices/{id}', name: 'api_material_prices')]
+    #[IsGranted(Role::READER->value)]
     public function materialPricesApi(Material $material, Request $request): JsonResponse
     {
         $data = [];
@@ -193,10 +203,5 @@ final class MaterialController extends AbstractController
         return $this->json([
             'data' => $data,
         ]);
-    }
-
-    public function wrongStyle(): void
-    {
-        echo 'wrong style';
     }
 }

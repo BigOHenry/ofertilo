@@ -7,7 +7,7 @@ namespace App\EventListener;
 use App\Domain\User\UserRepositoryInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
@@ -23,7 +23,7 @@ readonly class FirstRunListener
     /**
      * @throws InvalidArgumentException
      */
-    public function onKernelRequest(RequestEvent $event): void
+    public function onKernelController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
 
@@ -33,7 +33,22 @@ readonly class FirstRunListener
         }
 
         // Do not redirect if we are already on the "create-super-admin" page
-        if ($request->getPathInfo() === '/first-run') {
+        $route = $request->attributes->get('_route');
+
+        if (in_array($route, [
+            'app_first_run_setup',
+            '_wdt', '_profiler', '_profiler_home', '_profiler_exception', '_profiler_router',
+        ])) {
+            return;
+        }
+
+        $path = $request->getPathInfo();
+
+        if (str_starts_with($path, '/_') || // profiler a debug
+            str_starts_with($path, '/build') || // encore assets
+            str_starts_with($path, '/favicon') ||
+            str_starts_with($path, '/apple-touch-icon') ||
+            preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)) {
             return;
         }
 
@@ -44,9 +59,11 @@ readonly class FirstRunListener
         });
 
         if (!$is_installed) {
-            $event->setResponse(new RedirectResponse(
-                $this->router->generate('app_first_run_setup')
-            ));
+            $event->setController(function () {
+                return new RedirectResponse(
+                    $this->router->generate('app_first_run_setup')
+                );
+            });
         }
     }
 }

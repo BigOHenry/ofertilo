@@ -14,23 +14,30 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class SecurityController extends AbstractController
 {
     #[Route('/first-run', name: 'app_first_run_setup')]
     public function setup(
         Request $request,
-        UserRepositoryInterface $userRepo,
+        UserRepositoryInterface $userRepository,
         UserPasswordHasherInterface $passwordHasher,
+        CacheInterface $cache,
     ): Response {
-        if ($userRepo->hasSuperAdmin()) {
+
+        $is_installed = $cache->get('ofertilo.first_run_done', function () use ($userRepository) {
+            return $userRepository->hasSuperAdmin();
+        });
+
+        if ($is_installed) {
             return $this->redirectToRoute('app_login');
         }
 
         $form = $this->createForm(FirstRunSetupType::class);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($request->isMethod('POST') && $form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
             $user = new User($data['email']);
@@ -41,7 +48,9 @@ class SecurityController extends AbstractController
             $user->setRoles([Role::SUPER_ADMIN]);
             $user->setForceEmailChange(false);
             $user->setForcePasswordChange(false);
-            $userRepo->save($user);
+            $userRepository->save($user);
+
+            $cache->delete('ofertilo.first_run_done');
 
             $this->addFlash('success', 'SuperAdmin has been successfully created.');
 
@@ -50,7 +59,7 @@ class SecurityController extends AbstractController
 
         return $this->render('security/first_run_setup.html.twig', [
             'form' => $form->createView(),
-        ], new Response(null, 422));
+        ]);
     }
 
     #[Route('/login', name: 'app_login')]

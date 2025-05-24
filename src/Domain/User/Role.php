@@ -6,8 +6,8 @@ namespace App\Domain\User;
 
 enum Role: string
 {
-    case SUPER_ADMIN = 'SUPER_ADMIN';
-    case ADMIN = 'ADMIN';
-    case WRITER = 'WRITER';
-    case READER = 'READER';
+    case SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    case ADMIN = 'ROLE_ADMIN';
+    case WRITER = 'ROLE_WRITER';
+    case READER = 'ROLE_READER';
 }
