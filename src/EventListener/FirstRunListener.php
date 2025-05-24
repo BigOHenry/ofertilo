@@ -16,7 +16,7 @@ readonly class FirstRunListener
     public function __construct(
         private UserRepositoryInterface $userRepository,
         private RouterInterface $router,
-        private CacheInterface $cache
+        private CacheInterface $cache,
     ) {
     }
 
