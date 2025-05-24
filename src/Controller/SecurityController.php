@@ -25,7 +25,6 @@ class SecurityController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         CacheInterface $cache,
     ): Response {
-
         $is_installed = $cache->get('ofertilo.first_run_done', function () use ($userRepository) {
             return $userRepository->hasSuperAdmin();
         });

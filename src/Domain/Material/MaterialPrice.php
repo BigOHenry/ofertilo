@@ -25,9 +25,6 @@ class MaterialPrice
     #[ORM\JoinColumn(nullable: false)]
     private Material $material;
 
-    /**
-     * @param Material $material
-     */
     public function __construct(Material $material)
     {
         $this->material = $material;
