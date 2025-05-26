@@ -8,8 +8,6 @@
     <arg name="extensions" value="php"/>
     <file>src/</file>
     <file>tests/</file>
-    <rule ref="PSR1"/>
-    <rule ref="PSR2"/>
     <rule ref="PSR12"/>
     <!-- additional rules -->
     <rule ref="Generic.PHP.ForbiddenFunctions">
@@ -38,8 +36,6 @@
         </properties>
     </rule>
     <rule ref="Squiz.ControlStructures.ControlSignature">
-        <properties>
-            <property name="allowMultilineCondition" value="true"/>
-        </properties>
+        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterOpenBrace"/>
     </rule>
 </ruleset>
