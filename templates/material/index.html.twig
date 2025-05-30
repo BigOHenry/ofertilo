@@ -64,7 +64,6 @@
                         width: 100,
                         hozAlign: "center",
                         cellClick: function (e, cell) {
-                            // e.stopPropagation();
                             const target = e.target;
                             const row = cell.getRow();
                             const id = row.getData().id;
@@ -73,7 +72,7 @@
 
                             if (deleteBtn) {
                                 if (confirm('Opravdu chcete smazat tento materiál?')) {
-                                    fetch(`/materials/${id}`, {
+                                    fetch(`/material/${id}`, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-Requested-With': 'XMLHttpRequest',

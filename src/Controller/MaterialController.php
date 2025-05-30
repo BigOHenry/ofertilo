@@ -29,7 +29,7 @@ final class MaterialController extends AbstractController
         return $this->render('material/index.html.twig');
     }
 
-    #[Route('/materials/new', name: 'material_new', methods: ['GET', 'POST'])]
+    #[Route('/material/new', name: 'material_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
@@ -136,11 +136,11 @@ final class MaterialController extends AbstractController
         ]);
     }
 
-    #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
     {
-        $materialRepository->remove($material);
+        $materialPriceRepository->remove($materialPrice);
 
         return new JsonResponse(['success' => true]);
     }
@@ -175,6 +175,50 @@ final class MaterialController extends AbstractController
             }
 
             return $this->redirectToRoute('material_detail', ['id' => $material->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'materialPriceModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'material-price-form',
+            ],
+        ]);
+    }
+
+    #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function deletePrice(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    {
+        $materialRepository->remove($material);
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    #[Route('/material/price/{id}/edit', name: 'material_price_edit')]
+    #[IsGranted(Role::WRITER->value)]
+    public function editPrice(
+        Request $request,
+        MaterialPrice $materialPrice,
+        MaterialPriceRepositoryInterface $materialPriceRepository,
+    ): Response {
+        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+            'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $materialPriceRepository->save($materialPrice);
+
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('components/stream_modal_cleanup.html.twig');
+            }
+
+            return $this->redirectToRoute('material_detail', ['id' => $materialPrice->getMaterial()->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('components/form_frame.html.twig', [
