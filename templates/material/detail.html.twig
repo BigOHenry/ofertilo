@@ -10,12 +10,12 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">{{ material.description }}</h5>
+            <h5 class="mb-0">{{ material.description(app.request.locale) }}</h5>
         </div>
         <div class="card-body">
             <div class="row pb-2">
                 <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ material.name }}</span></div>
-                <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description }}</span></div>
+                <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description(app.request.locale) }}</span></div>
                 <div class="col"><label class="fw-semibold">{{ 'field.latin_name'|trans }}:</label> <span>{{ material.latinName }}</span></div>
             </div>
             <div class="row pb-2">

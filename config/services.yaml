@@ -47,5 +47,3 @@ services:
         autowire: true
         autoconfigure: true
         public: false
-
-    App\Domain\Translation\TranslationRepositoryInterface: '@App\Infrastructure\Persistence\Doctrine\DoctrineTranslationRepository'

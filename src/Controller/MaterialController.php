@@ -11,8 +11,10 @@ use App\Domain\Material\MaterialRepositoryInterface;
 use App\Domain\User\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
+use App\Infrastructure\Translation\TranslationInitializer;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +24,14 @@ use Symfony\UX\Turbo\TurboBundle;
 
 final class MaterialController extends AbstractController
 {
+    /**
+     * @param array<int, string> $locales
+     */
+    public function __construct(
+        #[Autowire('%app.supported_locales%')] private readonly array $locales,
+    ) {
+    }
+
     #[Route('/materials', name: 'material_index')]
     #[IsGranted(Role::READER->value)]
     public function index(): Response
@@ -34,6 +44,8 @@ final class MaterialController extends AbstractController
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
         $material = new Material();
+        TranslationInitializer::prepare($material, $this->locales);
+
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_new'),
             'method' => 'POST',
@@ -54,7 +66,7 @@ final class MaterialController extends AbstractController
 
         return $this->render('components/form_frame.html.twig', [
             'frame_id' => 'materialModal_frame',
-            'form_template' => 'components/_form.html.twig',
+            'form_template' => 'components/material_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'material-form',
@@ -108,6 +120,8 @@ final class MaterialController extends AbstractController
         Material $material,
         MaterialRepositoryInterface $materialRepository,
     ): Response {
+        TranslationInitializer::prepare($material, $this->locales);
+
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',
@@ -128,7 +142,7 @@ final class MaterialController extends AbstractController
 
         return $this->render('components/form_frame.html.twig', [
             'frame_id' => 'materialModal_frame',
-            'form_template' => 'components/_form.html.twig',
+            'form_template' => 'components/material_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'material-form',

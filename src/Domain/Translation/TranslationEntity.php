@@ -2,24 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Doctrine;
+namespace App\Domain\Translation;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'translation')]
+#[ORM\UniqueConstraint(name: 'uniq_translation_lookup', columns: ['object_class', 'object_id', 'locale', 'field'])]
 class TranslationEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: false)]
     private string $object_class;
 
     #[ORM\Column(nullable: false)]
-    private int $object_id;
+    private ?int $object_id = null;
 
     #[ORM\Column(length: 2, nullable: false)]
     private string $locale;
@@ -30,12 +31,12 @@ class TranslationEntity
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $value = null;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -50,7 +51,7 @@ class TranslationEntity
         $this->object_class = $objectClass;
     }
 
-    public function getObjectId(): int
+    public function getObjectId(): ?int
     {
         return $this->object_id;
     }

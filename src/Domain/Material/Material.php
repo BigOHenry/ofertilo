@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace App\Domain\Material;
 
+use App\Domain\Translation\TranslatableInterface;
+use App\Domain\Translation\TranslatableTrait;
+use App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DoctrineMaterialRepository::class)]
 #[ORM\Table(name: 'material')]
-class Material
+class Material implements TranslatableInterface
 {
+    use TranslatableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
     #[ORM\Column(length: 200, nullable: false)]
     private ?string $name = null;
-
-    #[ORM\Column(length: 400, nullable: false)]
-    private ?string $description = null;
 
     #[ORM\Column(nullable: false, enumType: Type::class)]
     private ?Type $type = null;
 
     #[ORM\Column(length: 300, nullable: true)]
     private ?string $latin_name = null;
-
-    #[ORM\Column(length: 300, nullable: true)]
-    private ?string $place_of_origin = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
     private ?int $dry_density = null;
@@ -49,6 +49,14 @@ class Material
     public function __construct()
     {
         $this->prices = new ArrayCollection();
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getTranslatableFields(): array
+    {
+        return ['description', 'place_of_origin'];
     }
 
     public function getId(): ?int
@@ -71,14 +79,24 @@ class Material
         $this->name = $name;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(?string $locale = null): ?string
     {
-        return $this->description;
+        return $this->getTranslationFromMemory('description', $locale ?? 'en');
     }
 
-    public function setDescription(?string $description): void
+    public function setDescription(string $value, string $locale = 'en'): void
     {
-        $this->description = $description;
+        $this->addOrUpdateTranslation('description', $value, $locale);
+    }
+
+    public function getPlaceOfOrigin(?string $locale = null): ?string
+    {
+        return $this->getTranslationFromMemory('description', $locale ?? 'en');
+    }
+
+    public function setPlaceOfOrigin(string $value, string $locale = 'en'): void
+    {
+        $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
     }
 
     public function getType(): ?Type
@@ -109,16 +127,6 @@ class Material
     public function setLatinName(?string $latin_name): void
     {
         $this->latin_name = $latin_name;
-    }
-
-    public function getPlaceOfOrigin(): ?string
-    {
-        return $this->place_of_origin;
-    }
-
-    public function setPlaceOfOrigin(?string $place_of_origin): void
-    {
-        $this->place_of_origin = $place_of_origin;
     }
 
     public function getDryDensity(): ?int
