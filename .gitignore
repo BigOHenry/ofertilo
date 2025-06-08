@@ -31,3 +31,4 @@ yarn-error.log
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+/docker-compose.yaml

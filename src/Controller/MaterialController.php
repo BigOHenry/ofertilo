@@ -57,6 +57,7 @@ final class MaterialController extends AbstractController
             $materialRepository->save($material);
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
                 return $this->render('components/stream_modal_cleanup.html.twig');
             }
 
@@ -83,7 +84,8 @@ final class MaterialController extends AbstractController
 
         $qb = $materialRepository->createQueryBuilder('m')
                    ->setFirstResult($offset)
-                   ->setMaxResults($size);
+                   ->setMaxResults($size)
+        ;
 
         $sortField = $request->query->get('sort')['field'] ?? null;
         $sortDir = $request->query->get('sort')['dir'] ?? 'asc';
@@ -125,27 +127,27 @@ final class MaterialController extends AbstractController
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
-        $frameId = $request->headers->get('Turbo-Frame') ?? 'xxx_frame';
 
         if ($form->isSubmitted() && $form->isValid()) {
             $materialRepository->save($material);
-
+            $frameId = $request->request->get('frame_id') ?? 'xxx_frame';
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
             if ($frameId === 'materialModal_frame') {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
                 return $this->render('components/stream_modal_cleanup.html.twig');
             }
 
             if ($frameId === 'materialDetailModal_frame') {
-                return $this->render('material/_streams/header.stream.html.twig', [
+                return $this->render('material/_streams/material_card.stream.html.twig', [
                     'material' => $material,
                 ]);
             }
         }
 
         return $this->render('components/form_frame.html.twig', [
-            'frame_id' => $frameId,
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialModal_frame',
             'form_template' => 'components/material_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
@@ -159,6 +161,7 @@ final class MaterialController extends AbstractController
     public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
     {
         $materialPriceRepository->remove($materialPrice);
+
         return new JsonResponse(['success' => true]);
     }
 
@@ -209,6 +212,7 @@ final class MaterialController extends AbstractController
     public function deletePrice(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
     {
         $materialRepository->remove($material);
+
         return new JsonResponse(['success' => true]);
     }
 
@@ -230,6 +234,7 @@ final class MaterialController extends AbstractController
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
                 return $this->render('components/stream_modal_cleanup.html.twig');
             }
 

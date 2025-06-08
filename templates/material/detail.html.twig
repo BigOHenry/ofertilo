@@ -3,7 +3,24 @@
 {% block title %}{{ 'title.material'|trans }}{% endblock %}
 
 {% block body %}
-    {% include 'material/_material_card.html.twig' with { material: material } %}
+    <div id="material_card" class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            {% include 'material/components/_material_header.html.twig' with { material: material } %}
+            <a class="btn btn-sm btn-primary" data-modal-id="materialDetailModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+        </div>
+        <div class="card-body">
+            {% include 'material/components/_material_detail.html.twig' with { material: material } %}
+
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end pb-2">
+                    <button class="btn btn-primary" data-modal-id="materialPriceModal" data-modal-src="{{ path('material_price_new', {'id': material.id}) }}" data-modal-title="{{ 'title.new_material_price'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="material-prices-table"></div>
+            </div>
+        </div>
+    </div>
 
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'materialPriceModal',
