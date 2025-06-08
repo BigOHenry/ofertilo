@@ -3,42 +3,22 @@
 {% block title %}{{ 'title.material'|trans }}{% endblock %}
 
 {% block body %}
+    {% include 'material/_material_card.html.twig' with { material: material } %}
+
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'materialPriceModal',
         title: 'title.material_price'|trans
     } %}
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">{{ material.description(app.request.locale) }}</h5>
-        </div>
-        <div class="card-body">
-            <div class="row pb-2">
-                <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ material.name }}</span></div>
-                <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description(app.request.locale) }}</span></div>
-                <div class="col"><label class="fw-semibold">{{ 'field.latin_name'|trans }}:</label> <span>{{ material.latinName }}</span></div>
-            </div>
-            <div class="row pb-2">
-                <div class="col"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('material.type.' ~ material.type.value)|trans({}, 'enum') }}</span></div>
-                <div class="col"><label class="fw-semibold">{{ 'field.dry_density'|trans }}:</label> <span>{{ material.dryDensity }}</span></div>
-                <div class="col"><label class="fw-semibold">{{ 'field.hardness'|trans }}:</label> <span>{{ material.hardness }}</span></div>
-            </div>
-            <div class="row">
-                <div class="d-flex flex-row justify-content-end">
-                    <button class="btn btn-primary" data-modal-id="materialPriceModal" data-modal-src="{{ path('material_price_new', {'id': material.id}) }}" data-modal-title="{{ 'title.new_material_price'|trans }}">
-                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
-                    </button>
-                </div>
-                <div id="material-prices-table"></div>
-            </div>
-        </div>
-    </div>
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'materialDetailModal',
+        title: 'title.material'|trans
+    } %}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
-
         document.addEventListener("turbo:load", () => {
             window.materialTable = new Tabulator("#material-prices-table", {
                 ajaxURL: "{{ path('api_material_prices', {'id': material.id}) }}",
