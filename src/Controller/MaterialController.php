@@ -130,7 +130,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $materialRepository->save($material);
-            $frameId = $request->request->get('frame_id') ?? 'xxx_frame';
+            $frameId = $request->request->get('frame_id');
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
             if ($frameId === 'materialModal_frame') {

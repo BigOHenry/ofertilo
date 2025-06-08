@@ -9,7 +9,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="d-flex flex-row justify-content-end">
+                <div class="d-flex flex-row justify-content-end pb-2">
                     <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}" data-modal-title="{{ 'title.new_material'|trans }}">
                         <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
                     </button>
@@ -30,72 +30,76 @@
     <script>
 
         document.addEventListener("turbo:load", () => {
-            window.materialTable = new Tabulator("#materials-table", {
-                ajaxURL: "{{ path('api_materials') }}",
-                layout: "fitColumns",
-                responsiveLayout: "collapse",
-                pagination: "remote",
-                paginationSize: 15,
-                paginationDataSent: {
-                    page: "page",
-                    size: "size",
-                    sorters: "sort"
-                },
-                paginationDataReceived: {
-                    last_page: "last_page",
-                    data: "data"
-                },
-                ajaxResponse: function(url, params, response) {
-                    return response.data;
-                },
-                columns: [
-                    { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
-                    { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
-                    { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                    {
-                        title: "Akce",
-                        formatter: (cell) => {
-                            const row = cell.getRow().getData()
-                            const id = row.id;
-                            const description = row.description;
-                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+            const el = document.querySelector("#materials-table");
+
+            if (el) {
+                window.materialTable = new Tabulator(el, {
+                    ajaxURL: "{{ path('api_materials') }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    pagination: "remote",
+                    paginationSize: 15,
+                    paginationDataSent: {
+                        page: "page",
+                        size: "size",
+                        sorters: "sort"
+                    },
+                    paginationDataReceived: {
+                        last_page: "last_page",
+                        data: "data"
+                    },
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
+                        { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        {
+                            title: "Akce",
+                            formatter: (cell) => {
+                                const row = cell.getRow().getData()
+                                const id = row.id;
+                                const description = row.description;
+                                return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
-                        },
-                        width: 100,
-                        hozAlign: "center",
-                        cellClick: function (e, cell) {
-                            const target = e.target;
-                            const row = cell.getRow();
-                            const id = row.getData().id;
+                            },
+                            width: 100,
+                            hozAlign: "center",
+                            cellClick: function (e, cell) {
+                                const target = e.target;
+                                const row = cell.getRow();
+                                const id = row.getData().id;
 
-                            const deleteBtn = target.closest('.delete-material');
+                                const deleteBtn = target.closest('.delete-material');
 
-                            if (deleteBtn) {
-                                if (confirm('Opravdu chcete smazat tento materiál?')) {
-                                    fetch(`/material/${id}`, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Content-Type': 'application/json'
-                                        }
-                                    })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            // Reload datagrid
-                                            row.delete();
-                                        } else {
-                                            console.log(response);
-                                            alert("Chyba při mazání.");
-                                        }
-                                    });
+                                if (deleteBtn) {
+                                    if (confirm('Opravdu chcete smazat tento materiál?')) {
+                                        fetch(`/material/${id}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Reload datagrid
+                                                    row.delete();
+                                                } else {
+                                                    console.log(response);
+                                                    alert("Chyba při mazání.");
+                                                }
+                                            });
+                                    }
                                 }
-                            }
 
-                            return false;
+                                return false;
+                            }
                         }
-                    }
-                ]
-            });
+                    ]
+                });
+            }
 
             window.materialTable.on("rowClick", function(e, row) {
                 if (e.target.closest('.edit-material') === null && e.target.closest('.delete-material') === null) {

@@ -37,60 +37,64 @@
     {{ parent() }}
     <script>
         document.addEventListener("turbo:load", () => {
-            window.materialTable = new Tabulator("#material-prices-table", {
-                ajaxURL: "{{ path('api_material_prices', {'id': material.id}) }}",
-                layout: "fitColumns",
-                responsiveLayout: "collapse",
-                ajaxResponse: function(url, params, response) {
-                    return response.data;
-                },
-                columns: [
-                    { title: "{{ 'field.thickness'|trans }}", field: "thickness", sorter: "int" },
-                    { title: "{{ 'field.price'|trans }}", field: "price", sorter: "string" },
-                    {
-                        title: "Akce",
-                        formatter: (cell) => {
-                            const row = cell.getRow().getData()
-                            const id = row.id;
-                            const description = row.thickness;
-                            return `<button class="btn btn-sm btn-primary me-1 edit-material-price" data-modal-src="/material/price/${id}/edit" data-modal-id="materialPriceModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+            const el = document.querySelector("#material-prices-table");
+
+            if (el) {
+                window.materialTable = new Tabulator(el, {
+                    ajaxURL: "{{ path('api_material_prices', {'id': material.id}) }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.thickness'|trans }}", field: "thickness", sorter: "int" },
+                        { title: "{{ 'field.price'|trans }}", field: "price", sorter: "string" },
+                        {
+                            title: "Akce",
+                            formatter: (cell) => {
+                                const row = cell.getRow().getData()
+                                const id = row.id;
+                                const description = row.thickness;
+                                return `<button class="btn btn-sm btn-primary me-1 edit-material-price" data-modal-src="/material/price/${id}/edit" data-modal-id="materialPriceModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-material-price" data-id="${id}"><i class="fa fa-trash"></i></button>`;
-                        },
-                        width: 100,
-                        hozAlign: "center",
-                        cellClick: function (e, cell) {
-                            const target = e.target;
-                            const row = cell.getRow();
-                            const id = row.getData().id;
+                            },
+                            width: 100,
+                            hozAlign: "center",
+                            cellClick: function (e, cell) {
+                                const target = e.target;
+                                const row = cell.getRow();
+                                const id = row.getData().id;
 
-                            const deleteBtn = target.closest('.delete-material-price');
+                                const deleteBtn = target.closest('.delete-material-price');
 
-                            if (deleteBtn) {
-                                if (confirm('Opravdu chcete smazat tuto cenu materiálu?')) {
-                                    fetch(`/material/price/${id}`, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Content-Type': 'application/json'
-                                        }
-                                    })
-                                        .then(response => {
-                                            if (response.ok) {
-                                                // Reload datagrid
-                                                row.delete();
-                                            } else {
-                                                console.log(response);
-                                                alert("Chyba při mazání.");
+                                if (deleteBtn) {
+                                    if (confirm('Opravdu chcete smazat tuto cenu materiálu?')) {
+                                        fetch(`/material/price/${id}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Content-Type': 'application/json'
                                             }
-                                        });
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Reload datagrid
+                                                    row.delete();
+                                                } else {
+                                                    console.log(response);
+                                                    alert("Chyba při mazání.");
+                                                }
+                                            });
+                                    }
                                 }
-                            }
 
-                            return false;
+                                return false;
+                            }
                         }
-                    }
-                ]
-            });
+                    ]
+                });
+            }
         });
 
     </script>

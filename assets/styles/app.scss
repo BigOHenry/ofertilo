@@ -1,18 +1,27 @@
 @import "fonts";
 
-$border-radius: 0  !default;
-$border-radius-xs: 0  !default;
-$border-radius-sm: 0  !default;
-$border-radius-lg: 0  !default;
-$border-radius-xl: 0  !default;
-$border-radius-2xl: 0  !default;
-$border-radius-pill: 0  !default;
-$badge-border-radius: 3px  !default;
-$input-border-radius: 0  !default;
-$form-check-input-border-radius: 0  !default;
-$form-select-border-radius: 0  !default;
-$form-select-border-radius-sm: 0  !default;
-$form-select-border-radius-lg: 0  !default;
+$border-radius: 0 !default;
+$border-radius-xs: 0 !default;
+$border-radius-sm: 0 !default;
+$border-radius-lg: 0 !default;
+$border-radius-xl: 0 !default;
+$border-radius-2xl: 0 !default;
+$border-radius-pill: 0 !default;
+$badge-border-radius: 3px !default;
+$input-border-radius: 0 !default;
+$form-check-input-border-radius: 0 !default;
+$form-select-border-radius: 0 !default;
+$form-select-border-radius-sm: 0 !default;
+$form-select-border-radius-lg: 0 !default;
+
+$primary:   #7c6b58;
+$secondary: #5a4633;
+$success:   #5F7C4B;
+$info:      #5B9A9A;
+$warning:   #D17C2F;
+$danger:    #B23B2B;
+$light:     #F5EFE5;
+$dark:      #2B211B;
 
 @import "~bootstrap/scss/bootstrap";
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
