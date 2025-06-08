@@ -25,6 +25,11 @@ class MaterialPrice
     #[ORM\JoinColumn(nullable: false)]
     private Material $material;
 
+    public function __construct(Material $material)
+    {
+        $this->material = $material;
+    }
+
     public function getId(): int
     {
         return $this->id;

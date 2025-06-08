@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use App\Domain\User\UserRepositoryInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 readonly class FirstRunListener
 {
     public function __construct(
-        private UserRepositoryInterface $userRepo,
+        private UserRepositoryInterface $userRepository,
         private RouterInterface $router,
+        private CacheInterface $cache,
     ) {
     }
 
-    public function onKernelRequest(RequestEvent $event): void
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function onKernelController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
 
@@ -27,15 +33,36 @@ readonly class FirstRunListener
         }
 
         // Do not redirect if we are already on the "create-super-admin" page
-        if ($request->getPathInfo() === '/first-run') {
+        $route = $request->attributes->get('_route');
+
+        if (\in_array($route, ['app_first_run_setup', '_wdt', '_profiler', '_profiler_home', '_profiler_exception', '_profiler_router'], true)) {
             return;
         }
 
+        $path = $request->getPathInfo();
+
+        if (
+            str_starts_with($path, '/_')
+            || str_starts_with($path, '/build')
+            || str_starts_with($path, '/favicon')
+            || str_starts_with($path, '/apple-touch-icon')
+            || preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)
+        ) {
+            return;
+        }
+
+        $userRepository = $this->userRepository;
         // Check if there is a superAdministrator
-        if (!$this->userRepo->hasSuperAdmin()) {
-            $event->setResponse(new RedirectResponse(
-                $this->router->generate('app_first_run_setup')
-            ));
+        $is_installed = $this->cache->get('ofertilo.first_run_done', function () use ($userRepository) {
+            return $userRepository->hasSuperAdmin();
+        });
+
+        if (!$is_installed) {
+            $event->setController(function () {
+                return new RedirectResponse(
+                    $this->router->generate('app_first_run_setup')
+                );
+            });
         }
     }
 }

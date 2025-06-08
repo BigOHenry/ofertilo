@@ -8,6 +8,7 @@ use App\Domain\Material\Material;
 use App\Domain\Material\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,8 +28,14 @@ class MaterialType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'field.name',
             ])
-            ->add('description', TextType::class, [
-                'label' => 'field.description',
+            ->add('translations', CollectionType::class, [
+                'entry_type' => TranslationFormType::class,
+                'mapped' => true,
+                'by_reference' => false,
+                'label' => false,
+                'entry_options' => [
+                    'label' => false,
+                ],
             ])
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
@@ -39,10 +46,6 @@ class MaterialType extends AbstractType
             ])
             ->add('latin_name', TextType::class, [
                 'label' => 'field.latin_name',
-                'required' => false,
-            ])
-            ->add('place_of_origin', TextType::class, [
-                'label' => 'field.place_of_origin',
                 'required' => false,
             ])
             ->add('dry_density', IntegerType::class, [

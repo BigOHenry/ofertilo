@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: resources/docker/Dockerfile
+ #     dockerfile: resources/docker/Dockerfile_dev
     container_name: ofertilo
     env_file:
       - .env.docker

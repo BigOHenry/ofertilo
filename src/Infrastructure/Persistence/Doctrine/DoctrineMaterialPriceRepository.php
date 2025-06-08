@@ -7,26 +7,27 @@ namespace App\Infrastructure\Persistence\Doctrine;
 use App\Domain\Material\MaterialPrice;
 use App\Domain\Material\MaterialPriceRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @phpstan-extends ServiceEntityRepository<MaterialPrice>
  */
 class DoctrineMaterialPriceRepository extends ServiceEntityRepository implements MaterialPriceRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(ManagerRegistry $registry)
     {
+        parent::__construct($registry, MaterialPrice::class);
     }
 
     public function save(MaterialPrice $price): void
     {
-        $this->em->persist($price);
-        $this->em->flush();
+        $this->getEntityManager()->persist($price);
+        $this->getEntityManager()->flush();
     }
 
     public function remove(MaterialPrice $price): void
     {
-        $this->em->remove($price);
-        $this->em->flush();
+        $this->getEntityManager()->remove($price);
+        $this->getEntityManager()->flush();
     }
 }

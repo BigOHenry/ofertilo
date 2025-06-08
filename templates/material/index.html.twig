@@ -3,25 +3,26 @@
 {% block title %}Seznam materiálů{% endblock %}
 
 {% block body %}
-    {% include 'components/form_modal_frame.html.twig' with {
-        modal_id: 'materialModal',
-        title: 'title.material'|trans,
-        frameUrl: path('material_new')
-    } %}
-
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">Materiály</h5>
+            <h5 class="mb-0">{{ 'title.materials'|trans }}</h5>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-row justify-content-end">
-                <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}">
-                    <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
-                </button>
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end">
+                    <button class="btn btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_new') }}" data-modal-title="{{ 'title.new_material'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="materials-table"></div>
             </div>
-            <div id="materials-table"></div>
         </div>
     </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'materialModal',
+        title: 'title.material'|trans
+    } %}
 {% endblock %}
 
 {% block javascripts %}
@@ -54,49 +55,24 @@
                     {
                         title: "Akce",
                         formatter: (cell) => {
-                            const id = cell.getRow().getData().id;
-                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat"><i class="fa fa-edit"></i></button>
+                            const row = cell.getRow().getData()
+                            const id = row.id;
+                            const description = row.description;
+                            return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                         },
                         width: 100,
                         hozAlign: "center",
                         cellClick: function (e, cell) {
-                            e.stopPropagation();
                             const target = e.target;
                             const row = cell.getRow();
                             const id = row.getData().id;
 
                             const deleteBtn = target.closest('.delete-material');
-                            const editBtn = target.closest('.edit-material');
-
-                            if (editBtn) {
-                                const modalId = "materialModal";
-                                const frameId = modalId + "_frame";
-                                const url = `/material/${id}/edit`;
-
-                                const modalEl = document.getElementById(modalId);
-                                const frameEl = document.getElementById(frameId);
-
-                                if (!modalEl || !frameEl) {
-                                    return;
-                                }
-
-                                frameEl.removeAttribute("src");
-                                frameEl.innerHTML = `<div class="text-center py-5">
-                                        <div class="spinner-border text-secondary" role="status">
-                                            <span class="visually-hidden">Načítání…</span>
-                                        </div></div>`;
-                                frameEl.setAttribute("src", url);
-
-                                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                                modal.show();
-
-                                return;
-                            }
 
                             if (deleteBtn) {
                                 if (confirm('Opravdu chcete smazat tento materiál?')) {
-                                    fetch(`/materials/${id}`, {
+                                    fetch(`/material/${id}`, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-Requested-With': 'XMLHttpRequest',

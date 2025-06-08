@@ -2,7 +2,9 @@
     document.addEventListener("turbo:load", () => {
         const delegateModalOpener = (e) => {
             const trigger = e.target.closest("[data-modal-src]");
-            if (!trigger) return;
+            if (!trigger) {
+                return;
+            }
 
             const modalId = trigger.dataset.modalId || "universalModal";
             const frameId = modalId + "_frame";
@@ -17,14 +19,18 @@
                     return;
                 }
 
+                const title = trigger.dataset.modalTitle || "";
+                const titleEl = modalEl.querySelector(".modal-title");
+                if (titleEl) {
+                    titleEl.textContent = title;
+                }
+
                 frameEl.removeAttribute("src");
-                frameEl.innerHTML = `
-                <div class="text-center py-5">
+                frameEl.innerHTML = `<div class="text-center py-5">
                     <div class="spinner-border text-secondary" role="status">
                         <span class="visually-hidden">Načítání…</span>
                     </div>
-                </div>
-            `;
+                </div>`;
                 frameEl.setAttribute("src", url);
 
                 const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -32,8 +38,10 @@
             }, 0);
         };
 
-        document.body.addEventListener("click", delegateModalOpener);
-
+        if (!window.__ofertilo_modal_delegate_bound) {
+            document.addEventListener("click", delegateModalOpener);
+            window.__ofertilo_modal_delegate_bound = true;
+        }
         document.querySelectorAll(".modal[data-modal-frame-cleanup]").forEach((modalEl) => {
             const modalId = modalEl.id;
             const frameId = modalId + "_frame";

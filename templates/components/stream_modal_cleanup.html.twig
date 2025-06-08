@@ -2,20 +2,22 @@
     <template>
         <script>
             // Najdi nejvýše zobrazený otevřený modal (Bootstrap 5)
-            const modalEl = document.querySelector(".modal.show");
-            if (modalEl) {
-                const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if (modalInstance) {
-                    modalInstance.hide();
+            {
+                const modalEl = document.querySelector(".modal.show");
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
                 }
-            }
 
-            // Odstraň backdropy
-            document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                // Odstraň backdropy
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
 
-            // Obnov datagrid (např. Tabulator.js)
-            if (window.materialTable) {
-                window.materialTable.replaceData();
+                // Obnov datagrid (např. Tabulator.js)
+                if (window.materialTable) {
+                    window.materialTable.replaceData();
+                }
             }
         </script>
     </template>
