@@ -23,7 +23,7 @@
 
     </head>
     <body>
-        <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg">
+        <nav class="navbar navbar-dark bg-primary mb-4 navbar-expand-lg">
             <div class="container-xxl">
                 <a class="navbar-brand" href="{{ path('app_home_index') }}">
                     <img src="{{ asset('img/ofertilo_logo.webp') }}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -35,10 +35,10 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{{ path('app_home_index') }}">Home</a>
+                            <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home_index' %}active{% endif %}" aria-current="page" href="{{ path('app_home_index') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('material_index') }}" data-turbo="true">{{ 'title.materials'|trans }}</a>
+                            <a class="nav-link {% if app.request.attributes.get('_route') starts with 'material' %}active{% endif %}" href="{{ path('material_index') }}" data-turbo="true">{{ 'title.materials'|trans }}</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav mb-2 mb-lg-0">
