@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\User;
 
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'appuser')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,6 +34,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'boolean')]
     private bool $forceEmailChange = true;
+
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $is_two_fa_enabled = false;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $two_fa_secret = null;
 
     /**
      * @var string[]
@@ -151,5 +160,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // odstranění citlivých dat, pokud je potřeba
+    }
+
+    public function getTotpAuthenticationSecret(): string
+    {
+        return $this->two_fa_secret ?? '';
+    }
+
+    public function getTotpAuthenticationUsername(): string
+    {
+        return $this->email;
+    }
+
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return $this->is_two_fa_enabled && $this->two_fa_secret !== null;
+    }
+
+    public function setTotpSecret(?string $secret): void
+    {
+        $this->two_fa_secret = $secret;
+    }
+
+    public function isTwoFactorEnabled(): bool
+    {
+        return $this->is_two_fa_enabled;
+    }
+
+    public function setTwoFactorEnabled(bool $enabled): void
+    {
+        $this->is_two_fa_enabled = $enabled;
+    }
+
+    public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface | null
+    {
+        return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 20, 8);
     }
 }
