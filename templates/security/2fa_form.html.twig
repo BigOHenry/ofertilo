@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dvoufaktorové ověření{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="text-center">Dvoufaktorové ověření</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if authenticationError %}
+                            <div class="alert alert-danger">
+                                {{ authenticationError.messageKey|trans(authenticationError.messageData, 'SchebTwoFactorBundle') }}
+                            </div>
+                        {% endif %}
+
+                        <form action="{{ path('2fa_login_check') }}" method="post">
+                            <div class="mb-3">
+                                <label for="_auth_code" class="form-label">Zadejte ověřovací kód:</label>
+                                <input type="text"
+                                       id="_auth_code"
+                                       name="_auth_code"
+                                       class="form-control text-center"
+                                       placeholder="123456"
+                                       maxlength="6"
+                                       autofocus
+                                       required>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Ověřit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

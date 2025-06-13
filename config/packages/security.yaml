@@ -22,6 +22,9 @@ security:
                 csrf_token_id: authenticate
                 always_use_default_target_path: true
                 default_target_path: app_home_index
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
             logout:
                 path: app_logout
                 target: app_login
@@ -34,6 +37,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_INCOMPLETE }
+        - { path: ^/logout, role: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

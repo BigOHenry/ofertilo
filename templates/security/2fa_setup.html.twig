@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nastavení 2FA{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Nastavení dvoufaktorového ověření</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+
+                        <div class="text-center mb-4">
+                            <p>Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)</p>
+                            <img src="{{ path('app_2fa_qr_code') }}" alt="QR Code" class="img-fluid">
+                        </div>
+
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="_auth_code" class="form-label">Zadejte ověřovací kód z aplikace:</label>
+                                <input type="text"
+                                       id="_auth_code"
+                                       name="_auth_code"
+                                       class="form-control text-center"
+                                       placeholder="123456"
+                                       maxlength="6"
+                                       required>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Aktivovat 2FA</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

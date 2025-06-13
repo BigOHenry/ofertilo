@@ -162,9 +162,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         // odstranění citlivých dat, pokud je potřeba
     }
 
-    public function getTotpAuthenticationSecret(): string
+    public function getTotpAuthenticationSecret(): ?string
     {
-        return $this->two_fa_secret ?? '';
+        return $this->two_fa_secret;
+    }
+
+    public function getTotpSecret(): ?string
+    {
+        return $this->two_fa_secret;
     }
 
     public function getTotpAuthenticationUsername(): string
@@ -192,8 +197,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->is_two_fa_enabled = $enabled;
     }
 
-    public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface | null
+    public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface|null
     {
-        return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 20, 8);
+        if (!$this->isTotpAuthenticationEnabled()) {
+            return null;
+        }
+
+        return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 }
