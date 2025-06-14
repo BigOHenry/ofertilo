@@ -167,11 +167,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->two_fa_secret;
     }
 
-    public function getTotpSecret(): ?string
-    {
-        return $this->two_fa_secret;
-    }
-
     public function getTotpAuthenticationUsername(): string
     {
         return $this->email;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Application\Service;
 
@@ -31,6 +31,6 @@ readonly class TwoFactorService
 
     public function needsSetup(User $user): bool
     {
-        return !$user->isTotpAuthenticationEnabled();
+        return $user->isTwoFactorEnabled() && $user->getTotpAuthenticationSecret() === null;
     }
 }

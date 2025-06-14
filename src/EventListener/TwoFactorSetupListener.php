@@ -33,8 +33,7 @@ readonly class TwoFactorSetupListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $route = $request->attributes->get('_route');
 
-        // Pokud uživatel nemá nastavené 2FA a není na setup stránce
-        if (!$user->isTotpAuthenticationEnabled() &&
+        if ($user->isTwoFactorEnabled() && $user->getTotpAuthenticationSecret() === null &&
             !in_array($route, ['app_2fa_setup', 'app_2fa_qr_code', 'app_logout', '2fa_login', '2fa_login_check'])) {
 
             $response = new RedirectResponse($this->router->generate('app_2fa_setup'));

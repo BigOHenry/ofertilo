@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Controller;
 
 use App\Application\Service\TwoFactorService;
 use App\Domain\User\User;
 use App\Domain\User\UserRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
@@ -14,9 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-//#[IsGranted("IS_AUTHENTICATED_FULLY or IS_AUTHENTICATED_2FA_INCOMPLETE")]
 class TwoFactorSetupController extends AbstractController
 {
     public function __construct(
@@ -31,7 +28,6 @@ class TwoFactorSetupController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // Zkus získat secret ze session
         $secret = $session->get('temp_totp_secret');
 
         if (!$secret) {
@@ -39,25 +35,19 @@ class TwoFactorSetupController extends AbstractController
             $session->set('temp_totp_secret', $secret);
         }
 
-        // Nastav secret na user objekt (ale neukládej do DB)
         $user->setTotpSecret($secret);
 
         if ($request->isMethod('POST')) {
             $code = $request->request->get('_auth_code');
 
             if ($this->totpAuthenticator->checkCode($user, $code)) {
-                // Úspěšné ověření - ulož do DB a aktivuj
-                $user->setTwoFactorEnabled(true);
                 $this->userRepository->save($user);
-
-                // Vyčisti session
                 $session->remove('temp_totp_secret');
-
                 $this->addFlash('success', '2FA bylo úspěšně aktivováno!');
                 return $this->redirectToRoute('app_home_index');
-            } else {
-                $this->addFlash('error', 'Neplatný ověřovací kód!');
             }
+
+            $this->addFlash('error', 'Neplatný ověřovací kód!');
         }
 
         return $this->render('security/2fa_setup.html.twig', [
@@ -78,7 +68,6 @@ class TwoFactorSetupController extends AbstractController
             throw $this->createNotFoundException('2FA setup nebyl zahájen');
         }
 
-        // Nastav secret na user objekt pro generování QR kódu
         $user->setTotpSecret($secret);
 
         $qrCodeContent = $this->totpAuthenticator->getQRContent($user);

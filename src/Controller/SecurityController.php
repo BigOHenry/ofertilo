@@ -9,6 +9,7 @@ use App\Domain\User\User;
 use App\Domain\User\UserRepositoryInterface;
 use App\Form\FirstRunSetupType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -64,6 +65,10 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_home_index');
+        }
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
@@ -80,5 +85,21 @@ class SecurityController extends AbstractController
     {
         // Symfony will intercept this and handle logout automatically
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
+    #[Route('/debug/2fa-status', name: 'debug_2fa_status')]
+    public function debug2faStatus(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $token = $this->container->get('security.token_storage')->getToken();
+
+        return $this->json([
+            'user_2fa_enabled' => $user->isTotpAuthenticationEnabled(),
+            'user_has_secret' => null !== $user->getTotpAuthenticationSecret(),
+            'current_token' => get_class($token),
+            'is_fully_authenticated' => $this->isGranted('IS_AUTHENTICATED_FULLY'),
+            'is_2fa_in_progress' => $this->isGranted('IS_AUTHENTICATED_2FA_IN_PROGRESS'),
+        ]);
     }
 }

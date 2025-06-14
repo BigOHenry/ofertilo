@@ -14,17 +14,26 @@ security:
             security: false
         main:
             lazy: true
+            pattern: ^/
             provider: app_user_provider
+            login_throttling:
+                max_attempts: 3
+                interval: '5 minutes'
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
                 csrf_token_id: authenticate
-                always_use_default_target_path: true
+#                always_use_default_target_path: true
                 default_target_path: app_home_index
             two_factor:
                 auth_form_path: 2fa_login
                 check_path: 2fa_login_check
+                auth_code_parameter_name: _auth_code
+                provider: app_user_provider
+                prepare_on_login: true
+                prepare_on_access_denied: true
+                enable_csrf: true
             logout:
                 path: app_logout
                 target: app_login
@@ -37,10 +46,15 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_INCOMPLETE }
-        - { path: ^/logout, role: PUBLIC_ACCESS }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+#        - { path: ^/login, role: PUBLIC_ACCESS }
+#        - { path: ^/logout, role: PUBLIC_ACCESS }
+#        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+
+        - { path: ^/login$, role: PUBLIC_ACCESS }
+        - { path: ^/logout$, role: PUBLIC_ACCESS }
+        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+#        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
+
 
 when@test:
     security:

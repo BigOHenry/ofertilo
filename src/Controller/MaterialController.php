@@ -22,6 +22,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
 
+
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MaterialController extends AbstractController
 {
     /**

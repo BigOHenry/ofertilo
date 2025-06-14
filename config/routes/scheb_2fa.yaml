@@ -5,13 +5,3 @@
 
 2fa_login_check:
     path: /2fa_check
-
-#app_2fa_setup:
-#    path: /2fa/setup
-#    defaults:
-#        _controller: App\Infrastructure\Controller\Security\TwoFactorSetupController::setup
-
-#app_2fa_qr_code:
-#    path: /2fa/qr-code
-#    defaults:
-#        _controller: App\Infrastructure\Controller\Security\TwoFactorSetupController::qrCode
