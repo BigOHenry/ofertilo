@@ -1,46 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dvoufaktorové ověření{% endblock %}
+{% block title %}{{ 'title.2fa'|trans}}{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="text-center">Dvoufaktorové ověření</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if authenticationError %}
-                            <div class="alert alert-danger">
-                                {% if authenticationError.messageKey is defined %}
-                                    {{ authenticationError.messageKey|trans(authenticationError.messageData, 'SchebTwoFactorBundle') }}
-                                {% else %}
-                                    {{ authenticationError }}
-                                {% endif %}
-                            </div>
-                        {% endif %}
-
-                        <form action="{{ path('2fa_login_check') }}" method="post">
-                            <div class="mb-3">
-                                <label for="_auth_code" class="form-label">Zadejte ověřovací kód:</label>
-                                <input type="text"
-                                       id="_auth_code"
-                                       name="_auth_code"
-                                       class="form-control text-center"
-                                       placeholder="123456"
-                                       maxlength="6"
-                                       autofocus
-                                       required>
-                            </div>
-                            {% if isCsrfProtectionEnabled %}
-                                <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col">
+            <div id="2fa-card" class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between">
+                    <h1 class="text-center">{{ 'title.2fa'|trans}}</h1>
+                </div>
+                <div class="card-body">
+                    {% if authenticationError %}
+                        <div class="alert alert-danger">
+                            {% if authenticationError.messageKey is defined %}
+                                {{ authenticationError.messageKey|trans(authenticationError.messageData, 'SchebTwoFactorBundle') }}
+                            {% else %}
+                                {{ authenticationError }}
                             {% endif %}
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Ověřit</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    {% endif %}
+
+                    <form action="{{ path('2fa_login_check') }}" method="post">
+                        <div class="mb-3">
+                            <label for="_auth_code" class="form-label">Zadejte ověřovací kód:</label>
+                            <input type="text"
+                                   id="_auth_code"
+                                   name="_auth_code"
+                                   class="form-control text-center"
+{#                                   placeholder="123456"#}
+                                   maxlength="6"
+                                   autofocus
+                                   required>
+                        </div>
+                        {% if isCsrfProtectionEnabled %}
+                            <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                        {% endif %}
+{#                        <div class="d-grid">#}
+                            <button type="submit" class="btn btn-primary">{{ 'button.verify'|trans }}</button>
+{#                        </div>#}
+                    </form>
                 </div>
             </div>
         </div>

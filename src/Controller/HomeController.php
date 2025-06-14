@@ -14,7 +14,6 @@ final class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home_index')]
     #[IsGranted(Role::READER->value)]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function index(): Response
     {
         return $this->render('hello/index.html.twig', [

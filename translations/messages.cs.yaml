@@ -8,6 +8,8 @@ title:
   material_price: 'Cena materiálu'
   new_material_price: 'Nová cena materiálu'
   localization: 'Lokalizace'
+  2fa_setup: 'Nastavení dvoufaktorového ověření'
+  2fa: 'Dvoufaktorové ověření'
 
 field:
   email: "E-mail"
@@ -22,9 +24,15 @@ field:
   hardness: "Tvrdost dřeva (Janka)"
   thickness: "Tloušťka (mm)"
   price: "Cena"
+  2fa_code: "Zadejte ověřovací kód z aplikace"
 
 button:
   save: "Uložit"
   login: 'Přihlásit'
   add: 'Přidat'
   close: 'Zavřít'
+  2fa_activate: 'Aktivovat 2FA'
+  verify: 'Ověřit'
+
+message:
+  2fa_setup_qr_scan: "Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)"
