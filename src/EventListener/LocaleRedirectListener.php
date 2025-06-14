@@ -27,6 +27,10 @@ readonly class LocaleRedirectListener
             return;
         }
 
+        if (str_starts_with($path, '/2fa')) {
+            return;
+        }
+
         // Pokud URL již obsahuje validní locale, nic nedělej
         if (preg_match('#^/(' . implode('|', $this->supportedLocales) . ')(/|$)#', $path)) {
             return;

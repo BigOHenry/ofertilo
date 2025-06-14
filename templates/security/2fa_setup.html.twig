@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.2fa_setup'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col">
+            <div id="setup-2fa-card" class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between">
+                    <h1 id="setup-2fa-title" class="mb-0">{{ 'title.2fa_setup'|trans }}</h1>
+                </div>
+                <div class="card-body">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+
+                    <div class="text-center mb-4">
+                        <p>{{ 'message.2fa_setup_qr_scan'|trans }}</p>
+                        <img src="{{ path('app_2fa_qr_code') }}" alt="QR Code" class="img-fluid">
+                    </div>
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="_auth_code" class="form-label">{{ 'field.2fa_code'|trans }}:</label>
+                            <input type="text"
+                                   id="_auth_code"
+                                   name="_auth_code"
+                                   class="form-control text-center"
+{#                                   placeholder="123456"#}
+                                   maxlength="6"
+                                   required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">{{ 'button.2fa_activate'|trans }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

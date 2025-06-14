@@ -43,7 +43,6 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
     App\Domain\Material\MaterialPriceRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialPriceRepository
-    App\Infrastructure\Persistence\Doctrine\DoctrineTranslationRepository:
-        autowire: true
-        autoconfigure: true
-        public: false
+    App\EventListener\TwoFactorSetupListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
