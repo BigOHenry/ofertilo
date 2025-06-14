@@ -41,6 +41,8 @@
 
             if (el) {
                 window.materialTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_material_prices', {'id': material.id}) }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",

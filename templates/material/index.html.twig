@@ -5,7 +5,7 @@
 {% block body %}
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">{{ 'title.materials'|trans }}</h5>
+            <h1 class="mb-0">{{ 'title.materials'|trans }}</h1>
         </div>
         <div class="card-body">
             <div class="row">
@@ -34,6 +34,8 @@
 
             if (el) {
                 window.materialTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_materials') }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",
