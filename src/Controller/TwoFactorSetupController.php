@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -19,8 +21,9 @@ class TwoFactorSetupController extends AbstractController
     public function __construct(
         private readonly TwoFactorService $twoFactorService,
         private readonly TotpAuthenticatorInterface $totpAuthenticator,
-        private readonly UserRepositoryInterface $userRepository
-    ) {}
+        private readonly UserRepositoryInterface $userRepository,
+    ) {
+    }
 
     #[Route('/2fa/setup', name: 'app_2fa_setup')]
     public function setup(Request $request, SessionInterface $session): Response
@@ -44,6 +47,7 @@ class TwoFactorSetupController extends AbstractController
                 $this->userRepository->save($user);
                 $session->remove('temp_totp_secret');
                 $this->addFlash('success', '2FA bylo úspěšně aktivováno!');
+
                 return $this->redirectToRoute('app_home_index');
             }
 
@@ -54,8 +58,6 @@ class TwoFactorSetupController extends AbstractController
             'user' => $user,
         ]);
     }
-
-
 
     #[Route('/2fa/qr-code', name: 'app_2fa_qr_code')]
     public function qrCode(SessionInterface $session): Response

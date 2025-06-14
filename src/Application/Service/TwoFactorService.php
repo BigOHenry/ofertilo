@@ -1,7 +1,8 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Application\Service;
-
 
 use App\Domain\User\User;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
@@ -9,8 +10,9 @@ use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInte
 readonly class TwoFactorService
 {
     public function __construct(
-        private TotpAuthenticatorInterface $totpAuthenticator
-    ) {}
+        private TotpAuthenticatorInterface $totpAuthenticator,
+    ) {
+    }
 
     public function generateSecret(): string
     {

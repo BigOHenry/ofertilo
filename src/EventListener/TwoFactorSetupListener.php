@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventListener;
 
 use App\Domain\User\User;
@@ -14,8 +16,9 @@ readonly class TwoFactorSetupListener implements EventSubscriberInterface
 {
     public function __construct(
         private TokenStorageInterface $tokenStorage,
-        private RouterInterface $router
-    ) {}
+        private RouterInterface $router,
+    ) {
+    }
 
     public function onKernelRequest(RequestEvent $event): void
     {
@@ -33,9 +36,11 @@ readonly class TwoFactorSetupListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $route = $request->attributes->get('_route');
 
-        if ($user->isTwoFactorEnabled() && $user->getTotpAuthenticationSecret() === null &&
-            !in_array($route, ['app_2fa_setup', 'app_2fa_qr_code', 'app_logout', '2fa_login', '2fa_login_check'])) {
-
+        if (
+            $user->isTwoFactorEnabled()
+            && $user->getTotpAuthenticationSecret() === null
+            && !\in_array($route, ['app_2fa_setup', 'app_2fa_qr_code', 'app_logout', '2fa_login', '2fa_login_check'], true)
+        ) {
             $response = new RedirectResponse($this->router->generate('app_2fa_setup'));
             $event->setResponse($response);
         }

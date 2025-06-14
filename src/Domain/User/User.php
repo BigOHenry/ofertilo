@@ -192,7 +192,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->is_two_fa_enabled = $enabled;
     }
 
-    public function getTotpAuthenticationConfiguration(): TotpConfigurationInterface|null
+    public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
     {
         if (!$this->isTotpAuthenticationEnabled()) {
             return null;

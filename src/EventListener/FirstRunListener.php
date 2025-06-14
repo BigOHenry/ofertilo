@@ -42,11 +42,11 @@ readonly class FirstRunListener
         $path = $request->getPathInfo();
 
         if (
-            \str_starts_with($path, '/_')
-            || \str_starts_with($path, '/build')
-            || \str_starts_with($path, '/favicon')
-            || \str_starts_with($path, '/apple-touch-icon')
-            || \preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)
+            str_starts_with($path, '/_')
+            || str_starts_with($path, '/build')
+            || str_starts_with($path, '/favicon')
+            || str_starts_with($path, '/apple-touch-icon')
+            || preg_match('#\.(css|js|png|jpg|svg|woff2?)$#', $path)
         ) {
             return;
         }

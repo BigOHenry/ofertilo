@@ -96,8 +96,8 @@ class SecurityController extends AbstractController
 
         return $this->json([
             'user_2fa_enabled' => $user->isTotpAuthenticationEnabled(),
-            'user_has_secret' => null !== $user->getTotpAuthenticationSecret(),
-            'current_token' => get_class($token),
+            'user_has_secret' => $user->getTotpAuthenticationSecret() !== null,
+            'current_token' => $token::class,
             'is_fully_authenticated' => $this->isGranted('IS_AUTHENTICATED_FULLY'),
             'is_2fa_in_progress' => $this->isGranted('IS_AUTHENTICATED_2FA_IN_PROGRESS'),
         ]);
