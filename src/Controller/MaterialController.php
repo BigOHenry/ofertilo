@@ -12,6 +12,7 @@ use App\Domain\User\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
 use App\Infrastructure\Translation\TranslationInitializer;
+use App\Infrastructure\Translation\TranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -77,12 +78,16 @@ final class MaterialController extends AbstractController
 
     #[Route('/api/materials', name: 'api_materials')]
     #[IsGranted(Role::READER->value)]
-    public function materialsApi(Request $request, MaterialRepositoryInterface $materialRepository): JsonResponse
-    {
+    public function materialsApi(
+        Request $request,
+        MaterialRepositoryInterface $materialRepository,
+        TranslationLoader $translationLoader
+    ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
         $offset = ($page - 1) * $size;
 
+        // TODO rework this to get translated Material
         $qb = $materialRepository->createQueryBuilder('m')
                    ->setFirstResult($offset)
                    ->setMaxResults($size)
@@ -100,6 +105,7 @@ final class MaterialController extends AbstractController
         $data = [];
         /** @var Material $material */
         foreach ($paginator as $material) {
+            $translationLoader->loadTranslations($material);
             $data[] = [
                 'id' => $material->getId(),
                 'name' => $material->getName(),

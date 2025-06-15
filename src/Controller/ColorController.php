@@ -9,6 +9,7 @@ use App\Domain\Color\ColorRepositoryInterface;
 use App\Domain\User\Role;
 use App\Form\ColorType;
 use App\Infrastructure\Translation\TranslationInitializer;
+use App\Infrastructure\Translation\TranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -74,7 +75,7 @@ final class ColorController extends AbstractController
 
     #[Route('/api/colors', name: 'api_colors')]
     #[IsGranted(Role::READER->value)]
-    public function colorsApi(Request $request, ColorRepositoryInterface $colorRepository): JsonResponse
+    public function colorsApi(Request $request, ColorRepositoryInterface $colorRepository, TranslationLoader $translationLoader): JsonResponse
     {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
@@ -97,6 +98,7 @@ final class ColorController extends AbstractController
         $data = [];
         /** @var Color $color */
         foreach ($paginator as $color) {
+            $translationLoader->loadTranslations($color);
             $data[] = [
                 'id' => $color->getId(),
                 'code' => $color->getCode(),

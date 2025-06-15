@@ -6,10 +6,10 @@ namespace App\Domain\Color;
 
 use App\Domain\Translation\TranslatableInterface;
 use App\Domain\Translation\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository;
+use App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DoctrineMaterialRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrineColorRepository::class)]
 #[ORM\Table(name: 'color')]
 class Color implements TranslatableInterface
 {
@@ -24,7 +24,7 @@ class Color implements TranslatableInterface
     private ?int $code = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
-    private bool $in_stock = false;
+    private bool $inStock = false;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
@@ -79,11 +79,11 @@ class Color implements TranslatableInterface
 
     public function isInStock(): bool
     {
-        return $this->in_stock;
+        return $this->inStock;
     }
 
-    public function setInStock(bool $in_stock): void
+    public function setInStock(bool $inStock): void
     {
-        $this->in_stock = $in_stock;
+        $this->inStock = $inStock;
     }
 }
