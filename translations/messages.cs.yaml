@@ -10,6 +10,8 @@ title:
   localization: 'Lokalizace'
   2fa_setup: 'Nastavení dvoufaktorového ověření'
   2fa: 'Dvoufaktorové ověření'
+  color: 'Barva'
+  colors: 'Barvy'
 
 field:
   email: "E-mail"
@@ -25,6 +27,8 @@ field:
   thickness: "Tloušťka (mm)"
   price: "Cena"
   2fa_code: "Zadejte ověřovací kód z aplikace"
+  code: 'Kód'
+  in_stock: 'Na skladě'
 
 button:
   save: "Uložit"

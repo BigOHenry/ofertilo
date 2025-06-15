@@ -20,8 +20,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    #[ORM\Column(length: 180, unique: true, nullable: false)]
+    private string $email;
 
     #[ORM\Column(length: 200)]
     private ?string $name = null;
@@ -42,13 +42,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private ?string $two_fa_secret = null;
 
     /**
-     * @var string[]
+     * @var string[]|Role[]
      */
     #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
     public function __construct(string $email)
     {
+        if (mb_trim($email) === '') {
+            throw new \InvalidArgumentException('Email cannot be empty');
+        }
         $this->email = $email;
     }
 
@@ -62,13 +65,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     public function setEmail(string $email): static
     {
+        if (mb_trim($email) === '') {
+            throw new \InvalidArgumentException('Email cannot be empty');
+        }
         $this->email = $email;
 
         return $this;
@@ -76,6 +82,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getUserIdentifier(): string
     {
+        \assert($this->email !== '', 'Email should never be empty');
+
         return $this->email;
     }
 
@@ -112,7 +120,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             $roles[] = Role::READER->value;
         }
 
-        return array_unique(array_map(static fn ($r) => $r, $roles));
+        return array_unique(array_map(
+            static fn ($r) => $r instanceof Role ? $r->value : (string) $r,
+            $roles
+        ));
     }
 
     /**
@@ -169,7 +180,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getTotpAuthenticationUsername(): string
     {
-        return $this->email;
+        return $this->getEmail();
     }
 
     public function isTotpAuthenticationEnabled(): bool

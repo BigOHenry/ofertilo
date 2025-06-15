@@ -91,7 +91,7 @@ class Material implements TranslatableInterface
 
     public function getPlaceOfOrigin(?string $locale = null): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale ?? 'en');
+        return $this->getTranslationFromMemory('place_of_origin', $locale ?? 'en');
     }
 
     public function setPlaceOfOrigin(string $value, string $locale = 'en'): void

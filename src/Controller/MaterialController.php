@@ -98,11 +98,12 @@ final class MaterialController extends AbstractController
         $total = \count($paginator);
 
         $data = [];
+        /** @var Material $material */
         foreach ($paginator as $material) {
             $data[] = [
                 'id' => $material->getId(),
                 'name' => $material->getName(),
-                'description' => $material->getDescription(),
+                'description' => $material->getDescription($request->getLocale()),
                 'type' => $material->getType()->value,
             ];
         }
@@ -208,7 +209,7 @@ final class MaterialController extends AbstractController
         ]);
     }
 
-    #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[Route('/material/{id}', name: 'material_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
     public function deletePrice(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
     {

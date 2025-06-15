@@ -41,7 +41,7 @@ class TwoFactorSetupController extends AbstractController
         $user->setTotpSecret($secret);
 
         if ($request->isMethod('POST')) {
-            $code = $request->request->get('_auth_code');
+            $code = (string) $request->request->get('_auth_code');
 
             if ($this->totpAuthenticator->checkCode($user, $code)) {
                 $this->userRepository->save($user);
