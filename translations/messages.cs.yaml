@@ -40,3 +40,7 @@ button:
 
 message:
   2fa_setup_qr_scan: "Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)"
+
+boolean:
+  yes: "Ano"
+  no: "Ne"

@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Translation\Translator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -75,8 +77,12 @@ final class ColorController extends AbstractController
 
     #[Route('/api/colors', name: 'api_colors')]
     #[IsGranted(Role::READER->value)]
-    public function colorsApi(Request $request, ColorRepositoryInterface $colorRepository, TranslationLoader $translationLoader): JsonResponse
-    {
+    public function colorsApi(
+        Request $request,
+        ColorRepositoryInterface $colorRepository,
+        TranslationLoader $translationLoader,
+        TranslatorInterface $translator
+    ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
         $offset = ($page - 1) * $size;
@@ -103,7 +109,7 @@ final class ColorController extends AbstractController
                 'id' => $color->getId(),
                 'code' => $color->getCode(),
                 'description' => $color->getDescription($request->getLocale()),
-                'in_stock' => $color->isInStock(),
+                'in_stock' => $translator->trans($color->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
             ];
         }
 
