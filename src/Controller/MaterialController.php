@@ -81,7 +81,7 @@ final class MaterialController extends AbstractController
     public function materialsApi(
         Request $request,
         MaterialRepositoryInterface $materialRepository,
-        TranslationLoader $translationLoader
+        TranslationLoader $translationLoader,
     ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);

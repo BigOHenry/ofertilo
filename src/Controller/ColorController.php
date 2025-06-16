@@ -18,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Translation\Translator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
@@ -81,7 +80,7 @@ final class ColorController extends AbstractController
         Request $request,
         ColorRepositoryInterface $colorRepository,
         TranslationLoader $translationLoader,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
