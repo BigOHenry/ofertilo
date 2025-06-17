@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine;
 
-use App\Domain\Color\Color;
-use App\Domain\Color\ColorRepositoryInterface;
-use App\Infrastructure\Translation\TranslationLoader;
+use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Repository\ColorRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<Color>
+ * @phpstan-extends ServiceEntityRepository<\App\Domain\Color\Entity\Color>
  */
 class DoctrineColorRepository extends ServiceEntityRepository implements ColorRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry, private readonly TranslationLoader $translationLoader)
+    public function __construct(ManagerRegistry $registry, private readonly DoctrineTranslationLoader $translationLoader)
     {
         parent::__construct($registry, Color::class);
     }

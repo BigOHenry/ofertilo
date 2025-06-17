@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Application\Service\TwoFactorService;
-use App\Domain\User\User;
-use App\Domain\User\UserRepositoryInterface;
+use App\Domain\User\Entity\User;
+use App\Domain\User\Repository\UserRepositoryInterface;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;

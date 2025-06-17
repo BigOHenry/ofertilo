@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Domain\Material\Material;
-use App\Domain\Material\MaterialPrice;
-use App\Domain\Material\MaterialPriceRepositoryInterface;
-use App\Domain\Material\MaterialRepositoryInterface;
-use App\Domain\User\Role;
+use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Entity\MaterialPrice;
+use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
+use App\Domain\Material\Repository\MaterialRepositoryInterface;
+use App\Domain\Translation\Service\TranslationInitializer;
+use App\Domain\User\ValueObject\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
-use App\Infrastructure\Translation\TranslationInitializer;
-use App\Infrastructure\Translation\TranslationLoader;
+use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -81,7 +81,7 @@ final class MaterialController extends AbstractController
     public function materialsApi(
         Request $request,
         MaterialRepositoryInterface $materialRepository,
-        TranslationLoader $translationLoader,
+        DoctrineTranslationLoader $translationLoader,
     ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);

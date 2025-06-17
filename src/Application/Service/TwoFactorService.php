@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
-use App\Domain\User\User;
+use App\Domain\User\Entity\User;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
 
 readonly class TwoFactorService

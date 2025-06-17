@@ -12,6 +12,8 @@ title:
   2fa: 'Dvoufaktorové ověření'
   color: 'Barva'
   colors: 'Barvy'
+  product: 'Produkt'
+  products: 'Produkty'
 
 field:
   email: "E-mail"

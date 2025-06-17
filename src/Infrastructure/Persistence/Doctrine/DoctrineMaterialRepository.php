@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine;
 
-use App\Domain\Material\Material;
-use App\Domain\Material\MaterialRepositoryInterface;
-use App\Infrastructure\Translation\TranslationLoader;
+use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<Material>
+ * @phpstan-extends ServiceEntityRepository<\App\Domain\Material\Entity\Material>
  */
 class DoctrineMaterialRepository extends ServiceEntityRepository implements MaterialRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry, private readonly TranslationLoader $translationLoader)
+    public function __construct(ManagerRegistry $registry, private readonly DoctrineTranslationLoader $translationLoader)
     {
         parent::__construct($registry, Material::class);
     }

@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produkty{% endblock %}
+
+{% block body %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h1 class="mb-0">{{ 'title.products'|trans }}</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end pb-2">
+                    <button class="btn btn-primary" data-modal-id="productModal" data-modal-src="{{ path('product_new') }}" data-modal-title="{{ 'title.new_product'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="products-table"></div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productModal',
+        title: 'title.product'|trans
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        document.addEventListener("turbo:load", () => {
+            const el = document.querySelector("#products-table");
+
+            if (el) {
+                window.productTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
+                    ajaxURL: "{{ path('api_products') }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    pagination: "remote",
+                    paginationSize: 15,
+                    paginationDataSent: {
+                        page: "page",
+                        size: "size",
+                        sorters: "sort"
+                    },
+                    paginationDataReceived: {
+                        last_page: "last_page",
+                        data: "data"
+                    },
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.code'|trans }}", field: "code", sorter: "integer" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        { title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },
+                        {
+                            title: "Akce",
+                            formatter: (cell) => {
+                                const row = cell.getRow().getData()
+                                const id = row.id;
+                                const description = row.description;
+                                return `<button class="btn btn-sm btn-primary me-1 edit-product" data-modal-src="/product/${id}/edit" data-modal-id="productModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-product" data-id="${id}"><i class="fa fa-trash"></i></button>`;
+                            },
+                            width: 100,
+                            hozAlign: "center",
+                            cellClick: function (e, cell) {
+                                const target = e.target;
+                                const row = cell.getRow();
+                                const id = row.getData().id;
+
+                                const deleteBtn = target.closest('.delete-product');
+
+                                if (deleteBtn) {
+                                    if (confirm('Opravdu chcete smazat tuto barvu?')) {
+                                        fetch(`/product/${id}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Reload datagrid
+                                                    row.delete();
+                                                } else {
+                                                    console.log(response);
+                                                    alert("Chyba při mazání.");
+                                                }
+                                            });
+                                    }
+                                }
+
+                                return false;
+                            }
+                        }
+                    ]
+                });
+            }
+
+            window.productTable.on("rowClick", function(e, row) {
+                if (e.target.closest('.edit-product') === null && e.target.closest('.delete-product') === null) {
+                    window.location.href = `/product/${row.getData().id}`;
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

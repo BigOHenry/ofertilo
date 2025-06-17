@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine;
 
-use App\Domain\Material\MaterialPrice;
-use App\Domain\Material\MaterialPriceRepositoryInterface;
+use App\Domain\Material\Entity\MaterialPrice;
+use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<MaterialPrice>
+ * @phpstan-extends ServiceEntityRepository<\App\Domain\Material\Entity\MaterialPrice>
  */
 class DoctrineMaterialPriceRepository extends ServiceEntityRepository implements MaterialPriceRepositoryInterface
 {

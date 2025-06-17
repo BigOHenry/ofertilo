@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Domain\Color\Color;
-use App\Domain\Color\ColorRepositoryInterface;
-use App\Domain\User\Role;
+use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Repository\ColorRepositoryInterface;
+use App\Domain\Translation\Repository\TranslationLoaderInterface;
+use App\Domain\Translation\Service\TranslationInitializer;
+use App\Domain\User\ValueObject\Role;
 use App\Form\ColorType;
-use App\Infrastructure\Translation\TranslationInitializer;
-use App\Infrastructure\Translation\TranslationLoader;
+use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -79,7 +80,7 @@ final class ColorController extends AbstractController
     public function colorsApi(
         Request $request,
         ColorRepositoryInterface $colorRepository,
-        TranslationLoader $translationLoader,
+        TranslationLoaderInterface $translationLoader,
         TranslatorInterface $translator,
     ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);

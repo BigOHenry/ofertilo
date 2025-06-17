@@ -1,0 +1,7 @@
+<div id="product-detail">
+    <div class="row pb-2">
+        <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ product.name }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ product.description(app.request.locale) }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.country'|trans }}:</label> <span>{{ product.country.name }}</span></div>
+    </div>
+</div>

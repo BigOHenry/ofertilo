@@ -1,0 +1,72 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form;
+
+use App\Domain\Product\Entity\Product;
+use App\Domain\Product\ValueObject\Type;
+use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Repository\CountryRepositoryInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+class ProductType extends AbstractType
+{
+    public function __construct(private TranslatorInterface $translator, private CountryRepositoryInterface $countryRepository)
+    {
+    }
+
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('name', TextType::class, [
+                'label' => 'field.name',
+            ])
+            ->add('translations', CollectionType::class, [
+                'entry_type' => TranslationFormType::class,
+                'mapped' => true,
+                'by_reference' => false,
+                'label' => false,
+                'entry_options' => [
+                    'label' => false,
+                ],
+            ])
+            ->add('type', ChoiceType::class, [
+                'label' => 'field.type',
+                'choices' => array_combine(
+                    array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
+                    Type::cases()
+                ),
+            ])
+            ->add('country', ChoiceType::class, [
+                'label' => 'field.country',
+                'choices' => $this->countryRepository->findAllAsChoices(),
+                'placeholder' => 'form.choose_country',
+            ])
+            ->add('enabled', CheckboxType::class, [
+                'label' => 'field.enabled',
+                'required' => false,
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'button.save',
+            ])
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Product::class,
+            'translation_domain' => 'messages',
+        ]);
+    }
+}

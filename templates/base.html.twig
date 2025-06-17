@@ -38,6 +38,9 @@
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home_index' %}active{% endif %}" aria-current="page" href="{{ path('app_home_index') }}">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {% if app.request.attributes.get('_route') starts with 'product' %}active{% endif %}" href="{{ path('product_index') }}" data-turbo="true">{{ 'title.products'|trans }}</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') starts with 'material' %}active{% endif %}" href="{{ path('material_index') }}" data-turbo="true">{{ 'title.materials'|trans }}</a>
                         </li>
                         <li class="nav-item">
