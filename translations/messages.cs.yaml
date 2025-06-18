@@ -31,6 +31,9 @@ field:
   2fa_code: "Zadejte ověřovací kód z aplikace"
   code: 'Kód'
   in_stock: 'Na skladě'
+  image: "Obrázek"
+  enabled: "Aktivní"
+  country: "Stát"
 
 button:
   save: "Uložit"
@@ -46,3 +49,6 @@ message:
 boolean:
   yes: "Ano"
   no: "Ne"
+
+form:
+  choose_country: "... vyberte stát ..."

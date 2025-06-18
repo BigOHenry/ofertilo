@@ -6,6 +6,7 @@
 parameters:
     app.supported_locales: ['cs', 'en']
     app.default_locale: 'cs'
+    secure_uploads_directory: '%kernel.project_dir%/var/uploads'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -54,3 +55,6 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
     App\Domain\Shared\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+    App\Infrastructure\Service\FileUploader:
+        arguments:
+            $secureUploadsDirectory: '%secure_uploads_directory%'

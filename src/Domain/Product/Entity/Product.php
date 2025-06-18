@@ -12,6 +12,7 @@ use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: DoctrineProductRepository::class)]
 #[ORM\Table(name: 'product')]
@@ -38,8 +39,16 @@ class Product implements TranslatableInterface
     #[ORM\Column(type: 'string', length: 100, nullable: false)]
     private string $name;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $imageFilename = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $imageOriginalName = null;
+
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
+
+    private ?UploadedFile $imageFile = null;
 
     /**
      * @var Collection<int, ProductColor>
@@ -189,5 +198,65 @@ class Product implements TranslatableInterface
         }
 
         return null;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+        return $this;
+    }
+
+    public function hasImage(): bool
+    {
+        return $this->imageFilename !== null;
+    }
+
+    public function removeImage(): self
+    {
+        $this->imageFilename = null;
+        $this->imageOriginalName = null;
+        return $this;
+    }
+
+    public function getEncodedFilename(): string
+    {
+        return base64_encode($this->imageFilename);
+    }
+
+    public function getImageOriginalName(): ?string
+    {
+        return $this->imageOriginalName;
+    }
+
+    public function setImageOriginalName(?string $imageOriginalName): self
+    {
+        $this->imageOriginalName = $imageOriginalName;
+        return $this;
+    }
+
+    public function getImageFile(): ?UploadedFile
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?UploadedFile $imageFile): self
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile) {
+            $this->setImageOriginalName($imageFile->getClientOriginalName());
+        }
+
+        return $this;
+    }
+
+    public function getEntityFolder(): string
+    {
+        return 'products';
     }
 }

@@ -8,8 +8,8 @@
 {% set modal_id = modal_id|default('universalModal') %}
 {% set frame_id = frame_id|default(modal_id ~ '_frame') %}
 
-<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-hidden="true" data-controller="modal" data-backdrop="static">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-hidden="true" data-bs-controller="modal" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-fullscreen-md-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" data-modal-target="title">...</h5>

@@ -8,15 +8,18 @@ use App\Domain\Product\Entity\Product;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Shared\Repository\CountryRepositoryInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductType extends AbstractType
@@ -47,10 +50,42 @@ class ProductType extends AbstractType
                     Type::cases()
                 ),
             ])
-            ->add('country', ChoiceType::class, [
+            ->add('country', EntityType::class, [
                 'label' => 'field.country',
-                'choices' => $this->countryRepository->findAllAsChoices(),
+                'class' => Country::class,
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                              ->where('c.enabled = :enabled')
+                              ->setParameter('enabled', true)
+                              ->orderBy('c.name', 'ASC');
+                },
                 'placeholder' => 'form.choose_country',
+                'required' => true,
+            ])
+//            ->add('country', ChoiceType::class, [
+//                'label' => 'field.country',
+//                'choices' => $this->countryRepository->findAllAsChoices(),
+//                'placeholder' => 'form.choose_country',
+//            ])
+            ->add('imageFile', FileType::class, [
+                'label' => 'field.image',
+                'mapped' => false, // Není mapováno přímo na entitu
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/webp',
+                            'image/svg+xml'
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF, WebP, SVG)',
+                    ])
+                ],
+                'help' => 'Maximum file size: 2MB. Allowed formats: JPEG, PNG, GIF, WebP, SVG',
             ])
             ->add('enabled', CheckboxType::class, [
                 'label' => 'field.enabled',

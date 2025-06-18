@@ -10,6 +10,7 @@ use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ProductType;
 use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
+use App\Infrastructure\Service\FileUploader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -41,7 +42,7 @@ final class ProductController extends AbstractController
 
     #[Route('/product/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, ProductRepositoryInterface $productRepository): Response
+    public function new(Request $request, ProductRepositoryInterface $productRepository, FileUploader $fileUploader): Response
     {
         $product = new Product();
         TranslationInitializer::prepare($product, $this->locales);
@@ -54,7 +55,16 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageFile')->getData();
+
+            if ($imageFile) {
+                $uploadResult = $fileUploader->upload($imageFile, $product->getEntityFolder());
+                $product->setImageFilename($uploadResult['filename']);
+                $product->setImageOriginalName($uploadResult['originalName']);
+            }
+
             $productRepository->save($product);
+
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -70,6 +80,7 @@ final class ProductController extends AbstractController
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'product-form',
+                'product' => $product,
             ],
         ]);
     }
@@ -106,9 +117,11 @@ final class ProductController extends AbstractController
             $translationLoader->loadTranslations($product);
             $data[] = [
                 'id' => $product->getId(),
-                'code' => $product->getCode(),
+                'name' => $product->getName(),
                 'description' => $product->getDescription($request->getLocale()),
-                'in_stock' => $translator->trans($product->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'country' => $product->getCountry()->getName(),
+                'type' => $product->getType()->value,
+                'enabled' => $translator->trans($product->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
             ];
         }
 
@@ -157,6 +170,7 @@ final class ProductController extends AbstractController
             'form_template' => 'components/product_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
+                'product' => $product,
                 'form_id' => 'product-form',
             ],
         ]);
