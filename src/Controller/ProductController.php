@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Entity\ProductColor;
+use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
+use App\Form\ProductColorType;
 use App\Form\ProductType;
 use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use App\Infrastructure\Service\FileUploader;
@@ -187,10 +190,110 @@ final class ProductController extends AbstractController
 
     #[Route('/product/{id}', name: 'product_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function deletePrice(Product $product, ProductRepositoryInterface $productRepository): JsonResponse
+    public function deleteProduct(Product $product, ProductRepositoryInterface $productRepository): JsonResponse
     {
         $productRepository->remove($product);
 
         return new JsonResponse(['success' => true]);
     }
+
+
+
+    #[Route('/product/{id}/color/new', name: 'product_color_new', methods: ['GET', 'POST'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function newColor(Request $request, Product $product, ProductColorRepositoryInterface $productColorRepository): Response
+    {
+        $productColor = new ProductColor($product);
+        $form = $this->createForm(ProductColorType::class, $productColor, [
+            'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
+            'method' => 'POST',
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $productColorRepository->save($productColor);
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('components/stream_modal_cleanup.html.twig');
+            }
+
+            return $this->redirectToRoute('product_detail', ['id' => $product->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'productColorModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'product-color-form',
+            ],
+        ]);
+    }
+
+    #[Route('/product/color/{id}/edit', name: 'product_color_edit')]
+    #[IsGranted(Role::WRITER->value)]
+    public function editColor(
+        Request $request,
+        ProductColor $productColor,
+        ProductColorRepositoryInterface $productColorRepository,
+    ): Response {
+        $form = $this->createForm(ProductColorType::class, $productColor, [
+            'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $productColorRepository->save($productColor);
+
+            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->render('components/stream_modal_cleanup.html.twig');
+            }
+
+            return $this->redirectToRoute('product_detail', ['id' => $productColor->getProduct()->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('components/form_frame.html.twig', [
+            'frame_id' => 'productColorModal_frame',
+            'form_template' => 'components/_form.html.twig',
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'product-color-form',
+            ],
+        ]);
+    }
+
+
+    #[Route('/api/product_colors/{id}', name: 'api_product_colors')]
+    #[IsGranted(Role::READER->value)]
+    public function productColorsApi(Product $product, Request $request): JsonResponse
+    {
+        $data = [];
+        foreach ($product->getProductColors() as $productColor) {
+            $data[] = [
+                'id' => $productColor->getId(),
+                'color' => $productColor->getColor()->getCode(),
+                'description' => $productColor->getDescription(),
+            ];
+        }
+
+        return $this->json([
+            'data' => $data,
+        ]);
+    }
+
+
+    #[Route('/product/color/{id}', name: 'product_color_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function delete(ProductColor $productColor, ProductColorRepositoryInterface $productColorRepository): JsonResponse
+    {
+        $productColorRepository->remove($productColor);
+
+        return new JsonResponse(['success' => true]);
+    }
+
 }

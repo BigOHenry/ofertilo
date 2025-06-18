@@ -31,11 +31,9 @@ class ProductColor
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    public function __construct(Product $product, Color $color, ?string $description = null)
+    public function __construct(Product $product)
     {
         $this->product = $product;
-        $this->color = $color;
-        $this->description = $description;
     }
 
     public function setId(?int $id): void
@@ -68,5 +66,10 @@ class ProductColor
         $this->description = $description;
 
         return $this;
+    }
+
+    public function setColor(Color $color): void
+    {
+        $this->color = $color;
     }
 }

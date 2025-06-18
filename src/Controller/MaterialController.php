@@ -164,15 +164,6 @@ final class MaterialController extends AbstractController
         ]);
     }
 
-    #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
-    #[IsGranted(Role::WRITER->value)]
-    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
-    {
-        $materialPriceRepository->remove($materialPrice);
-
-        return new JsonResponse(['success' => true]);
-    }
-
     #[Route('/material/{id}', name: 'material_detail', methods: ['GET'])]
     #[IsGranted(Role::READER->value)]
     public function detail(Material $material): Response
@@ -180,6 +171,15 @@ final class MaterialController extends AbstractController
         return $this->render('material/detail.html.twig', [
             'material' => $material,
         ]);
+    }
+
+    #[Route('/material/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function deleteMaterial(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    {
+        $materialRepository->remove($material);
+
+        return new JsonResponse(['success' => true]);
     }
 
     #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
@@ -213,15 +213,6 @@ final class MaterialController extends AbstractController
                 'form_id' => 'material-price-form',
             ],
         ]);
-    }
-
-    #[Route('/material/{id}', name: 'material_delete', methods: ['DELETE'])]
-    #[IsGranted(Role::WRITER->value)]
-    public function deletePrice(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
-    {
-        $materialRepository->remove($material);
-
-        return new JsonResponse(['success' => true]);
     }
 
     #[Route('/material/price/{id}/edit', name: 'material_price_edit')]
@@ -275,5 +266,14 @@ final class MaterialController extends AbstractController
         return $this->json([
             'data' => $data,
         ]);
+    }
+
+    #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
+    {
+        $materialPriceRepository->remove($materialPrice);
+
+        return new JsonResponse(['success' => true]);
     }
 }

@@ -7,6 +7,8 @@ title:
   new_material: 'Nový materiál'
   material_price: 'Cena materiálu'
   new_material_price: 'Nová cena materiálu'
+  product_color: 'Barva produktu'
+  new_product_color: 'Nová barva produktu'
   localization: 'Lokalizace'
   2fa_setup: 'Nastavení dvoufaktorového ověření'
   2fa: 'Dvoufaktorové ověření'
@@ -34,6 +36,7 @@ field:
   image: "Obrázek"
   enabled: "Aktivní"
   country: "Stát"
+  color: "Barva"
 
 button:
   save: "Uložit"
@@ -52,3 +55,4 @@ boolean:
 
 form:
   choose_country: "... vyberte stát ..."
+  choose_color: "... vyberte barvu ..."

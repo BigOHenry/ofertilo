@@ -6,9 +6,6 @@
                 <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ product.description(app.request.locale) }}</span></div>
                 <div class="col"><label class="fw-semibold">{{ 'field.country'|trans }}:</label> <span>{{ product.country.name }}</span></div>
             </div>
-            <div class="row">
-{#                TODO add datagrid with colors #}
-            </div>
         </div>
         {% if product.hasImage %}
             <div class="col-auto">

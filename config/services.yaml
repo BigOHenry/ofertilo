@@ -51,6 +51,8 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository
+    App\Domain\Product\Repository\ProductColorRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductColorRepository
     App\Domain\Translation\Repository\TranslationLoaderInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
     App\Domain\Shared\Repository\CountryRepositoryInterface:
