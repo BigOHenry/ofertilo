@@ -140,6 +140,7 @@ final class ProductController extends AbstractController
         Request $request,
         Product $product,
         ProductRepositoryInterface $productRepository,
+        FileUploader $fileUploader,
     ): Response {
         TranslationInitializer::prepare($product, $this->locales);
 
@@ -148,8 +149,21 @@ final class ProductController extends AbstractController
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
+        $oldImageFilename = $product->getImageFilename();
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageFile')->getData();
+
+            if ($imageFile) {
+                if ($oldImageFilename) {
+                    $fileUploader->remove($product->getEntityFolder(), $oldImageFilename);
+                }
+
+                $uploadResult = $fileUploader->upload($imageFile, $product->getEntityFolder());
+                $product->setImageFilename($uploadResult['filename']);
+                $product->setImageOriginalName($uploadResult['originalName']);
+            }
+
             $productRepository->save($product);
             $frameId = $request->request->get('frame_id');
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -276,6 +290,7 @@ final class ProductController extends AbstractController
                 'id' => $productColor->getId(),
                 'color' => $productColor->getColor()->getCode(),
                 'description' => $productColor->getDescription(),
+                'in_stock' => $productColor->getColor()->isInStock(),
             ];
         }
 

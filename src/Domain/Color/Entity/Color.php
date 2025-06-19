@@ -24,7 +24,7 @@ class Color implements TranslatableInterface
     private ?int $code = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
-    private bool $inStock = false;
+    private bool $in_stock = false;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
@@ -79,11 +79,11 @@ class Color implements TranslatableInterface
 
     public function isInStock(): bool
     {
-        return $this->inStock;
+        return $this->in_stock;
     }
 
     public function setInStock(bool $inStock): void
     {
-        $this->inStock = $inStock;
+        $this->in_stock = $inStock;
     }
 }

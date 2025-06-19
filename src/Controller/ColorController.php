@@ -179,4 +179,31 @@ final class ColorController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+
+    #[Route('/api/colors/out-of-stock', name: 'api_colors_out_of_stock', methods: ['GET'])]
+    public function getOutOfStockColors(
+        Request $request,
+        ColorRepositoryInterface $colorRepository,
+        TranslationLoaderInterface $translationLoader,
+    ): JsonResponse {
+        $colors = $colorRepository->findOutOfStock();
+
+        $data = array_map(
+            static function (Color $color) use ($request, $translationLoader) {
+                $translationLoader->loadTranslations($color);
+
+                return [
+                    'id' => $color->getId(),
+                    'code' => $color->getCode(),
+                    'description' => $color->getDescription($request->getLocale()),
+                ];
+            },
+            $colors
+        );
+
+        return $this->json([
+            'data' => $data,
+            'total' => \count($data),
+        ]);
+    }
 }

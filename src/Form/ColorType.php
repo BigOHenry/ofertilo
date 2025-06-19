@@ -32,6 +32,7 @@ class ColorType extends AbstractType
             ])
             ->add('in_stock', CheckboxType::class, [
                 'label' => 'field.in_stock',
+                'required' => false,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

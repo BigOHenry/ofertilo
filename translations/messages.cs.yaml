@@ -17,6 +17,8 @@ title:
   colors: 'Barvy'
   product: 'Produkt'
   products: 'Produkty'
+  colors_out_of_stock: 'Barvy k zakoupení'
+  home: 'Domů'
 
 field:
   email: "E-mail"

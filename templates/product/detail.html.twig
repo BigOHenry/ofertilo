@@ -3,7 +3,7 @@
 {% block title %}{{ 'title.product'|trans }}{% endblock %}
 
 {% block body %}
-    <div id="product_card" class="card shadow-sm">
+    <div id="product-card" class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between">
             {% include 'product/components/_product_header.html.twig' with { product: product } %}
             <a class="btn btn-sm btn-primary" data-modal-id="productDetailModal" data-modal-src="{{ path('product_edit', {'id': product.id}) }}" data-modal-title="{{ product.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
@@ -52,6 +52,7 @@
                     columns: [
                         { title: "{{ 'field.color'|trans }}", field: "color", sorter: "string" },
                         { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        { title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },
                         {
                             title: "Akce",
                             formatter: (cell) => {

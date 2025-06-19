@@ -16,4 +16,11 @@ interface ColorRepositoryInterface
     public function save(Color $color): void;
 
     public function remove(Color $color): void;
+
+    /**
+     * @return Color[]
+     */
+    public function findOutOfStock(): array;
+
+    public function countOutOfStock(): int;
 }

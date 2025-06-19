@@ -16,8 +16,6 @@ final class HomeController extends AbstractController
     #[IsGranted(Role::READER->value)]
     public function index(): Response
     {
-        return $this->render('hello/index.html.twig', [
-            'message' => 'Hello World!',
-        ]);
+        return $this->render('home/index.html.twig');
     }
 }
