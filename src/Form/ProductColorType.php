@@ -30,12 +30,27 @@ class ProductColorType extends AbstractType
                 'label' => 'field.color',
                 'class' => Color::class,
                 'choice_label' => 'code',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('c')
+                'query_builder' => function (EntityRepository $er) use ($product, $productColor) {
+                    $qb = $er->createQueryBuilder('c')
                              ->where('c.enabled = :enabled')
                              ->setParameter('enabled', true)
                              ->orderBy('c.code', 'ASC')
                     ;
+
+                    if ($product && $product->getId() && (!$productColor || !$productColor->getId())) {
+                        $assignedColorIds = [];
+                        foreach ($product->getProductColors() as $productColor) {
+                            $assignedColorIds[] = $productColor->getColor()->getId();
+                        }
+
+                        if (!empty($assignedColorIds)) {
+                            $qb->andWhere('c.id NOT IN (:assignedColors)')
+                               ->setParameter('assignedColors', $assignedColorIds)
+                            ;
+                        }
+                    }
+
+                    return $qb;
                 },
                 'placeholder' => 'form.choose_color',
                 'required' => true,
