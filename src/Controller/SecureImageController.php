@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Domain\User\ValueObject\Role;
@@ -17,9 +19,9 @@ class SecureImageController extends AbstractController
     public function showImage(
         string $entityFolder,
         string $filename,
-        FileUploader $fileUploader
+        FileUploader $fileUploader,
     ): Response {
-        $filename = base64_decode($filename);
+        $filename = base64_decode($filename, true);
         if ($filename === false) {
             throw $this->createNotFoundException('Image not found');
         }

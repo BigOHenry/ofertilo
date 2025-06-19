@@ -70,6 +70,10 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
 
     /**
      * @throws InvalidArgumentException
+     *
+     * @return object[]
+     *
+     * @phpstan-return list<object>
      */
     public function findAllEnabled(): array
     {
@@ -85,6 +89,8 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
 
     /**
      * @throws InvalidArgumentException
+     *
+     * @return array<string, int>
      */
     public function findAllAsChoices(): array
     {
@@ -94,8 +100,9 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
                 $item->expiresAfter(self::CACHE_TTL);
                 $countries = $this->findAllEnabled();
                 $choices = [];
+                /** @var Country $country */
                 foreach ($countries as $country) {
-                    $choices[$country->getName()] = $country->getId();
+                    $choices[$country->getName()] = (int) $country->getId();
                 }
 
                 return $choices;
@@ -105,6 +112,8 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
 
     /**
      * @throws InvalidArgumentException
+     *
+     * @return array<string, string>
      */
     public function findAllAsApiChoices(): array
     {
@@ -114,6 +123,7 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
                 $item->expiresAfter(self::CACHE_TTL);
                 $countries = $this->findAllEnabled();
                 $choices = [];
+                /** @var Country $country */
                 foreach ($countries as $country) {
                     $choices[$country->getAlpha2()] = $country->getName();
                 }

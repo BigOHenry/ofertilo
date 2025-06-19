@@ -120,10 +120,9 @@ final class ProductController extends AbstractController
             $translationLoader->loadTranslations($product);
             $data[] = [
                 'id' => $product->getId(),
-                'name' => $product->getName(),
                 'description' => $product->getDescription($request->getLocale()),
-                'country' => $product->getCountry()->getName(),
-                'type' => $product->getType()->value,
+                'country' => '(' . $product->getCountry()->getAlpha2() . ') ' . $product->getCountry()->getName(),
+                'type' => $translator->trans('product.type.' . $product->getType()->value, domain: 'enum'),
                 'enabled' => $translator->trans($product->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
             ];
         }
@@ -197,8 +196,6 @@ final class ProductController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-
-
     #[Route('/product/{id}/color/new', name: 'product_color_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
     public function newColor(Request $request, Product $product, ProductColorRepositoryInterface $productColorRepository): Response
@@ -206,6 +203,7 @@ final class ProductController extends AbstractController
         $productColor = new ProductColor($product);
         $form = $this->createForm(ProductColorType::class, $productColor, [
             'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
+            'product' => $product,
             'method' => 'POST',
         ]);
 
@@ -241,6 +239,7 @@ final class ProductController extends AbstractController
     ): Response {
         $form = $this->createForm(ProductColorType::class, $productColor, [
             'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
+            'product' => $productColor->getProduct(),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
@@ -267,7 +266,6 @@ final class ProductController extends AbstractController
         ]);
     }
 
-
     #[Route('/api/product_colors/{id}', name: 'api_product_colors')]
     #[IsGranted(Role::READER->value)]
     public function productColorsApi(Product $product, Request $request): JsonResponse
@@ -286,7 +284,6 @@ final class ProductController extends AbstractController
         ]);
     }
 
-
     #[Route('/product/color/{id}', name: 'product_color_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
     public function delete(ProductColor $productColor, ProductColorRepositoryInterface $productColorRepository): JsonResponse
@@ -295,5 +292,4 @@ final class ProductController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
-
 }

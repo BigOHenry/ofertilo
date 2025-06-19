@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -18,6 +19,12 @@ class ProductColorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var Product|null $product */
+        $product = $options['product'];
+
+        /** @var ProductColor|null $productColor */
+        $productColor = $options['data'];
+
         $builder
             ->add('color', EntityType::class, [
                 'label' => 'field.color',
@@ -25,9 +32,10 @@ class ProductColorType extends AbstractType
                 'choice_label' => 'code',
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
-                              ->where('c.enabled = :enabled')
-                              ->setParameter('enabled', true)
-                              ->orderBy('c.code', 'ASC');
+                             ->where('c.enabled = :enabled')
+                             ->setParameter('enabled', true)
+                             ->orderBy('c.code', 'ASC')
+                    ;
                 },
                 'placeholder' => 'form.choose_color',
                 'required' => true,
@@ -37,14 +45,18 @@ class ProductColorType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',
-            ]);
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => ProductColor::class,
+            'product' => null,
             'translation_domain' => 'messages',
         ]);
+
+        $resolver->setAllowedTypes('product', ['null', Product::class]);
     }
 }

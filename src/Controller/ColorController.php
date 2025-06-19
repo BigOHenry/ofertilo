@@ -10,7 +10,6 @@ use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ColorType;
-use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

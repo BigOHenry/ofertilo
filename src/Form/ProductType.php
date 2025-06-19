@@ -7,7 +7,6 @@ namespace App\Form;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
-use App\Domain\Shared\Repository\CountryRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -16,7 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -24,16 +22,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductType extends AbstractType
 {
-    public function __construct(private TranslatorInterface $translator, private CountryRepositoryInterface $countryRepository)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'field.name',
-            ])
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,
                 'mapped' => true,
@@ -58,16 +53,12 @@ class ProductType extends AbstractType
                     return $er->createQueryBuilder('c')
                               ->where('c.enabled = :enabled')
                               ->setParameter('enabled', true)
-                              ->orderBy('c.name', 'ASC');
+                              ->orderBy('c.name', 'ASC')
+                    ;
                 },
                 'placeholder' => 'form.choose_country',
                 'required' => true,
             ])
-//            ->add('country', ChoiceType::class, [
-//                'label' => 'field.country',
-//                'choices' => $this->countryRepository->findAllAsChoices(),
-//                'placeholder' => 'form.choose_country',
-//            ])
             ->add('imageFile', FileType::class, [
                 'label' => 'field.image',
                 'mapped' => false, // Není mapováno přímo na entitu
@@ -80,10 +71,10 @@ class ProductType extends AbstractType
                             'image/png',
                             'image/gif',
                             'image/webp',
-                            'image/svg+xml'
+                            'image/svg+xml',
                         ],
                         'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF, WebP, SVG)',
-                    ])
+                    ]),
                 ],
                 'help' => 'Maximum file size: 2MB. Allowed formats: JPEG, PNG, GIF, WebP, SVG',
             ])

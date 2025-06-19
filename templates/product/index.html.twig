@@ -33,7 +33,7 @@
             const el = document.querySelector("#products-table");
 
             if (el) {
-                window.productTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
                     locale: window.APP_LOCALE,
                     langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_products') }}",
@@ -54,10 +54,9 @@
                         return response.data;
                     },
                     columns: [
-                        { title: "{{ 'field.name'|trans }}", field: "name", sorter: "integer" },
-                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        { title: "{{ 'field.country'|trans }}", field: "country", sorter: "string" },
                         { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
+                        { title: "{{ 'field.country'|trans }}", field: "country", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
                         { title: "{{ 'field.enabled'|trans }}", field: "enabled", sorter: "string" },
                         {
                             title: "Akce",
@@ -105,7 +104,7 @@
                 });
             }
 
-            window.productTable.on("rowClick", function(e, row) {
+            window.tabulatorTable.on("rowClick", function(e, row) {
                 if (e.target.closest('.edit-product') === null && e.target.closest('.delete-product') === null) {
                     window.location.href = `/product/${row.getData().id}`;
                 }

@@ -21,6 +21,7 @@ class TranslationFormType extends AbstractType
             ->add('locale', HiddenType::class)
             ->add('value', TextType::class, [
                 'label' => false,
+                'required' => false,
             ])
         ;
     }

@@ -33,7 +33,7 @@
             const el = document.querySelector("#materials-table");
 
             if (el) {
-                window.materialTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
                     locale: window.APP_LOCALE,
                     langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_materials') }}",
@@ -103,7 +103,7 @@
                 });
             }
 
-            window.materialTable.on("rowClick", function(e, row) {
+            window.tabulatorTable.on("rowClick", function(e, row) {
                 if (e.target.closest('.edit-material') === null && e.target.closest('.delete-material') === null) {
                     window.location.href = `/material/${row.getData().id}`;
                 }

@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -82,6 +83,7 @@ final class MaterialController extends AbstractController
         Request $request,
         MaterialRepositoryInterface $materialRepository,
         DoctrineTranslationLoader $translationLoader,
+        TranslatorInterface $translator,
     ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
@@ -110,7 +112,7 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription($request->getLocale()),
-                'type' => $material->getType()->value,
+                'type' => $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
             ];
         }
 

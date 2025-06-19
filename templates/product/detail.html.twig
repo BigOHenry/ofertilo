@@ -40,7 +40,7 @@
             const el = document.querySelector("#product-colors-table");
 
             if (el) {
-                window.productTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
                     locale: window.APP_LOCALE,
                     langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_product_colors', {'id': product.id}) }}",
@@ -57,7 +57,7 @@
                             formatter: (cell) => {
                                 const row = cell.getRow().getData()
                                 const id = row.id;
-                                const description = row.thickness;
+                                const description = row.color;
                                 return `<button class="btn btn-sm btn-primary me-1 edit-product-color" data-modal-src="/product/color/${id}/edit" data-modal-id="productColorModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-product-color" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                             },

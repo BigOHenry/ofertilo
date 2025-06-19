@@ -14,7 +14,13 @@ interface CountryRepositoryInterface
 
     public function findByAlpha3(string $alpha3): ?Country;
 
+    /**
+     * @return array<string, int>
+     */
     public function findAllAsChoices(): array;
 
+    /**
+     * @return array<string, string>
+     */
     public function findAllAsApiChoices(): array;
 }

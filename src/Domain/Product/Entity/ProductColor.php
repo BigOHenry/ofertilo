@@ -6,12 +6,17 @@ namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_color')]
 #[ORM\UniqueConstraint(
     name: 'unique_product_color',
     columns: ['product_id', 'color_id']
+)]
+#[UniqueEntity(
+    fields: ['product', 'color'],
+    message: 'unique',
 )]
 class ProductColor
 {
@@ -20,7 +25,7 @@ class ProductColor
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productColor')]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productColors')]
     #[ORM\JoinColumn(nullable: false)]
     private Product $product;
 

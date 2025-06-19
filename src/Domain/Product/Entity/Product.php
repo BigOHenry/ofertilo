@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 #[ORM\Table(name: 'product')]
 #[ORM\UniqueConstraint(
     name: 'unique_product_type_country',
-    columns: ['type', 'country_id', 'name']
+    columns: ['type', 'country_id']
 )]
 class Product implements TranslatableInterface
 {
@@ -35,9 +35,6 @@ class Product implements TranslatableInterface
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: false)]
     private Country $country;
-
-    #[ORM\Column(type: 'string', length: 100, nullable: false)]
-    private string $name;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageFilename = null;
@@ -91,16 +88,6 @@ class Product implements TranslatableInterface
         $this->country = $country;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
     public function isEnabled(): bool
     {
         return $this->enabled;
@@ -135,7 +122,7 @@ class Product implements TranslatableInterface
             throw new \InvalidArgumentException('Color is already assigned to this Product');
         }
 
-        $productColor = new ProductColor($this, $color, $description);
+        $productColor = new ProductColor($this);
         $this->productColors->add($productColor);
 
         return $this;
@@ -189,17 +176,6 @@ class Product implements TranslatableInterface
         $this->productColors = $productColors;
     }
 
-    private function findProductColorByColor(Color $color): ?ProductColor
-    {
-        foreach ($this->productColors as $productColor) {
-            if ($productColor->getColor()->getId() === $color->getId()) {
-                return $productColor;
-            }
-        }
-
-        return null;
-    }
-
     public function getImageFilename(): ?string
     {
         return $this->imageFilename;
@@ -208,6 +184,7 @@ class Product implements TranslatableInterface
     public function setImageFilename(?string $imageFilename): self
     {
         $this->imageFilename = $imageFilename;
+
         return $this;
     }
 
@@ -220,6 +197,7 @@ class Product implements TranslatableInterface
     {
         $this->imageFilename = null;
         $this->imageOriginalName = null;
+
         return $this;
     }
 
@@ -236,6 +214,7 @@ class Product implements TranslatableInterface
     public function setImageOriginalName(?string $imageOriginalName): self
     {
         $this->imageOriginalName = $imageOriginalName;
+
         return $this;
     }
 
@@ -258,5 +237,16 @@ class Product implements TranslatableInterface
     public function getEntityFolder(): string
     {
         return 'products';
+    }
+
+    private function findProductColorByColor(Color $color): ?ProductColor
+    {
+        foreach ($this->productColors as $productColor) {
+            if ($productColor->getColor()->getId() === $color->getId()) {
+                return $productColor;
+            }
+        }
+
+        return null;
     }
 }

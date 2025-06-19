@@ -33,7 +33,7 @@
             const el = document.querySelector("#colors-table");
 
             if (el) {
-                window.colorTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
                     locale: window.APP_LOCALE,
                     langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_colors') }}",
@@ -103,7 +103,7 @@
                 });
             }
 
-            window.colorTable.on("rowClick", function(e, row) {
+            window.tabulatorTable.on("rowClick", function(e, row) {
                 if (e.target.closest('.edit-color') === null && e.target.closest('.delete-color') === null) {
                     window.location.href = `/color/${row.getData().id}`;
                 }
