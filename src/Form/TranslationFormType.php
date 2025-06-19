@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Domain\Translation\TranslationEntity;
+use App\Domain\Translation\Entity\TranslationEntity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,6 +21,7 @@ class TranslationFormType extends AbstractType
             ->add('locale', HiddenType::class)
             ->add('value', TextType::class, [
                 'label' => false,
+                'required' => false,
             ])
         ;
     }

@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.product'|trans }}{% endblock %}
+
+{% block body %}
+    <div id="product-card" class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            {% include 'product/components/_product_header.html.twig' with { product: product } %}
+            <a class="btn btn-sm btn-primary" data-modal-id="productDetailModal" data-modal-src="{{ path('product_edit', {'id': product.id}) }}" data-modal-title="{{ product.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+        </div>
+        <div class="card-body">
+            {% include 'product/components/_product_detail.html.twig' with { product: product } %}
+
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end pb-2">
+                    <button class="btn btn-primary" data-modal-id="productColorModal" data-modal-src="{{ path('product_color_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="product-colors-table"></div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productColorModal',
+        title: 'title.product_color'|trans
+    } %}
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productDetailModal',
+        title: 'title.product'|trans
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("turbo:load", () => {
+            const el = document.querySelector("#product-colors-table");
+
+            if (el) {
+                window.tabulatorTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
+                    ajaxURL: "{{ path('api_product_colors', {'id': product.id}) }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.color'|trans }}", field: "color", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        { title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },
+                        {
+                            title: "Akce",
+                            formatter: (cell) => {
+                                const row = cell.getRow().getData()
+                                const id = row.id;
+                                const description = row.color;
+                                return `<button class="btn btn-sm btn-primary me-1 edit-product-color" data-modal-src="/product/color/${id}/edit" data-modal-id="productColorModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-product-color" data-id="${id}"><i class="fa fa-trash"></i></button>`;
+                            },
+                            width: 100,
+                            hozAlign: "center",
+                            cellClick: function (e, cell) {
+                                const target = e.target;
+                                const row = cell.getRow();
+                                const id = row.getData().id;
+
+                                const deleteBtn = target.closest('.delete-product-color');
+
+                                if (deleteBtn) {
+                                    if (confirm('Opravdu chcete smazat tuto barvu?')) {
+                                        fetch(`/product/color/${id}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Reload datagrid
+                                                    row.delete();
+                                                } else {
+                                                    console.log(response);
+                                                    alert("Chyba při mazání.");
+                                                }
+                                            });
+                                    }
+                                }
+
+                                return false;
+                            }
+                        }
+                    ]
+                });
+            }
+        });
+
+    </script>
+{% endblock %}

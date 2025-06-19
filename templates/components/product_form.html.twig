@@ -1,0 +1,57 @@
+{{ form_start(form, {
+  attr: {
+    id: form_id|default(null),
+    class: 'needs-validation',
+  }
+}) }}
+
+  {{ form_errors(form) }}
+
+<div class="row">
+  <div class="col">
+    {{ form_row(form.type) }}
+    {{ form_row(form.country) }}
+    {{ form_row(form.imageFile) }}
+  </div>
+  {% if product.hasImage %}
+    <div class="col-auto">
+      <div class="current-image mt-3">
+        <img src="{{ path('secure_image', {
+          'entityFolder': product.entityFolder,
+          'filename': product.encodedFilename
+        }) }}" alt="{{ product.imageOriginalName }}" class="img-thumbnail" style="max-width: 200px;">
+        <p class="text-muted">{{ product.imageOriginalName }}</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+
+  {{ form_row(form.enabled) }}
+
+  <h5 class="mt-4 mb-3">{{ 'title.localization'|trans }}</h5>
+  <div class="row">
+    {% for translation in form.translations %}
+      {{ form_row(translation.id) }}
+      {{ form_row(translation.field) }}
+      {{ form_row(translation.locale) }}
+
+      <div class="col-md-6 col-12 mb-3">
+        {% set field = translation.vars.data.getField() %}
+        {% set locale = translation.vars.data.getLocale() %}
+        <label for="{{ translation.value.vars.id }}">
+          {{ ('field.' ~ field)|trans({}, 'messages') }} ({{ locale|upper }})
+        </label>
+        {{ form_widget(translation.value) }}
+        {{ form_errors(translation.value) }}
+      </div>
+    {% endfor %}
+    {% do form.translations.setRendered() %}
+  </div>
+
+  {{ form_row(form.save) }}
+  <input type="hidden" name="frame_id" value="{{ frame_id }}">
+
+{{ form_end(form) }}
+
+

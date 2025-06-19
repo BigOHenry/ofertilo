@@ -6,6 +6,7 @@
 parameters:
     app.supported_locales: ['cs', 'en']
     app.default_locale: 'cs'
+    secure_uploads_directory: '%kernel.project_dir%/var/uploads'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -37,12 +38,25 @@ services:
         arguments:
             $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
-    App\Domain\User\UserRepositoryInterface:
+    App\Domain\User\Repository\UserRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
-    App\Domain\Material\MaterialRepositoryInterface:
+    App\Domain\Material\Repository\MaterialRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
-    App\Domain\Material\MaterialPriceRepositoryInterface:
+    App\Domain\Material\Repository\MaterialPriceRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialPriceRepository
     App\EventListener\TwoFactorSetupListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+    App\Domain\Color\Repository\ColorRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository
+    App\Domain\Product\Repository\ProductRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository
+    App\Domain\Product\Repository\ProductColorRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductColorRepository
+    App\Domain\Translation\Repository\TranslationLoaderInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
+    App\Domain\Shared\Repository\CountryRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+    App\Infrastructure\Service\FileUploader:
+        arguments:
+            $secureUploadsDirectory: '%secure_uploads_directory%'

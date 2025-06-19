@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col">
+        <div id="colors-out-of-stock-card" class="card shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between">
+                <h2>{{ 'title.colors_out_of_stock'|trans }}</h2>
+            </div>
+            <div class="card-body">
+                <div id="colors-out-of-stock-table"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("turbo:load", () => {
+            const el = document.querySelector("#colors-out-of-stock-table");
+
+            if (el) {
+                window.tabulatorTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
+                    ajaxURL: "{{ path('api_colors_out_of_stock') }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.code'|trans }}", field: "code", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        {#{ title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },#}
+                    ]
+                });
+            }
+        });
+
+    </script>
+{% endblock %}

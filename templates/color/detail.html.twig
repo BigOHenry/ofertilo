@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.color'|trans }}{% endblock %}
+
+{% block body %}
+    <div id="color_card" class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            {% include 'color/components/_color_header.html.twig' with { color: color } %}
+            <a class="btn btn-sm btn-primary" data-modal-id="colorDetailModal" data-modal-src="{{ path('color_edit', {'id': color.id}) }}" data-modal-title="{{ color.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+        </div>
+        <div class="card-body">
+            {% include 'color/components/_color_detail.html.twig' with { color: color } %}
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'colorDetailModal',
+        title: 'title.color'|trans
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

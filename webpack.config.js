@@ -1,3 +1,4 @@
+const path = require('path');
 const Encore = require('@symfony/webpack-encore');
 
 Encore
@@ -14,6 +15,6 @@ Encore
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
-;
+    .addAliases({'tabulator-tables': path.resolve(__dirname, 'node_modules/tabulator-tables')});
 
 module.exports = Encore.getWebpackConfig();

@@ -5,7 +5,7 @@
 {% block body %}
     <div class="card shadow-sm">
         <div class="card-header bg-light">
-            <h5 class="mb-0">{{ 'title.materials'|trans }}</h5>
+            <h1 class="mb-0">{{ 'title.materials'|trans }}</h1>
         </div>
         <div class="card-body">
             <div class="row">
@@ -33,7 +33,9 @@
             const el = document.querySelector("#materials-table");
 
             if (el) {
-                window.materialTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_materials') }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",
@@ -58,7 +60,7 @@
                         {
                             title: "Akce",
                             formatter: (cell) => {
-                                const row = cell.getRow().getData()
+                                const row = cell.getRow().getData();
                                 const id = row.id;
                                 const description = row.description;
                                 return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
@@ -101,7 +103,7 @@
                 });
             }
 
-            window.materialTable.on("rowClick", function(e, row) {
+            window.tabulatorTable.on("rowClick", function(e, row) {
                 if (e.target.closest('.edit-material') === null && e.target.closest('.delete-material') === null) {
                     window.location.href = `/material/${row.getData().id}`;
                 }

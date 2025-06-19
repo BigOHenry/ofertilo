@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Domain\Material\Material;
-use App\Domain\Material\MaterialPrice;
-use App\Domain\Material\MaterialPriceRepositoryInterface;
-use App\Domain\Material\MaterialRepositoryInterface;
-use App\Domain\User\Role;
+use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Entity\MaterialPrice;
+use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
+use App\Domain\Material\Repository\MaterialRepositoryInterface;
+use App\Domain\Translation\Service\TranslationInitializer;
+use App\Domain\User\ValueObject\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
-use App\Infrastructure\Translation\TranslationInitializer;
+use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -77,12 +79,17 @@ final class MaterialController extends AbstractController
 
     #[Route('/api/materials', name: 'api_materials')]
     #[IsGranted(Role::READER->value)]
-    public function materialsApi(Request $request, MaterialRepositoryInterface $materialRepository): JsonResponse
-    {
+    public function materialsApi(
+        Request $request,
+        MaterialRepositoryInterface $materialRepository,
+        DoctrineTranslationLoader $translationLoader,
+        TranslatorInterface $translator,
+    ): JsonResponse {
         $page = max((int) $request->query->get('page', 1), 1);
         $size = min((int) $request->query->get('size', 10), 100);
         $offset = ($page - 1) * $size;
 
+        // TODO rework this to get translated Material
         $qb = $materialRepository->createQueryBuilder('m')
                    ->setFirstResult($offset)
                    ->setMaxResults($size)
@@ -98,12 +105,14 @@ final class MaterialController extends AbstractController
         $total = \count($paginator);
 
         $data = [];
+        /** @var Material $material */
         foreach ($paginator as $material) {
+            $translationLoader->loadTranslations($material);
             $data[] = [
                 'id' => $material->getId(),
                 'name' => $material->getName(),
-                'description' => $material->getDescription(),
-                'type' => $material->getType()->value,
+                'description' => $material->getDescription($request->getLocale()),
+                'type' => $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
             ];
         }
 
@@ -157,15 +166,6 @@ final class MaterialController extends AbstractController
         ]);
     }
 
-    #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
-    #[IsGranted(Role::WRITER->value)]
-    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
-    {
-        $materialPriceRepository->remove($materialPrice);
-
-        return new JsonResponse(['success' => true]);
-    }
-
     #[Route('/material/{id}', name: 'material_detail', methods: ['GET'])]
     #[IsGranted(Role::READER->value)]
     public function detail(Material $material): Response
@@ -173,6 +173,15 @@ final class MaterialController extends AbstractController
         return $this->render('material/detail.html.twig', [
             'material' => $material,
         ]);
+    }
+
+    #[Route('/material/{id}', name: 'material_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function deleteMaterial(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    {
+        $materialRepository->remove($material);
+
+        return new JsonResponse(['success' => true]);
     }
 
     #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
@@ -206,15 +215,6 @@ final class MaterialController extends AbstractController
                 'form_id' => 'material-price-form',
             ],
         ]);
-    }
-
-    #[Route('/materials/{id}', name: 'material_delete', methods: ['DELETE'])]
-    #[IsGranted(Role::WRITER->value)]
-    public function deletePrice(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
-    {
-        $materialRepository->remove($material);
-
-        return new JsonResponse(['success' => true]);
     }
 
     #[Route('/material/price/{id}/edit', name: 'material_price_edit')]
@@ -268,5 +268,14 @@ final class MaterialController extends AbstractController
         return $this->json([
             'data' => $data,
         ]);
+    }
+
+    #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
+    {
+        $materialPriceRepository->remove($materialPrice);
+
+        return new JsonResponse(['success' => true]);
     }
 }

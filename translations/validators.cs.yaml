@@ -1,1 +1,2 @@
 password_mismatch: "Hesla se musí shodovat."
+unique: "Vybraná hodnota je duplicitní."

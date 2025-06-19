@@ -3,3 +3,8 @@ material:
     piece: Kusový
     area: Plošný
     volume: Objemový
+
+product:
+  type:
+    flag: "Vlajka"
+    coat_of_arms: "Erb"

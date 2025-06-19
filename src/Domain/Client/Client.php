@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Client;
 
-use App\Entity\Country;
+use App\Domain\Shared\Entity\Country;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

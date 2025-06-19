@@ -40,7 +40,9 @@
             const el = document.querySelector("#material-prices-table");
 
             if (el) {
-                window.materialTable = new Tabulator(el, {
+                window.tabulatorTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
                     ajaxURL: "{{ path('api_material_prices', {'id': material.id}) }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",

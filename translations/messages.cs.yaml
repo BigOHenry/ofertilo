@@ -7,9 +7,19 @@ title:
   new_material: 'Nový materiál'
   material_price: 'Cena materiálu'
   new_material_price: 'Nová cena materiálu'
+  product_color: 'Barva produktu'
+  new_product_color: 'Nová barva produktu'
   localization: 'Lokalizace'
   2fa_setup: 'Nastavení dvoufaktorového ověření'
   2fa: 'Dvoufaktorové ověření'
+  new_color: 'Nová barva'
+  color: 'Barva'
+  colors: 'Barvy'
+  product: 'Produkt'
+  products: 'Produkty'
+  new_product: 'Nový produkt'
+  colors_out_of_stock: 'Barvy k zakoupení'
+  home: 'Domů'
 
 field:
   email: "E-mail"
@@ -25,6 +35,12 @@ field:
   thickness: "Tloušťka (mm)"
   price: "Cena"
   2fa_code: "Zadejte ověřovací kód z aplikace"
+  code: 'Kód'
+  in_stock: 'Na skladě'
+  image: "Obrázek"
+  enabled: "Aktivní"
+  country: "Stát"
+  color: "Barva"
 
 button:
   save: "Uložit"
@@ -36,3 +52,11 @@ button:
 
 message:
   2fa_setup_qr_scan: "Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)"
+
+boolean:
+  yes: "Ano"
+  no: "Ne"
+
+form:
+  choose_country: "... vyberte stát ..."
+  choose_color: "... vyberte barvu ..."

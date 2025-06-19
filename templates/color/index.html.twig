@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seznam materiálů{% endblock %}
+
+{% block body %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h1 class="mb-0">{{ 'title.colors'|trans }}</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="d-flex flex-row justify-content-end pb-2">
+                    <button class="btn btn-primary" data-modal-id="colorModal" data-modal-src="{{ path('color_new') }}" data-modal-title="{{ 'title.new_color'|trans }}">
+                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                    </button>
+                </div>
+                <div id="colors-table"></div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'colorModal',
+        title: 'title.color'|trans
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        document.addEventListener("turbo:load", () => {
+            const el = document.querySelector("#colors-table");
+
+            if (el) {
+                window.tabulatorTable = new Tabulator(el, {
+                    locale: window.APP_LOCALE,
+                    langs: window.TabulatoLangs,
+                    ajaxURL: "{{ path('api_colors') }}",
+                    layout: "fitColumns",
+                    responsiveLayout: "collapse",
+                    pagination: "remote",
+                    paginationSize: 15,
+                    paginationDataSent: {
+                        page: "page",
+                        size: "size",
+                        sorters: "sort"
+                    },
+                    paginationDataReceived: {
+                        last_page: "last_page",
+                        data: "data"
+                    },
+                    ajaxResponse: function(url, params, response) {
+                        return response.data;
+                    },
+                    columns: [
+                        { title: "{{ 'field.code'|trans }}", field: "code", sorter: "integer" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
+                        { title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },
+                        {
+                            title: "Akce",
+                            formatter: (cell) => {
+                                const row = cell.getRow().getData()
+                                const id = row.id;
+                                const description = row.description;
+                                return `<button class="btn btn-sm btn-primary me-1 edit-color" data-modal-src="/color/${id}/edit" data-modal-id="colorModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-color" data-id="${id}"><i class="fa fa-trash"></i></button>`;
+                            },
+                            width: 100,
+                            hozAlign: "center",
+                            cellClick: function (e, cell) {
+                                const target = e.target;
+                                const row = cell.getRow();
+                                const id = row.getData().id;
+
+                                const deleteBtn = target.closest('.delete-color');
+
+                                if (deleteBtn) {
+                                    if (confirm('Opravdu chcete smazat tuto barvu?')) {
+                                        fetch(`/color/${id}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Reload datagrid
+                                                    row.delete();
+                                                } else {
+                                                    console.log(response);
+                                                    alert("Chyba při mazání.");
+                                                }
+                                            });
+                                    }
+                                }
+
+                                return false;
+                            }
+                        }
+                    ]
+                });
+            }
+
+            window.tabulatorTable.on("rowClick", function(e, row) {
+                if (e.target.closest('.edit-color') === null && e.target.closest('.delete-color') === null) {
+                    window.location.href = `/color/${row.getData().id}`;
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

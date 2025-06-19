@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine;
 
-use App\Domain\User\Role;
-use App\Domain\User\User;
-use App\Domain\User\UserRepositoryInterface;
+use App\Domain\User\Entity\User;
+use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\Role;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<User>
+ * @phpstan-extends ServiceEntityRepository<\App\Domain\User\Entity\User>
  */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
