@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Domain\Material\Entity\Material;
@@ -12,7 +14,7 @@ class MaterialPriceTest extends TestCase
     {
         $material = new Material();
         $price = new MaterialPrice($material);
-        $this->assertEquals($material, $price->getMaterial());
+        $this->assertSame($material, $price->getMaterial());
         $this->assertNull($price->getId());
         $this->assertNull($price->getPrice());
         $this->assertNull($price->getThickness());
@@ -23,7 +25,7 @@ class MaterialPriceTest extends TestCase
         $material = new Material();
         $price = new MaterialPrice($material);
         $price->setThickness(25);
-        $this->assertEquals(25, $price->getThickness());
+        $this->assertSame(25, $price->getThickness());
     }
 
     public function testSetAndGetPrice(): void
@@ -32,7 +34,7 @@ class MaterialPriceTest extends TestCase
         $price = new MaterialPrice($material);
         $price->setPrice(150.50);
 
-        $this->assertEquals(150.50, $price->getPrice());
+        $this->assertSame(150.50, $price->getPrice());
     }
 
     public function testSetAndGetMaterial(): void
@@ -51,7 +53,7 @@ class MaterialPriceTest extends TestCase
         $price = new MaterialPrice($material);
         $price->setThickness(0);
 
-        $this->assertEquals(0, $price->getThickness());
+        $this->assertSame(0, $price->getThickness());
     }
 
     public function testNegativeThickness(): void
@@ -60,6 +62,6 @@ class MaterialPriceTest extends TestCase
         $price = new MaterialPrice($material);
         $price->setThickness(-5);
 
-        $this->assertEquals(-5, $price->getThickness());
+        $this->assertSame(-5, $price->getThickness());
     }
 }

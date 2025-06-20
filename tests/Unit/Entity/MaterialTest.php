@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Entity;
 
 use App\Domain\Material\Entity\Material;
@@ -27,28 +29,28 @@ class MaterialTest extends TestCase
     {
         $material = new Material();
         $material->setName('oak');
-        $this->assertEquals('oak', $material->getName());
+        $this->assertSame('oak', $material->getName());
     }
 
     public function testSetAndGetLatinName(): void
     {
         $material = new Material();
         $material->setLatinName('Quercus');
-        $this->assertEquals('Quercus', $material->getLatinName());
+        $this->assertSame('Quercus', $material->getLatinName());
     }
 
     public function testSetAndGetDryDensity(): void
     {
         $material = new Material();
         $material->setDryDensity(500);
-        $this->assertEquals(500, $material->getDryDensity());
+        $this->assertSame(500, $material->getDryDensity());
     }
 
     public function testSetAndGetHardness(): void
     {
         $material = new Material();
         $material->setHardness(85);
-        $this->assertEquals(85, $material->getHardness());
+        $this->assertSame(85, $material->getHardness());
     }
 
     public function testSetAndGetEnabled(): void
@@ -62,7 +64,7 @@ class MaterialTest extends TestCase
     {
         $material = new Material();
         $material->setType(Type::VOLUME);
-        $this->assertEquals(Type::VOLUME, $material->getType());
+        $this->assertSame(Type::VOLUME, $material->getType());
     }
 
     public function testSetAndGetDescriptionTranslation(): void
@@ -70,8 +72,8 @@ class MaterialTest extends TestCase
         $material = new Material();
         $material->setDescription('Oak', 'en');
         $material->setDescription('Dub', 'cs');
-        $this->assertEquals('Oak', $material->getDescription('en'));
-        $this->assertEquals('Dub', $material->getDescription('cs'));
+        $this->assertSame('Oak', $material->getDescription('en'));
+        $this->assertSame('Dub', $material->getDescription('cs'));
     }
 
     public function testSetAndGetPlaceOfOriginTranslation(): void
@@ -79,7 +81,7 @@ class MaterialTest extends TestCase
         $material = new Material();
         $material->setPlaceOfOrigin('Czech republic', 'en');
         $material->setPlaceOfOrigin('Česká republika', 'cs');
-        $this->assertEquals('Czech republic', $material->getPlaceOfOrigin('en'));
-        $this->assertEquals('Česká republika', $material->getPlaceOfOrigin('cs'));
+        $this->assertSame('Czech republic', $material->getPlaceOfOrigin('en'));
+        $this->assertSame('Česká republika', $material->getPlaceOfOrigin('cs'));
     }
 }

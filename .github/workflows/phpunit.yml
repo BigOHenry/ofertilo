@@ -57,6 +57,11 @@ jobs:
 #          cp .env .env.test.local
 #          echo "DATABASE_URL=postgresql://app:test@127.0.0.1:5432/ofertilo_test" >> .env.test
 
+      - name: Configure test database
+        run: |
+          touch .env.local
+          echo 'APP_ENV=test' > .env.local
+
       - name: Run database migrations
         run: |
           php bin/console doctrine:database:create --env=test
