@@ -5,21 +5,30 @@ declare(strict_types=1);
 namespace App\Domain\Material\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'material_price')]
+#[ORM\UniqueConstraint(
+    name: 'unique_material_thickness',
+    columns: ['material_id', 'thickness']
+)]
+#[UniqueEntity(
+    fields: ['material_id', 'thickness'],
+    message: 'unique',
+)]
 class MaterialPrice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'integer')]
-    private int $thickness;
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $thickness = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private string $price;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
+    private ?float $price = null;
 
     #[ORM\ManyToOne(targetEntity: Material::class, inversedBy: 'prices')]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,7 +39,7 @@ class MaterialPrice
         $this->material = $material;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -40,7 +49,7 @@ class MaterialPrice
         $this->id = $id;
     }
 
-    public function getThickness(): int
+    public function getThickness(): ?int
     {
         return $this->thickness;
     }
@@ -50,12 +59,12 @@ class MaterialPrice
         $this->thickness = $thickness;
     }
 
-    public function getPrice(): string
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): void
+    public function setPrice(float $price): void
     {
         $this->price = $price;
     }

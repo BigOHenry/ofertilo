@@ -1,0 +1,66 @@
+name: PHPUnit tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: library/postgres:17.5-alpine
+        env:
+          POSTGRES_DB: ofertilo_test
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+          coverage: xdebug
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-scripts
+
+      - name: Create var directory
+        run: mkdir -p var
+
+#      - name: Create test database
+#        run: |
+#          cp .env .env.test.local
+#          echo "DATABASE_URL=postgresql://app:test@127.0.0.1:5432/ofertilo_test" >> .env.test
+
+      - name: Run database migrations
+        run: |
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+
+      - name: Run PHPUnit tests
+        run: php bin/phpunit --coverage-text

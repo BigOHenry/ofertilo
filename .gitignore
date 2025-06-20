@@ -32,3 +32,8 @@ yarn-error.log
 phpstan.neon
 ###< phpstan/phpstan ###
 /docker-compose.yaml
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
