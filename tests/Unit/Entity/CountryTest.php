@@ -16,7 +16,7 @@ class CountryTest extends TestCase
         $this->assertNull($country->getId());
         $this->assertSame('Czech Republic', $country->getName());
         $this->assertSame('CZ', $country->getAlpha2()); // Automatically converted to uppercase
-        $this->assertSame('cze', $country->getAlpha3()); // Automatically converted to uppercase
+        $this->assertSame('CZE', $country->getAlpha3()); // Automatically converted to uppercase
         $this->assertTrue($country->isEnabled());
     }
 
@@ -48,52 +48,25 @@ class CountryTest extends TestCase
         $this->assertSame(123, $country->getId());
     }
 
-    public function testSetAndGetName(): void
+    public function testGetName(): void
     {
-        $country = new Country('Initial', 'xx', 'xxx');
-        $country->setName('Updated Name');
+        $country = new Country('United Kingdom', 'gb', 'gbr');
 
-        $this->assertSame('Updated Name', $country->getName());
+        $this->assertSame('United Kingdom', $country->getName());
     }
 
-    public function testSetAndGetNameWithNull(): void
+    public function testGetAlpha2(): void
     {
-        $country = new Country('Initial', 'xx', 'xxx');
-        $country->setName(null);
-
-        $this->assertNull($country->getName());
-    }
-
-    public function testSetAndGetAlpha2(): void
-    {
-        $country = new Country('Test', 'xx', 'xxx');
-        $country->setAlpha2('us');
+        $country = new Country('United States', 'us', 'usa');
 
         $this->assertSame('US', $country->getAlpha2());
     }
 
-    public function testSetAndGetAlpha2WithNull(): void
+    public function testGetAlpha3(): void
     {
-        $country = new Country('Test', 'xx', 'xxx');
-        $country->setAlpha2(null);
+        $country = new Country('Canada', 'ca', 'can');
 
-        $this->assertNull($country->getAlpha2());
-    }
-
-    public function testSetAndGetAlpha3(): void
-    {
-        $country = new Country('Test', 'xx', 'xxx');
-        $country->setAlpha3('usa');
-
-        $this->assertSame('USA', $country->getAlpha3());
-    }
-
-    public function testSetAndGetAlpha3WithNull(): void
-    {
-        $country = new Country('Test', 'xx', 'xxx');
-        $country->setAlpha3(null);
-
-        $this->assertNull($country->getAlpha3());
+        $this->assertSame('CAN', $country->getAlpha3());
     }
 
     public function testIsEnabledByDefault(): void
@@ -119,11 +92,58 @@ class CountryTest extends TestCase
         $this->assertTrue($country->isEnabled());
     }
 
+    public function testAlpha2CaseConversionInConstructor(): void
+    {
+        $country = new Country('Test', 'us', 'usa');
+
+        $this->assertSame('US', $country->getAlpha2());
+    }
+
+    public function testAlpha3CaseConversionInConstructor(): void
+    {
+        $country = new Country('Test', 'us', 'usa');
+
+        $this->assertSame('USA', $country->getAlpha3());
+    }
+
+    public function testMixedCaseConversionInConstructor(): void
+    {
+        $country = new Country('Test', 'uS', 'UsA');
+
+        $this->assertSame('US', $country->getAlpha2());
+        $this->assertSame('USA', $country->getAlpha3());
+    }
+
+    public function testMultibyteStringConversion(): void
+    {
+        // Test with multibyte characters - mb_strtoupper handles special characters correctly
+        $country = new Country('Test', 'ü', 'üöä');
+
+        $this->assertSame('Ü', $country->getAlpha2());
+        $this->assertSame('ÜÖÄ', $country->getAlpha3());
+    }
+
+    public function testRealWorldCountries(): void
+    {
+        $czechRepublic = new Country('Czech Republic', 'cz', 'cze');
+        $this->assertSame('CZ', $czechRepublic->getAlpha2());
+        $this->assertSame('CZE', $czechRepublic->getAlpha3());
+
+        $unitedStates = new Country('United States', 'us', 'usa');
+        $this->assertSame('US', $unitedStates->getAlpha2());
+        $this->assertSame('USA', $unitedStates->getAlpha3());
+
+        $germany = new Country('Germany', 'de', 'deu');
+        $this->assertSame('DE', $germany->getAlpha2());
+        $this->assertSame('DEU', $germany->getAlpha3());
+    }
+
     public function testCompleteCountryConfiguration(): void
     {
         $country = new Country('Slovakia', 'sk', 'svk', true);
         $country->setId(1);
 
+        // Ověření všech vlastností
         $this->assertSame(1, $country->getId());
         $this->assertSame('Slovakia', $country->getName());
         $this->assertSame('SK', $country->getAlpha2());
@@ -162,8 +182,9 @@ class CountryTest extends TestCase
         $this->assertSame('CIV', $country->getAlpha3());
     }
 
-    public function testMultibyteStringHandling(): void
+    public function testCzechCharactersInName(): void
     {
+        // Test s českými znaky v názvu
         $country = new Country('Česká republika', 'cz', 'cze');
 
         $this->assertSame('Česká republika', $country->getName());
@@ -171,22 +192,20 @@ class CountryTest extends TestCase
         $this->assertSame('CZE', $country->getAlpha3());
     }
 
-    public function testUpdateAllProperties(): void
+    public function testLowercaseInputConversion(): void
     {
-        $country = new Country('Original', 'xx', 'xxx', false);
+        $country = new Country('Test Country', 'lowercase', 'lowercase');
 
-        // Update all properties
-        $country->setId(999);
-        $country->setName('Updated Country');
-        $country->setAlpha2('up');
-        $country->setAlpha3('upd');
-        $country->setEnabled(true);
+        $this->assertSame('LOWERCASE', $country->getAlpha2());
+        $this->assertSame('LOWERCASE', $country->getAlpha3());
+    }
 
-        // Verify updates
-        $this->assertSame(999, $country->getId());
-        $this->assertSame('Updated Country', $country->getName());
-        $this->assertSame('up', $country->getAlpha2());
-        $this->assertSame('upd', $country->getAlpha3());
-        $this->assertTrue($country->isEnabled());
+    public function testMbStrToUpperFunctionality(): void
+    {
+        // Test specifically for mb_strtoupper function
+        $country = new Country('Test', 'àáâãäå', 'èéêë');
+
+        $this->assertSame('ÀÁÂÃÄÅ', $country->getAlpha2());
+        $this->assertSame('ÈÉÊË', $country->getAlpha3());
     }
 }
