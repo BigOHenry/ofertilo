@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\ValueObject\Type;
 use PHPUnit\Framework\TestCase;
 
@@ -23,6 +24,14 @@ class MaterialTest extends TestCase
         $this->assertNull($material->getPlaceOfOrigin());
         $this->assertTrue($material->isEnabled());
         $this->assertEmpty($material->getPrices());
+    }
+
+    public function testSetId(): void
+    {
+        $material = new Material();
+        $material->setId(123);
+
+        $this->assertSame(123, $material->getId());
     }
 
     public function testSetAndGetName(): void
@@ -84,4 +93,92 @@ class MaterialTest extends TestCase
         $this->assertSame('Czech republic', $material->getPlaceOfOrigin('en'));
         $this->assertSame('Česká republika', $material->getPlaceOfOrigin('cs'));
     }
+
+    public function testAddPrice(): void
+    {
+        $material = new Material();
+        $price = new MaterialPrice($material);
+
+        $material->addPrice($price);
+
+        $this->assertTrue($material->getPrices()->contains($price));
+        $this->assertSame($material, $price->getMaterial());
+    }
+
+    public function testRemovePrice(): void
+    {
+        $material = new Material();
+        $price = new MaterialPrice($material);
+
+        $material->addPrice($price);
+        $material->removePrice($price);
+
+        $this->assertFalse($material->getPrices()->contains($price));
+    }
+
+    public function testMultiplePrices(): void
+    {
+        $material = new Material();
+        $price1 = new MaterialPrice($material);
+        $price2 = new MaterialPrice($material);
+
+        $material->addPrice($price1);
+        $material->addPrice($price2);
+
+        $this->assertCount(2, $material->getPrices());
+        $this->assertTrue($material->getPrices()->contains($price1));
+        $this->assertTrue($material->getPrices()->contains($price2));
+    }
+
+    public function testGetTranslatableFields(): void
+    {
+        $fields = Material::getTranslatableFields();
+
+        $this->assertIsArray($fields);
+        $this->assertContains('description', $fields);
+        $this->assertContains('place_of_origin', $fields);
+        $this->assertCount(2, $fields);
+    }
+
+    public function testTranslationWithDefaultLocale(): void
+    {
+        $material = new Material();
+        $material->setDescription('Default description');
+
+        $this->assertSame('Default description', $material->getDescription());
+        $this->assertSame('Default description', $material->getDescription('en'));
+    }
+
+    public function testTranslationWithNullLocale(): void
+    {
+        $material = new Material();
+        $material->setDescription('English description', 'en');
+
+        $this->assertSame('English description', $material->getDescription(null));
+    }
+
+    public function testMultipleTranslationsForSameField(): void
+    {
+        $material = new Material();
+        $material->setDescription('English description', 'en');
+        $material->setDescription('Czech description', 'cs');
+        $material->setDescription('German description', 'de');
+
+        $this->assertSame('English description', $material->getDescription('en'));
+        $this->assertSame('Czech description', $material->getDescription('cs'));
+        $this->assertSame('German description', $material->getDescription('de'));
+    }
+
+    public function testPlaceOfOriginWithMultipleLocales(): void
+    {
+        $material = new Material();
+        $material->setPlaceOfOrigin('United States', 'en');
+        $material->setPlaceOfOrigin('Spojené státy', 'cs');
+        $material->setPlaceOfOrigin('Deutschland', 'de');
+
+        $this->assertSame('United States', $material->getPlaceOfOrigin('en'));
+        $this->assertSame('Spojené státy', $material->getPlaceOfOrigin('cs'));
+        $this->assertSame('Deutschland', $material->getPlaceOfOrigin('de'));
+    }
+
 }
