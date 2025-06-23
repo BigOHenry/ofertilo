@@ -68,15 +68,32 @@ jobs:
           php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
       - name: Run PHPUnit tests with coverage
-        run: php bin/phpunit --coverage-clover coverage.xml --coverage-text
+        run: php bin/phpunit --coverage-clover clover.xml --coverage-text
+
+      - name: Debug - Check coverage files
+        run: |
+          echo "Checking for coverage files:"
+          ls -la
+          echo "Looking for clover.xml:"
+          find . -name "clover.xml" -type f
+          echo "Looking for coverage.xml:"
+          find . -name "coverage.xml" -type f
+          if [ -f clover.xml ]; then
+            echo "clover.xml found, size:"
+            ls -lh clover.xml
+            echo "First few lines:"
+            head -10 clover.xml
+          fi
 
       - name: Generate coverage badge
+        if: success()
         uses: timkrase/phpunit-coverage-badge@v1.2.1
         with:
           coverage_badge_path: output/coverage.svg
           push_badge: false
 
       - name: Push badge to image-data branch
+        if: success()
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: ./output
@@ -86,7 +103,8 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
       - name: Coverage Check
+        if: success()
         uses: ericsizemore/phpunit-coverage-check-action@1.0.0
         with:
-          clover_file: 'coverage.xml'
+          clover_file: 'clover.xml'
           threshold: 80
