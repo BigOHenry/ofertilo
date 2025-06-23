@@ -2,6 +2,8 @@
 
 **Ofertilo** je interní nástroj pro správu zakázek, evidenci materiálů a tvorbu cenových nabídek. Byl vytvořen jako podpora výrobního procesu mého e-shopu [woodflag.eu](https://woodflag.eu) a zároveň jako ukázka programátorských dovedností v PHP.
 
+![Coverage](https://github.com/BigOHenry/ofertilo/blob/image-data/coverage.svg)
+
 ## ✨ Funkce
 - Evidence klientů a zakázek
 - Výpočet spotřeby a ceny materiálů (masiv, MDF, překližka, spárovky...) (plánováno)

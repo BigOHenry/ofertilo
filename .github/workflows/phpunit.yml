@@ -10,6 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write    # Pro commit coverage badge
+      pages: write       # Pro deployment na GitHub Pages
+      id-token: write    # Pro GitHub Pages
+
     services:
       postgres:
         image: library/postgres:17.5-alpine
@@ -34,7 +39,7 @@ jobs:
         with:
           php-version: '8.4'
           tools: composer
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, xdebug
           coverage: xdebug
 
       - name: Cache Composer packages
@@ -67,5 +72,26 @@ jobs:
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
-      - name: Run PHPUnit tests
-        run: php bin/phpunit --coverage-text
+      - name: Run PHPUnit tests with coverage
+        run: php bin/phpunit --coverage-clover coverage.xml --coverage-text
+
+      - name: Generate coverage badge
+        uses: timkrase/phpunit-coverage-badge@v1.2.1
+        with:
+          coverage_badge_path: output/coverage.svg
+          push_badge: false
+
+      - name: Push badge to image-data branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: ./output
+          publish_branch: image-data
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Coverage Check
+        uses: ericsizemore/phpunit-coverage-check-action@1.0.0
+        with:
+          clover_file: 'coverage.xml'
+          threshold: 80
