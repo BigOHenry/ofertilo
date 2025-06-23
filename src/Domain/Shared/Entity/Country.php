@@ -65,7 +65,7 @@ class Country
 
     public function setAlpha2(?string $alpha2): void
     {
-        $this->alpha2 = $alpha2;
+        $this->alpha2 = mb_strtoupper($alpha2);
     }
 
     public function getAlpha3(): ?string
@@ -75,7 +75,7 @@ class Country
 
     public function setAlpha3(?string $alpha3): void
     {
-        $this->alpha3 = $alpha3;
+        $this->alpha3 = mb_strtoupper($alpha3);
     }
 
     public function isEnabled(): bool

@@ -180,5 +180,4 @@ class MaterialTest extends TestCase
         $this->assertSame('Spojené státy', $material->getPlaceOfOrigin('cs'));
         $this->assertSame('Deutschland', $material->getPlaceOfOrigin('de'));
     }
-
 }

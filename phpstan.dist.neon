@@ -8,4 +8,3 @@ parameters:
         - config/
         - public/
         - src/
-        - tests/

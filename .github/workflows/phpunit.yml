@@ -106,7 +106,6 @@ jobs:
       - name: Coverage Check
         if: success() && hashFiles('clover.xml') != ''
         run: |
-          # Jednoduchá coverage kontrola bez externí action
           if [ -f clover.xml ]; then
             COVERAGE=$(php -r "
               \$xml = simplexml_load_file('clover.xml');
