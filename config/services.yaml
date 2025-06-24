@@ -61,3 +61,7 @@ services:
             $defaultLocale: '%app.default_locale%'
     App\Domain\Product\Factory\ProductFactory:
         autowire: true
+    App\Domain\Material\Factory\MaterialFactory:
+        autowire: true
+    App\Domain\Color\Factory\ColorFactory:
+        autowire: true

@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 readonly class LocaleService
 {
     /**
-     * @param string[]     $supportedLocales
-     * @param string       $defaultLocale
-     * @param RequestStack $requestStack
+     * @param string[] $supportedLocales
      */
     public function __construct(
         private array $supportedLocales,

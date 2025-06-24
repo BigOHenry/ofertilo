@@ -6,16 +6,15 @@ namespace App\Controller;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
+use App\Domain\Material\Factory\MaterialFactory;
 use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
-use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
 use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,12 +26,8 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MaterialController extends AbstractController
 {
-    /**
-     * @param array<int, string> $locales
-     */
-    public function __construct(
-        #[Autowire('%app.supported_locales%')] private readonly array $locales,
-    ) {
+    public function __construct(private readonly MaterialFactory $materialFactory)
+    {
     }
 
     #[Route('/materials', name: 'material_index')]
@@ -46,8 +41,7 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
-        $material = new Material();
-        TranslationInitializer::prepare($material, $this->locales);
+        $material = $this->materialFactory->createNew();
 
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_new'),
@@ -112,7 +106,7 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription($request->getLocale()),
-                'type' => $material->getType() === null ?: $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
+                'type' => $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
             ];
         }
 
@@ -130,8 +124,6 @@ final class MaterialController extends AbstractController
         Material $material,
         MaterialRepositoryInterface $materialRepository,
     ): Response {
-        TranslationInitializer::prepare($material, $this->locales);
-
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',

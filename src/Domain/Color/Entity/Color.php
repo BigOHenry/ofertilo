@@ -21,13 +21,33 @@ class Color implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(type: 'integer', length: 4, unique: true, nullable: false)]
-    private ?int $code = null;
+    private int $code;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $in_stock = false;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
+
+    protected function __construct()
+    {
+        $this->initTranslations();
+    }
+
+    public static function create(int $code): self
+    {
+        $product = new self();
+        $product->code = $code;
+        $product->in_stock = false;
+        $product->enabled = true;
+
+        return $product;
+    }
+
+    public static function createEmpty(): self
+    {
+        return new self();
+    }
 
     /**
      * @return string[]
@@ -47,19 +67,19 @@ class Color implements TranslatableInterface
         $this->id = $id;
     }
 
-    public function getCode(): ?int
+    public function getCode(): int
     {
         return $this->code;
     }
 
-    public function setCode(?int $code): void
+    public function setCode(int $code): void
     {
         $this->code = $code;
     }
 
-    public function getDescription(?string $locale = null): ?string
+    public function getDescription(string $locale = 'en'): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale ?? 'en');
+        return $this->getTranslationFromMemory('description', $locale);
     }
 
     public function setDescription(string $value, string $locale = 'en'): void

@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Factory\ColorFactory;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 use App\Domain\Translation\Repository\TranslationLoaderInterface;
-use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ColorType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,12 +23,8 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ColorController extends AbstractController
 {
-    /**
-     * @param array<int, string> $locales
-     */
-    public function __construct(
-        #[Autowire('%app.supported_locales%')] private readonly array $locales,
-    ) {
+    public function __construct()
+    {
     }
 
     #[Route('/colors', name: 'color_index')]
@@ -41,10 +36,9 @@ final class ColorController extends AbstractController
 
     #[Route('/color/new', name: 'color_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, ColorRepositoryInterface $colorRepository): Response
+    public function new(Request $request, ColorRepositoryInterface $colorRepository, ColorFactory $colorFactory): Response
     {
-        $color = new Color();
-        TranslationInitializer::prepare($color, $this->locales);
+        $color = $colorFactory->createNew();
 
         $form = $this->createForm(ColorType::class, $color, [
             'action' => $this->generateUrl('color_new'),
@@ -126,8 +120,6 @@ final class ColorController extends AbstractController
         Color $color,
         ColorRepositoryInterface $colorRepository,
     ): Response {
-        TranslationInitializer::prepare($color, $this->locales);
-
         $form = $this->createForm(ColorType::class, $color, [
             'action' => $this->generateUrl('color_edit', ['id' => $color->getId()]),
             'method' => 'POST',

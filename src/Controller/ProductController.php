@@ -9,7 +9,6 @@ use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Factory\ProductFactory;
 use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
-use App\Domain\Translation\Service\TranslationInitializer;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ProductColorType;
 use App\Form\ProductType;
@@ -17,7 +16,6 @@ use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use App\Infrastructure\Service\FileUploader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,12 +27,8 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ProductController extends AbstractController
 {
-    /**
-     * @param array<int, string> $locales
-     */
-    public function __construct(
-        #[Autowire('%app.supported_locales%')] private readonly array $locales,
-    ) {
+    public function __construct()
+    {
     }
 
     #[Route('/products', name: 'product_index')]
@@ -50,7 +44,7 @@ final class ProductController extends AbstractController
         Request $request,
         ProductRepositoryInterface $productRepository,
         FileUploader $fileUploader,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
     ): Response {
         $product = $productFactory->createNew();
 
@@ -146,8 +140,6 @@ final class ProductController extends AbstractController
         ProductRepositoryInterface $productRepository,
         FileUploader $fileUploader,
     ): Response {
-        TranslationInitializer::prepare($product, $this->locales);
-
         $form = $this->createForm(ProductType::class, $product, [
             'action' => $this->generateUrl('product_edit', ['id' => $product->getId()]),
             'method' => 'POST',

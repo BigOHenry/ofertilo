@@ -16,10 +16,6 @@ readonly class ProductFactory
     {
     }
 
-    /**
-     * Creates a new product with default values for the form.
-     * @return Product
-     */
     public function createNew(): Product
     {
         $product = Product::createEmpty();
@@ -28,12 +24,6 @@ readonly class ProductFactory
         return $product;
     }
 
-    /**
-     * Creates a product with specific values.
-     * @param Type    $type
-     * @param Country $country
-     * @return Product
-     */
     public function create(Type $type, Country $country): Product
     {
         $product = Product::create($type, $country);

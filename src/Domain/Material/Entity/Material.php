@@ -24,10 +24,10 @@ class Material implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 200, nullable: false)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(nullable: false, enumType: Type::class)]
-    private ?Type $type = null;
+    private Type $type;
 
     #[ORM\Column(length: 300, nullable: true)]
     private ?string $latin_name = null;
@@ -47,9 +47,25 @@ class Material implements TranslatableInterface
     #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prices;
 
-    public function __construct()
+    protected function __construct()
     {
         $this->prices = new ArrayCollection();
+        $this->initTranslations();
+    }
+
+    public static function create(Type $type, string $name): self
+    {
+        $product = new self();
+        $product->type = $type;
+        $product->name = $name;
+        $product->enabled = true;
+
+        return $product;
+    }
+
+    public static function createEmpty(): self
+    {
+        return new self();
     }
 
     /**
@@ -70,12 +86,12 @@ class Material implements TranslatableInterface
         $this->id = $id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -100,7 +116,7 @@ class Material implements TranslatableInterface
         $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
     }
 
-    public function getType(): ?Type
+    public function getType(): Type
     {
         return $this->type;
     }
