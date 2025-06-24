@@ -67,7 +67,7 @@ class ProductColorTest extends TestCase
         $result = $productColor->setDescription('Shield red color');
 
         $this->assertSame('Shield red color', $productColor->getDescription());
-        $this->assertSame($productColor, $result);
+        $this->assertSame($productColor, $result); // Test fluent interface
     }
 
     public function testSetDescriptionWithNull(): void
@@ -78,7 +78,7 @@ class ProductColorTest extends TestCase
         $result = $productColor->setDescription(null);
 
         $this->assertNull($productColor->getDescription());
-        $this->assertSame($productColor, $result);
+        $this->assertSame($productColor, $result); // Test fluent interface
     }
 
     public function testCompleteProductColorConfiguration(): void
