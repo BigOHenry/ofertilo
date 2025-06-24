@@ -88,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->email;
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -208,6 +208,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     {
         if (!$this->isTotpAuthenticationEnabled()) {
             return null;
+        }
+
+        if ($this->two_fa_secret === null) {
+            throw new \InvalidArgumentException('two_fa_secret cannot be empty');
         }
 
         return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);

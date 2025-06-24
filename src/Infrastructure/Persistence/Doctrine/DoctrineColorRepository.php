@@ -28,8 +28,12 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
 
         foreach ($color->getTranslations() as $translation) {
             if ($translation->getId() === null) {
-                $translation->setObjectId($color->getId());
-                $em->persist($translation);
+                $color_id = $color->getId();
+
+                if ($color_id !== null) {
+                    $translation->setObjectId($color_id);
+                    $em->persist($translation);
+                }
             }
         }
 

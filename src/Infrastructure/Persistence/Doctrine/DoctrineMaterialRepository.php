@@ -28,8 +28,12 @@ class DoctrineMaterialRepository extends ServiceEntityRepository implements Mate
 
         foreach ($material->getTranslations() as $translation) {
             if ($translation->getId() === null) {
-                $translation->setObjectId($material->getId());
-                $em->persist($translation);
+                $material_id = $material->getId();
+
+                if ($material_id !== null) {
+                    $translation->setObjectId($material_id);
+                    $em->persist($translation);
+                }
             }
         }
 

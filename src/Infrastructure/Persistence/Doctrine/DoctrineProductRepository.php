@@ -28,8 +28,12 @@ class DoctrineProductRepository extends ServiceEntityRepository implements Produ
 
         foreach ($product->getTranslations() as $translation) {
             if ($translation->getId() === null) {
-                $translation->setObjectId($product->getId());
-                $em->persist($translation);
+                $product_id = $product->getId();
+
+                if ($product_id !== null) {
+                    $translation->setObjectId($product_id);
+                    $em->persist($translation);
+                }
             }
         }
 

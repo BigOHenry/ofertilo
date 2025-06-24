@@ -112,7 +112,7 @@ final class MaterialController extends AbstractController
                 'id' => $material->getId(),
                 'name' => $material->getName(),
                 'description' => $material->getDescription($request->getLocale()),
-                'type' => $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
+                'type' => $material->getType() === null ?: $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
             ];
         }
 

@@ -46,8 +46,12 @@ final class ProductController extends AbstractController
 
     #[Route('/product/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, ProductRepositoryInterface $productRepository, FileUploader $fileUploader, ProductFactory $productFactory): Response
-    {
+    public function new(
+        Request $request,
+        ProductRepositoryInterface $productRepository,
+        FileUploader $fileUploader,
+        ProductFactory $productFactory
+    ): Response {
         $product = $productFactory->createNew();
 
         $form = $this->createForm(ProductType::class, $product, [
@@ -288,9 +292,9 @@ final class ProductController extends AbstractController
         foreach ($product->getProductColors() as $productColor) {
             $data[] = [
                 'id' => $productColor->getId(),
-                'color' => $productColor->getColor()?->getCode(),
+                'color' => $productColor->getColor()->getCode(),
                 'description' => $productColor->getDescription(),
-                'in_stock' => $productColor->getColor()?->isInStock(),
+                'in_stock' => $productColor->getColor()->isInStock(),
             ];
         }
 

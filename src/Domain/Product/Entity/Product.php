@@ -65,18 +65,19 @@ class Product implements TranslatableInterface
         $this->initTranslations();
     }
 
-    /**
-     * @param Type    $type
-     * @param Country $country
-     * @return self
-     */
     public static function create(Type $type, Country $country): self
     {
         $product = new self();
         $product->type = $type;
         $product->country = $country;
         $product->enabled = true;
+
         return $product;
+    }
+
+    public static function createEmpty(): self
+    {
+        return new self();
     }
 
     public function getId(): ?int
@@ -222,8 +223,12 @@ class Product implements TranslatableInterface
         return $this;
     }
 
-    public function getEncodedFilename(): string
+    public function getEncodedFilename(): ?string
     {
+        if (empty($this->imageFilename)) {
+            return null;
+        }
+
         return base64_encode($this->imageFilename);
     }
 

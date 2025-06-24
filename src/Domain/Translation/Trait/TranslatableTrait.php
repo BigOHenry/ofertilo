@@ -83,7 +83,7 @@ trait TranslatableTrait
         $result = [];
 
         foreach ($this->translations as $t) {
-            if ($t->getObjectId() === null) {
+            if ($t->getObjectId() === null && $this->getId() !== null) {
                 $t->setObjectId($this->getId());
             }
 
