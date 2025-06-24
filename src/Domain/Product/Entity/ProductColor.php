@@ -56,7 +56,7 @@ class ProductColor
         return $this->product;
     }
 
-    public function getColor(): Color
+    public function getColor(): ?Color
     {
         return $this->color;
     }
