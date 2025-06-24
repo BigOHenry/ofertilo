@@ -31,7 +31,7 @@ class ProductColor
 
     #[ORM\ManyToOne(targetEntity: Color::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private Color $color;
+    private ?Color $color = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;

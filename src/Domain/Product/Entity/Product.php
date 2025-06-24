@@ -10,6 +10,7 @@ use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -57,6 +58,11 @@ class Product implements TranslatableInterface
         orphanRemoval: true
     )]
     private Collection $productColors;
+
+    public function __construct()
+    {
+        $this->productColors = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
