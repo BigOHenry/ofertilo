@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
+use App\Domain\Product\Factory\ProductFactory;
 use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Translation\Service\TranslationInitializer;
@@ -45,10 +46,9 @@ final class ProductController extends AbstractController
 
     #[Route('/product/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, ProductRepositoryInterface $productRepository, FileUploader $fileUploader): Response
+    public function new(Request $request, ProductRepositoryInterface $productRepository, FileUploader $fileUploader, ProductFactory $productFactory): Response
     {
-        $product = new Product();
-        TranslationInitializer::prepare($product, $this->locales);
+        $product = $productFactory->createNew();
 
         $form = $this->createForm(ProductType::class, $product, [
             'action' => $this->generateUrl('product_new'),
@@ -288,9 +288,9 @@ final class ProductController extends AbstractController
         foreach ($product->getProductColors() as $productColor) {
             $data[] = [
                 'id' => $productColor->getId(),
-                'color' => $productColor->getColor()->getCode(),
+                'color' => $productColor->getColor()?->getCode(),
                 'description' => $productColor->getDescription(),
-                'in_stock' => $productColor->getColor()->isInStock(),
+                'in_stock' => $productColor->getColor()?->isInStock(),
             ];
         }
 

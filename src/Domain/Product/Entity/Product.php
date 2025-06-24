@@ -59,9 +59,24 @@ class Product implements TranslatableInterface
     )]
     private Collection $productColors;
 
-    public function __construct()
+    protected function __construct()
     {
         $this->productColors = new ArrayCollection();
+        $this->initTranslations();
+    }
+
+    /**
+     * @param Type    $type
+     * @param Country $country
+     * @return self
+     */
+    public static function create(Type $type, Country $country): self
+    {
+        $product = new self();
+        $product->type = $type;
+        $product->country = $country;
+        $product->enabled = true;
+        return $product;
     }
 
     public function getId(): ?int

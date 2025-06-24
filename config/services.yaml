@@ -60,3 +60,6 @@ services:
     App\Infrastructure\Service\FileUploader:
         arguments:
             $secureUploadsDirectory: '%secure_uploads_directory%'
+    App\Domain\Product\Factory\ProductFactory:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
