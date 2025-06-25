@@ -87,8 +87,8 @@ class Material implements TranslatableInterface
     public static function create(Type $type, string $name): self
     {
         $product = new self();
-        $product->type = $type;
-        $product->name = $name;
+        $product->setType($type);
+        $product->setName($name);
         $product->enabled = true;
 
         return $product;
@@ -124,7 +124,7 @@ class Material implements TranslatableInterface
 
     public function setName(string $name): void
     {
-        $this->validateName($name);
+        self::validateName($name);
         $this->name = $name;
     }
 
@@ -135,6 +135,7 @@ class Material implements TranslatableInterface
 
     public function setDescription(string $value, string $locale = 'en'): void
     {
+        self::validateDescription($value);
         $this->addOrUpdateTranslation('description', $value, $locale);
     }
 
@@ -145,6 +146,7 @@ class Material implements TranslatableInterface
 
     public function setPlaceOfOrigin(string $value, string $locale = 'en'): void
     {
+        self::validatePlaceOfOrigin($value);
         $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
     }
 
@@ -176,7 +178,7 @@ class Material implements TranslatableInterface
     public function setLatinName(?string $latin_name): void
     {
         if ($latin_name !== null) {
-            $this->validateLatinName($latin_name);
+            self::validateLatinName($latin_name);
         }
         $this->latin_name = $latin_name;
     }
@@ -189,7 +191,7 @@ class Material implements TranslatableInterface
     public function setDryDensity(?int $dry_density): void
     {
         if ($dry_density !== null) {
-            $this->validateDryDensity($dry_density);
+            self::validateDryDensity($dry_density);
         }
         $this->dry_density = $dry_density;
     }
@@ -202,7 +204,7 @@ class Material implements TranslatableInterface
     public function setHardness(?int $hardness): void
     {
         if ($hardness !== null) {
-            $this->validateHardness($hardness);
+            self::validateHardness($hardness);
         }
         $this->hardness = $hardness;
     }
@@ -215,15 +217,15 @@ class Material implements TranslatableInterface
         return $this->prices;
     }
 
-    public function addPrice(MaterialPrice $price): void
+    public function addPrice(int $thickness, float $price): void
     {
         foreach ($this->prices as $existingPrice) {
-            if ($existingPrice->getThickness() === $price->getThickness()) {
-                throw DuplicatePriceThicknessException::forThickness($price->getThickness());
+            if ($existingPrice->getThickness() === $thickness) {
+                throw DuplicatePriceThicknessException::forThickness($thickness);
             }
         }
-        $this->prices[] = $price;
-        $price->setMaterial($this);
+        $materialPrice = MaterialPrice::create($this, $thickness, $price);
+        $this->prices->add($materialPrice);
     }
 
     public function removePrice(MaterialPrice $price): void
@@ -235,7 +237,7 @@ class Material implements TranslatableInterface
         $this->prices->removeElement($price);
     }
 
-    private function validateName(string $name): void
+    private static function validateName(string $name): void
     {
         $trimmed = trim($name);
         if (empty($trimmed)) {
@@ -255,7 +257,7 @@ class Material implements TranslatableInterface
         }
     }
 
-    private function validateLatinName(string $latinName): void
+    private static function validateLatinName(string $latinName): void
     {
         $trimmed = trim($latinName);
         if (strlen($trimmed) > 300) {
@@ -267,18 +269,18 @@ class Material implements TranslatableInterface
         }
     }
 
-    private function validateDryDensity(int $density): void
+    private static function validateDryDensity(int $density): void
     {
         if ($density < 10) {
             throw InvalidMaterialException::dryDensityTooLow(10);
         }
 
         if ($density > 2000) {
-            throw InvalidMaterialException::dryDensityTooLow(2000);
+            throw InvalidMaterialException::dryDensityTooHigh(2000);
         }
     }
 
-    private function validateHardness(int $hardness): void
+    private static function validateHardness(int $hardness): void
     {
         if ($hardness < 1) {
             throw InvalidMaterialException::hardnessTooLow(1);
@@ -289,7 +291,7 @@ class Material implements TranslatableInterface
         }
     }
 
-    private function validateDescription(string $description): void
+    private static function validateDescription(string $description): void
     {
         $trimmed = trim($description);
         if (strlen($trimmed) > 100) {
@@ -297,7 +299,7 @@ class Material implements TranslatableInterface
         }
     }
 
-    private function validatePlaceOfOrigin(string $placeOfOrigin): void
+    private static function validatePlaceOfOrigin(string $placeOfOrigin): void
     {
         $trimmed = trim($placeOfOrigin);
         if (strlen($trimmed) > 200) {

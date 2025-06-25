@@ -15,7 +15,7 @@ readonly class MaterialFactory
     {
     }
 
-    public function createNew(): Material
+    public function createEmpty(): Material
     {
         $material = Material::createEmpty();
         TranslationInitializer::prepare($material, $this->localeService->getSupportedLocales());

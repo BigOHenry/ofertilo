@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Factory\MaterialFactory;
-use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\User\ValueObject\Role;
 use App\Form\MaterialPriceType;
@@ -41,7 +40,7 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
     {
-        $material = $this->materialFactory->createNew();
+        $material = $this->materialFactory->createEmpty();
 
         $form = $this->createForm(MaterialType::class, $material, [
             'action' => $this->generateUrl('material_new'),
@@ -178,9 +177,9 @@ final class MaterialController extends AbstractController
 
     #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function newPrice(Request $request, Material $material, MaterialPriceRepositoryInterface $materialPriceRepository): Response
+    public function newPrice(Request $request, Material $material, MaterialRepositoryInterface $materialRepository): Response
     {
-        $materialPrice = new MaterialPrice($material);
+        $materialPrice = MaterialPrice::createEmpty($material);
         $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
@@ -189,7 +188,12 @@ final class MaterialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialPriceRepository->save($materialPrice);
+            $material->addPrice(
+                $materialPrice->getThickness(),
+                $materialPrice->getPrice()
+            );
+            $materialRepository->save($material);
+
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -214,7 +218,7 @@ final class MaterialController extends AbstractController
     public function editPrice(
         Request $request,
         MaterialPrice $materialPrice,
-        MaterialPriceRepositoryInterface $materialPriceRepository,
+        MaterialRepositoryInterface $materialRepository,
     ): Response {
         $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
@@ -223,7 +227,8 @@ final class MaterialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialPriceRepository->save($materialPrice);
+            $material = $materialPrice->getMaterial();
+            $materialRepository->save($material);
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -264,9 +269,12 @@ final class MaterialController extends AbstractController
 
     #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
+    public function delete(MaterialPrice $materialPrice, MaterialRepositoryInterface $materialRepository): JsonResponse
     {
-        $materialPriceRepository->remove($materialPrice);
+        $material = $materialPrice->getMaterial();
+
+        $material->removePrice($materialPrice);
+        $materialRepository->save($material);
 
         return new JsonResponse(['success' => true]);
     }

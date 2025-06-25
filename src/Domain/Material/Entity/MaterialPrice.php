@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     columns: ['material_id', 'thickness']
 )]
 #[UniqueEntity(
-    fields: ['material_id', 'thickness'],
+    fields: ['material', 'thickness'],
     message: 'unique',
 )]
 class MaterialPrice
@@ -49,6 +49,9 @@ class MaterialPrice
 
     public static function create(Material $material, int $thickness, float $price): self
     {
+        self::validateThickness($thickness);
+        self::validatePrice($price);
+
         $product = new self($material);
         $product->thickness = $thickness;
         $product->price = $price;
@@ -77,7 +80,7 @@ class MaterialPrice
 
     public function setThickness(int $thickness): void
     {
-        $this->validateThickness($thickness);
+        self::validateThickness($thickness);
         $this->thickness = $thickness;
     }
 
@@ -88,7 +91,7 @@ class MaterialPrice
 
     public function setPrice(float $price): void
     {
-        $this->validatePrice($price);
+        self::validatePrice($price);
         $this->price = $price;
     }
 
@@ -102,7 +105,7 @@ class MaterialPrice
         $this->material = $material;
     }
 
-    private function validatePrice(float $price): void
+    private static function validatePrice(float $price): void
     {
         if ($price < 1) {
             throw InvalidMaterialPriceException::priceTooLow($price, 1);
@@ -113,7 +116,7 @@ class MaterialPrice
         }
     }
 
-    private function validateThickness(int $thickness): void
+    private static function validateThickness(int $thickness): void
     {
         if ($thickness < 1) {
             throw InvalidMaterialPriceException::thicknessTooLow($thickness, 1);
