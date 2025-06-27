@@ -6,6 +6,7 @@ namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
+use App\Domain\Material\ValueObject\Type;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
@@ -46,9 +47,9 @@ class DoctrineMaterialRepository extends ServiceEntityRepository implements Mate
         $this->getEntityManager()->flush();
     }
 
-    public function findByName(string $name): ?Material
+    public function findByTypeAndName(Type $type, string $name): ?Material
     {
-        return $this->findOneBy(['name' => $name]);
+        return $this->findOneBy(['type' => $type, 'name' => $name]);
     }
 
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Material

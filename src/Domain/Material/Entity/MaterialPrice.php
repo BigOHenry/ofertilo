@@ -62,6 +62,7 @@ class MaterialPrice
         $product = new self($material);
         $product->thickness = $thickness;
         $product->price = $price;
+
         return $product;
     }
 

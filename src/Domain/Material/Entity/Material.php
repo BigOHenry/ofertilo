@@ -13,8 +13,8 @@ use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DoctrineMaterialRepository::class)]
 #[ORM\Table(name: 'material')]
@@ -233,16 +233,16 @@ class Material implements TranslatableInterface
 
     private static function validateName(string $name): void
     {
-        $trimmed = trim($name);
+        $trimmed = mb_trim($name);
         if (empty($trimmed)) {
             throw InvalidMaterialException::emptyName();
         }
 
-        if (strlen($trimmed) < 2) {
+        if (mb_strlen($trimmed) < 2) {
             throw InvalidMaterialException::nameTooShort(2);
         }
 
-        if (strlen($trimmed) > 100) {
+        if (mb_strlen($trimmed) > 100) {
             throw InvalidMaterialException::nameTooLong(100);
         }
 
@@ -253,8 +253,8 @@ class Material implements TranslatableInterface
 
     private static function validateLatinName(string $latinName): void
     {
-        $trimmed = trim($latinName);
-        if (strlen($trimmed) > 300) {
+        $trimmed = mb_trim($latinName);
+        if (mb_strlen($trimmed) > 300) {
             throw InvalidMaterialException::latinNameTooLong(300);
         }
 
@@ -287,16 +287,16 @@ class Material implements TranslatableInterface
 
     private static function validateDescription(string $description): void
     {
-        $trimmed = trim($description);
-        if (strlen($trimmed) > 100) {
+        $trimmed = mb_trim($description);
+        if (mb_strlen($trimmed) > 100) {
             throw InvalidMaterialException::descriptionTooLong(100);
         }
     }
 
     private static function validatePlaceOfOrigin(string $placeOfOrigin): void
     {
-        $trimmed = trim($placeOfOrigin);
-        if (strlen($trimmed) > 200) {
+        $trimmed = mb_trim($placeOfOrigin);
+        if (mb_strlen($trimmed) > 200) {
             throw InvalidMaterialException::placeOfOriginTooLong(200);
         }
 
@@ -304,5 +304,4 @@ class Material implements TranslatableInterface
             throw InvalidMaterialException::placeOfOriginInvalidCharacters();
         }
     }
-
 }
