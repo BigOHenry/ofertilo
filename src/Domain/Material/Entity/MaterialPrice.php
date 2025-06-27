@@ -27,19 +27,26 @@ class MaterialPrice
     private ?int $id = null;
 
     #[ORM\Column(type: 'integer', nullable: false)]
-    #[Assert\NotNull]
-    #[Assert\Range(notInRangeMessage: 'Thickness must be between {{ min }}mm and {{ max }}mm', min: 1, max: 100)]
+    #[Assert\NotNull(message: 'not_null')]
+    #[Assert\Range(
+        notInRangeMessage: 'range',
+        min: 1,
+        max: 100
+    )]
     private int $thickness;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
-    #[Assert\NotNull]
-    #[Assert\Positive(message: 'Price must be positive')]
-    #[Assert\Range(min: 1.00, max: 999999.99)]
+    #[Assert\NotNull(message: 'not_null')]
+    #[Assert\Range(
+        notInRangeMessage: 'range',
+        min: 1.00,
+        max: 999999.99
+    )]
     private float $price;
 
     #[ORM\ManyToOne(targetEntity: Material::class, inversedBy: 'prices')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'not_null')]
     private Material $material;
 
     protected function __construct(Material $material)

@@ -28,34 +28,34 @@ class Material implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: false)]
-    #[Assert\NotBlank(message: 'Material name is required')]
+    #[Assert\NotBlank(message: 'not_null')]
     #[Assert\Length(
         min: 2,
         max: 50,
-        minMessage: 'Name must be at least {{ limit }} characters',
-        maxMessage: 'Name cannot exceed {{ limit }} characters'
+        minMessage: 'length_min',
+        maxMessage: 'length_max',
     )]
     #[Assert\Regex(
         pattern: '/^[a-z\s\-_]+$/',
-        message: 'Name contains invalid characters'
+        message: 'invalid_characters'
     )]
     private string $name;
 
     #[ORM\Column(nullable: false, enumType: Type::class)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'not_null')]
     private Type $type;
 
     #[ORM\Column(length: 300, nullable: true)]
-    #[Assert\Length(max: 300)]
+    #[Assert\Length(max: 300, maxMessage: 'length_max')]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z\s]+$/',
-        message: 'Latin name can only contain letters and spaces'
+        message: 'invalid_characters'
     )]
     private ?string $latin_name = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
     #[Assert\Range(
-        notInRangeMessage: 'Dry density must be between {{ min }} and {{ max }} kg/m³',
+        notInRangeMessage: 'range³',
         min: 10,
         max: 2000
     )]
@@ -63,7 +63,7 @@ class Material implements TranslatableInterface
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
     #[Assert\Range(
-        notInRangeMessage: 'Hardness must be between {{ min }} and {{ max }}',
+        notInRangeMessage: 'range',
         min: 1,
         max: 9999
     )]
@@ -124,6 +124,11 @@ class Material implements TranslatableInterface
 
     public function setName(string $name): void
     {
+        $this->name = $name;
+    }
+
+    public function changeName(string $name): void
+    {
         self::validateName($name);
         $this->name = $name;
     }
@@ -135,7 +140,6 @@ class Material implements TranslatableInterface
 
     public function setDescription(string $value, string $locale = 'en'): void
     {
-        self::validateDescription($value);
         $this->addOrUpdateTranslation('description', $value, $locale);
     }
 
@@ -146,7 +150,6 @@ class Material implements TranslatableInterface
 
     public function setPlaceOfOrigin(string $value, string $locale = 'en'): void
     {
-        self::validatePlaceOfOrigin($value);
         $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
     }
 
@@ -177,9 +180,6 @@ class Material implements TranslatableInterface
 
     public function setLatinName(?string $latin_name): void
     {
-        if ($latin_name !== null) {
-            self::validateLatinName($latin_name);
-        }
         $this->latin_name = $latin_name;
     }
 
@@ -190,9 +190,6 @@ class Material implements TranslatableInterface
 
     public function setDryDensity(?int $dry_density): void
     {
-        if ($dry_density !== null) {
-            self::validateDryDensity($dry_density);
-        }
         $this->dry_density = $dry_density;
     }
 
@@ -203,9 +200,6 @@ class Material implements TranslatableInterface
 
     public function setHardness(?int $hardness): void
     {
-        if ($hardness !== null) {
-            self::validateHardness($hardness);
-        }
         $this->hardness = $hardness;
     }
 

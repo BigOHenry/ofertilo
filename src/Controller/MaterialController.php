@@ -62,12 +62,19 @@ final class MaterialController extends AbstractController
 
         return $this->render('components/form_frame.html.twig', [
             'frame_id' => 'materialModal_frame',
+            'modal_id' => 'materialModal',
             'form_template' => 'components/material_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'material-form',
             ],
         ]);
+
+//        if ($form->isSubmitted() && !$form->isValid()) {
+//            $response->setStatusCode(422);
+//        }
+
+        return $response;
     }
 
     #[Route('/api/materials', name: 'api_materials')]
