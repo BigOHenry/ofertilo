@@ -11,7 +11,7 @@ interface ColorRepositoryInterface
 {
     public function createQueryBuilder(string $alias): QueryBuilder;
 
-    public function findByName(string $name): ?Color;
+    public function findByCode(int $code): ?Color;
 
     public function save(Color $color): void;
 

@@ -46,9 +46,9 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
         $this->getEntityManager()->flush();
     }
 
-    public function findByName(string $name): ?Color
+    public function findByCode(int $code): ?Color
     {
-        return $this->findOneBy(['name' => $name]);
+        return $this->findOneBy(['code' => $code]);
     }
 
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Color
