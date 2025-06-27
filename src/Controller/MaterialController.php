@@ -145,9 +145,7 @@ final class MaterialController extends AbstractController
     public function materialsApi(Request $request): JsonResponse
     {
         try {
-            $result = $this->materialService->getPaginatedMaterials($request);
-
-            return $this->json($result);
+            return $this->json($this->materialService->getPaginatedMaterials($request));
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

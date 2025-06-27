@@ -124,11 +124,6 @@ class Material implements TranslatableInterface
 
     public function setName(string $name): void
     {
-        $this->name = $name;
-    }
-
-    public function changeName(string $name): void
-    {
         self::validateName($name);
         $this->name = $name;
     }
@@ -138,9 +133,12 @@ class Material implements TranslatableInterface
         return $this->getTranslationFromMemory('description', $locale ?? 'en');
     }
 
-    public function setDescription(string $value, string $locale = 'en'): void
+    public function setDescription(?string $description, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        if ($description !== null) {
+            self::validateDescription($description);
+        }
+        $this->addOrUpdateTranslation('description', $description, $locale);
     }
 
     public function getPlaceOfOrigin(?string $locale = null): ?string
@@ -148,9 +146,12 @@ class Material implements TranslatableInterface
         return $this->getTranslationFromMemory('place_of_origin', $locale ?? 'en');
     }
 
-    public function setPlaceOfOrigin(string $value, string $locale = 'en'): void
+    public function setPlaceOfOrigin(?string $place_of_origin, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
+        if ($place_of_origin !== null) {
+            self::validatePlaceOfOrigin($place_of_origin);
+        }
+        $this->addOrUpdateTranslation('place_of_origin', $place_of_origin, $locale);
     }
 
     public function getType(): Type
@@ -180,6 +181,9 @@ class Material implements TranslatableInterface
 
     public function setLatinName(?string $latin_name): void
     {
+        if ($latin_name !== null) {
+            self::validateLatinName($latin_name);
+        }
         $this->latin_name = $latin_name;
     }
 
@@ -190,6 +194,9 @@ class Material implements TranslatableInterface
 
     public function setDryDensity(?int $dry_density): void
     {
+        if ($dry_density !== null) {
+            self::validateDryDensity($dry_density);
+        }
         $this->dry_density = $dry_density;
     }
 
@@ -200,6 +207,9 @@ class Material implements TranslatableInterface
 
     public function setHardness(?int $hardness): void
     {
+        if ($hardness !== null) {
+            self::validateHardness($hardness);
+        }
         $this->hardness = $hardness;
     }
 

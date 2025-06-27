@@ -49,6 +49,9 @@ final readonly class MaterialService
         $this->materialRepository->remove($material);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPaginatedMaterials(Request $request): array
     {
         $page = max((int) $request->query->get('page', 1), 1);
@@ -67,8 +70,10 @@ final readonly class MaterialService
         $allowedFields = ['name', 'type'];
         $allowedDirections = ['asc', 'desc'];
 
-        if (\in_array($sortField, $allowedFields, true)
-            && \in_array(mb_strtolower($sortDir), $allowedDirections, true)) {
+        if (
+            \in_array($sortField, $allowedFields, true)
+            && \in_array(mb_strtolower($sortDir), $allowedDirections, true)
+        ) {
             $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
         }
 
@@ -122,6 +127,9 @@ final readonly class MaterialService
         return MaterialPrice::createEmpty($material);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getMaterialPricesData(Material $material): array
     {
         $data = [];
