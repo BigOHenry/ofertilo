@@ -5,7 +5,7 @@
 ![Coverage](https://github.com/BigOHenry/ofertilo/blob/image-data/coverage.svg)
 
 ## ✨ Funkce
-- [x] Evidence materiálů (MDF/překližka, dřevo, spárovky)
+- [x] Evidence materiálů a jejich cen dle tloušťky (MDF/překližka, dřevo, spárovky)
 - [x] Evidence barev (barvy vzorníku RAL)
 - [x] Evidence produktů a přiřazení použitých barev s popiskem
 - [ ] Evidence klientů včetně kontaktu
