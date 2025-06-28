@@ -44,6 +44,7 @@ class Color implements TranslatableInterface
 
     public static function create(int $code): self
     {
+        self::validateCode($code);
         $product = new self();
         $product->code = $code;
         $product->in_stock = false;
@@ -129,11 +130,11 @@ class Color implements TranslatableInterface
 
     private static function validateCode(int $code): void
     {
-        if ($code <= 1000) {
+        if ($code < 1000) {
             throw InvalidColorException::codeTooLow(1000);
         }
 
-        if ($code >= 9999) {
+        if ($code > 9999) {
             throw InvalidColorException::codeTooHigh(9999);
         }
     }

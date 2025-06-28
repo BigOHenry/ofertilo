@@ -19,7 +19,7 @@
 ## 🛠️ Technologie
 - PHP 8.4.x
 - Bootstrap 5.3
-- PostgreSQL 17.4
+- PostgreSQL 17.5
 - Symfony 7.x
 - Doctrine ORM
 - Tabulator.js
@@ -35,7 +35,8 @@
 - vygenerování migrací `php bin/console make:migration`
 - spuštění mígrací `php bin/console doctrine:migrations:migrate`
 
-## 📦 CS + PHPStan
+## 📦 CS + PHPStan + PHPUnit
 
 - kvalita kódu je kontrolována dle PSR-12 pomocí CodeSniffer `vendor/bin/phpcs` nebo automatický fix `PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix`
 - statickou analýzu kódu provádí PHPStan `vendor/bin/phpstan analyse`
+- 
