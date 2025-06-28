@@ -5,13 +5,16 @@
 ![Coverage](https://github.com/BigOHenry/ofertilo/blob/image-data/coverage.svg)
 
 ## ✨ Funkce
-- Evidence klientů a zakázek
-- Výpočet spotřeby a ceny materiálů (masiv, MDF, překližka, spárovky...) (plánováno)
-- Tvorba cenových nabídek s různými variantami (materiál, rozměr, povrchová úprava) (plánováno)
-- Víceúrovňové výpočty a varianty provedení (plánováno)
-- Šablony cenových nabídek (plánováno)
-- Export do PDF (plánováno)
-- Link pro zobrazení nacenění klientovi (plánováno)
+- [x] Evidence materiálů (MDF/překližka, dřevo, spárovky)
+- [x] Evidence barev (barvy vzorníku RAL)
+- [x] Evidence produktů a přiřazení použitých barev s popiskem
+- [ ] Evidence klientů včetně kontaktu
+- [ ] Tvorba cenových nabídek s různými variantami (materiál, rozměr, povrchová úprava)
+- [ ] Výpočet spotřeby a ceny materiálů (masiv, MDF, překližka, spárovky...)
+- [ ] Šablony cenových nabídek
+- [ ] Export do PDF
+- [ ] Link pro zobrazení nacenění klientovi
+- [ ] Nacenění variant produktů na e-shop včetně možnosti aktualizovat produkty přímo na e-shopu (API)
 
 ## 🛠️ Technologie
 - PHP 8.4.x
