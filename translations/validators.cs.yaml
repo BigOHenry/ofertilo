@@ -8,3 +8,5 @@ max: 'Hodnota nesmí překročit {{ limit }}'
 length_min: 'Hodnota musí mít alespoň {{ limit }} znaků'
 length_max: 'Hodnota nesmí překročit {{ limit }} znaků'
 invalid_characters: 'Hodnota obsahuje nepovolené znaky'
+image:
+  invalid_format: 'Povolené formáty obrázků jsou: JPEG, PNG, GIF, WebP, SVG'

@@ -155,7 +155,7 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function newPrice(Request $request, Material $material): Response
     {
-        $materialPrice = MaterialPrice::createEmpty($material);
+        $materialPrice = $this->materialService->createEmptyPrice($material);
         $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
@@ -238,9 +238,7 @@ final class MaterialController extends AbstractController
     public function materialPricesApi(Material $material): JsonResponse
     {
         try {
-            $result = $this->materialService->getMaterialPricesData($material);
-
-            return $this->json($result);
+            return $this->json($this->materialService->getMaterialPricesData($material));
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }

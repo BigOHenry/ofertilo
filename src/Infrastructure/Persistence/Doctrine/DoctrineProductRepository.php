@@ -6,6 +6,8 @@ namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
+use App\Domain\Product\ValueObject\Type;
+use App\Domain\Shared\Entity\Country;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
@@ -46,9 +48,9 @@ class DoctrineProductRepository extends ServiceEntityRepository implements Produ
         $this->getEntityManager()->flush();
     }
 
-    public function findByName(string $name): ?Product
+    public function findByTypeAndCountry(Type $type, Country $country): ?Product
     {
-        return $this->findOneBy(['name' => $name]);
+        return $this->findOneBy(['type' => $type, 'country' => $country]);
     }
 
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Product

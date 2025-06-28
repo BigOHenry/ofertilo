@@ -4,30 +4,26 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\Product\ProductService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
-use App\Domain\Product\Factory\ProductFactory;
-use App\Domain\Product\Repository\ProductColorRepositoryInterface;
-use App\Domain\Product\Repository\ProductRepositoryInterface;
+use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ProductColorType;
 use App\Form\ProductType;
-use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
 use App\Infrastructure\Service\FileUploader;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ProductController extends AbstractController
 {
-    public function __construct()
+    public function __construct(private readonly ProductService $productService)
     {
     }
 
@@ -40,13 +36,9 @@ final class ProductController extends AbstractController
 
     #[Route('/product/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(
-        Request $request,
-        ProductRepositoryInterface $productRepository,
-        FileUploader $fileUploader,
-        ProductFactory $productFactory,
-    ): Response {
-        $product = $productFactory->createNew();
+    public function new(Request $request, FileUploader $fileUploader): Response
+    {
+        $product = $this->productService->createEmpty();
 
         $form = $this->createForm(ProductType::class, $product, [
             'action' => $this->generateUrl('product_new'),
@@ -64,7 +56,7 @@ final class ProductController extends AbstractController
                 $product->setImageOriginalName($uploadResult['originalName']);
             }
 
-            $productRepository->save($product);
+            $this->productService->save($product);
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -88,48 +80,13 @@ final class ProductController extends AbstractController
 
     #[Route('/api/products', name: 'api_products')]
     #[IsGranted(Role::READER->value)]
-    public function productsApi(
-        Request $request,
-        ProductRepositoryInterface $productRepository,
-        DoctrineTranslationLoader $translationLoader,
-        TranslatorInterface $translator,
-    ): JsonResponse {
-        $page = max((int) $request->query->get('page', 1), 1);
-        $size = min((int) $request->query->get('size', 10), 100);
-        $offset = ($page - 1) * $size;
-
-        $qb = $productRepository->createQueryBuilder('m')
-                   ->setFirstResult($offset)
-                   ->setMaxResults($size)
-        ;
-
-        $sortField = $request->query->get('sort')['field'] ?? null;
-        $sortDir = $request->query->get('sort')['dir'] ?? 'asc';
-        if (\in_array($sortField, ['name', 'type', 'pricePerUnit'], true)) {
-            $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
+    public function productsApi(Request $request): JsonResponse
+    {
+        try {
+            return $this->json($this->productService->getPaginatedProducts($request));
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
-
-        $paginator = new Paginator($qb);
-        $total = \count($paginator);
-
-        $data = [];
-        /** @var Product $product */
-        foreach ($paginator as $product) {
-            $translationLoader->loadTranslations($product);
-            $data[] = [
-                'id' => $product->getId(),
-                'description' => $product->getDescription($request->getLocale()),
-                'country' => '(' . $product->getCountry()->getAlpha2() . ') ' . $product->getCountry()->getName(),
-                'type' => $translator->trans('product.type.' . $product->getType()->value, domain: 'enum'),
-                'enabled' => $translator->trans($product->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
-            ];
-        }
-
-        return $this->json([
-            'data' => $data,
-            'last_page' => ceil($total / $size),
-            'total' => $total,
-        ]);
     }
 
     #[Route('/product/{id}/edit', name: 'product_edit')]
@@ -137,7 +94,6 @@ final class ProductController extends AbstractController
     public function productEdit(
         Request $request,
         Product $product,
-        ProductRepositoryInterface $productRepository,
         FileUploader $fileUploader,
     ): Response {
         $form = $this->createForm(ProductType::class, $product, [
@@ -160,7 +116,8 @@ final class ProductController extends AbstractController
                 $product->setImageOriginalName($uploadResult['originalName']);
             }
 
-            $productRepository->save($product);
+            $this->productService->save($product);
+
             $frameId = $request->request->get('frame_id');
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -199,18 +156,22 @@ final class ProductController extends AbstractController
 
     #[Route('/product/{id}', name: 'product_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function deleteProduct(Product $product, ProductRepositoryInterface $productRepository): JsonResponse
+    public function deleteProduct(Product $product): JsonResponse
     {
-        $productRepository->remove($product);
+        try {
+            $this->productService->delete($product);
 
-        return new JsonResponse(['success' => true]);
+            return new JsonResponse(['success' => true]);
+        } catch (ProductException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 
     #[Route('/product/{id}/color/new', name: 'product_color_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function newColor(Request $request, Product $product, ProductColorRepositoryInterface $productColorRepository): Response
+    public function newColor(Request $request, Product $product): Response
     {
-        $productColor = new ProductColor($product);
+        $productColor = $this->productService->createEmptyColor($product);
         $form = $this->createForm(ProductColorType::class, $productColor, [
             'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
             'product' => $product,
@@ -220,7 +181,13 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $productColorRepository->save($productColor);
+            $this->productService->addColorToProduct(
+                $product,
+                $productColor->getColor(),
+                $productColor->getDescription(),
+            );
+
+            $this->productService->save($product);
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -242,11 +209,8 @@ final class ProductController extends AbstractController
 
     #[Route('/product/color/{id}/edit', name: 'product_color_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function editColor(
-        Request $request,
-        ProductColor $productColor,
-        ProductColorRepositoryInterface $productColorRepository,
-    ): Response {
+    public function editColor(Request $request, ProductColor $productColor): Response
+    {
         $form = $this->createForm(ProductColorType::class, $productColor, [
             'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
             'product' => $productColor->getProduct(),
@@ -255,7 +219,13 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $productColorRepository->save($productColor);
+            $this->productService->updateProductColor(
+                $productColor,
+                $productColor->getColor(),
+                $productColor->getDescription()
+            );
+
+            $this->productService->save($productColor->getProduct());
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -278,29 +248,27 @@ final class ProductController extends AbstractController
 
     #[Route('/api/product_colors/{id}', name: 'api_product_colors')]
     #[IsGranted(Role::READER->value)]
-    public function productColorsApi(Product $product, Request $request): JsonResponse
+    public function productColorsApi(Product $product): JsonResponse
     {
-        $data = [];
-        foreach ($product->getProductColors() as $productColor) {
-            $data[] = [
-                'id' => $productColor->getId(),
-                'color' => $productColor->getColor()->getCode(),
-                'description' => $productColor->getDescription(),
-                'in_stock' => $productColor->getColor()->isInStock(),
-            ];
+        try {
+            return $this->json($this->productService->getProductColorsData($product));
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
-
-        return $this->json([
-            'data' => $data,
-        ]);
     }
 
     #[Route('/product/color/{id}', name: 'product_color_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(ProductColor $productColor, ProductColorRepositoryInterface $productColorRepository): JsonResponse
+    public function delete(ProductColor $productColor): JsonResponse
     {
-        $productColorRepository->remove($productColor);
+        try {
+            $this->productService->removeColorFromProduct($productColor->getProduct(), $productColor->getColor());
 
-        return new JsonResponse(['success' => true]);
+            return new JsonResponse(['success' => true]);
+        } catch (ProductException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'An error occurred while deleting the price'], 500);
+        }
     }
 }

@@ -16,7 +16,7 @@ readonly class ProductFactory
     {
     }
 
-    public function createNew(): Product
+    public function createEmpty(): Product
     {
         $product = Product::createEmpty();
         TranslationInitializer::prepare($product, $this->localeService->getSupportedLocales());

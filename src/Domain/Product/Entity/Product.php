@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\InvalidProductException;
+use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
@@ -14,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DoctrineProductRepository::class)]
 #[ORM\Table(name: 'product')]
@@ -31,21 +35,37 @@ class Product implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', enumType: Type::class)]
+    #[Assert\NotNull(message: 'not_null')]
     private Type $type;
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: false)]
+    #[Assert\NotNull(message: 'not_null')]
     private Country $country;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageFilename = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageOriginalName = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
+    #[Assert\File(
+        maxSize: '5M',
+        mimeTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'image/svg+xml',
+            'image/svg',
+        ],
+        mimeTypesMessage: 'image.invalid_format'
+    )]
     private ?UploadedFile $imageFile = null;
 
     /**
@@ -57,6 +77,7 @@ class Product implements TranslatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[Assert\Valid]
     private Collection $productColors;
 
     protected function __construct()
@@ -138,13 +159,13 @@ class Product implements TranslatableInterface
         $this->addOrUpdateTranslation('description', $value, $locale);
     }
 
-    public function addColor(Color $color, string $description): self
+    public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw new \InvalidArgumentException('Color is already assigned to this Product');
+            throw DuplicateProductColorException::forProduct($this, $color->getCode());
         }
 
-        $productColor = new ProductColor($this);
+        $productColor = ProductColor::create($this, $color, $description);
         $this->productColors->add($productColor);
 
         return $this;
@@ -153,18 +174,20 @@ class Product implements TranslatableInterface
     public function removeColor(Color $color): self
     {
         $productColor = $this->findProductColorByColor($color);
-        if ($productColor) {
-            $this->productColors->removeElement($productColor);
+        if (!$productColor) {
+            throw ProductColorNotFoundException::forProduct($this, $color->getCode());
         }
+
+        $this->productColors->removeElement($productColor);
 
         return $this;
     }
 
-    public function updateColorDescription(Color $color, string $description): self
+    public function updateColorDescription(Color $color, ?string $description = null): self
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw new \InvalidArgumentException('Color is not assigned to this product');
+            throw ProductColorNotFoundException::forProduct($this, $color->getCode());
         }
 
         $productColor->setDescription($description);

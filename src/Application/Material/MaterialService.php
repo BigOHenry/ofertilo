@@ -81,6 +81,7 @@ final readonly class MaterialService
         $total = \count($paginator);
 
         $data = [];
+        /** @var Material $material */
         foreach ($paginator as $material) {
             $this->translationLoader->loadTranslations($material);
             $data[] = [
