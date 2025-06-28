@@ -33,7 +33,7 @@ class MaterialPrice
         min: 1,
         max: 100
     )]
-    private int $thickness;
+    private ?int $thickness = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
@@ -42,15 +42,16 @@ class MaterialPrice
         min: 1.00,
         max: 999999.99
     )]
-    private float $price;
+    private ?float $price = null;
 
     #[ORM\ManyToOne(targetEntity: Material::class, inversedBy: 'prices')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
     private Material $material;
 
-    protected function __construct(Material $material)
+    protected function __construct(Material $material, ?int $id = null)
     {
+        $this->id = $id;
         $this->material = $material;
     }
 
@@ -71,18 +72,34 @@ class MaterialPrice
         return new self($material);
     }
 
+    public static function createFromDatabase(
+        int $id,
+        Material $material,
+        int $thickness,
+        float $price
+    ): self {
+        $materialPrice = new self($material, $id);
+        $materialPrice->thickness = $thickness;
+        $materialPrice->price = $price;
+
+        return $materialPrice;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    protected function setId(?int $id = null): void
     {
         $this->id = $id;
     }
 
     public function getThickness(): int
     {
+        if ($this->thickness === null) {
+            throw new \LogicException('MaterialPrice thickness is not initialized');
+        }
         return $this->thickness;
     }
 
@@ -94,6 +111,9 @@ class MaterialPrice
 
     public function getPrice(): float
     {
+        if ($this->price === null) {
+            throw new \LogicException('MaterialPrice price is not initialized');
+        }
         return $this->price;
     }
 

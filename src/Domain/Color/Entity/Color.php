@@ -37,8 +37,9 @@ class Color implements TranslatableInterface
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
-    protected function __construct()
+    protected function __construct(?int $id = null)
     {
+        $this->id = $id;
         $this->initTranslations();
     }
 
@@ -56,6 +57,20 @@ class Color implements TranslatableInterface
     public static function createEmpty(): self
     {
         return new self();
+    }
+
+    public static function createFromDatabase(
+        int $id,
+        int $code,
+        bool $in_stock,
+        bool $enabled = true
+    ): self {
+        $material = new self($id);
+        $material->code = $code;
+        $material->in_stock = $in_stock;
+        $material->enabled = $enabled;
+
+        return $material;
     }
 
     /**
@@ -78,6 +93,9 @@ class Color implements TranslatableInterface
 
     public function getCode(): int
     {
+        if (!isset($this->code)) {
+            throw new \LogicException('Color code is not initialized');
+        }
         return $this->code;
     }
 

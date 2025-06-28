@@ -38,22 +38,22 @@ class InvalidMaterialException extends MaterialException
 
     public static function dryDensityTooLow(int $minValue): self
     {
-        return new self("Material dry density is lower than minimum allowed value {$minValue}kg/m³");
+        return new self("Material dry density is lower than minimum allowed value {$minValue} kg/m³");
     }
 
     public static function dryDensityTooHigh(int $maxValue): self
     {
-        return new self("Material dry density exceeds maximum allowed value {$maxValue}kg/m³");
+        return new self("Material dry density exceeds maximum allowed value {$maxValue} kg/m³");
     }
 
     public static function hardnessTooLow(int $minValue): self
     {
-        return new self("Material hardness is lower than minimum allowed value {$minValue}kg/m³");
+        return new self("Material hardness is lower than minimum allowed value {$minValue}");
     }
 
     public static function hardnessTooHigh(int $maxValue): self
     {
-        return new self("Material hardness exceeds maximum allowed value {$maxValue}kg/m³");
+        return new self("Material hardness exceeds maximum allowed value {$maxValue}");
     }
 
     public static function descriptionTooLong(int $maxLength): self

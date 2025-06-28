@@ -78,25 +78,39 @@ class Material implements TranslatableInterface
     #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prices;
 
-    protected function __construct()
+    protected function __construct(?int $id = null)
     {
+        $this->id = $id;
         $this->prices = new ArrayCollection();
         $this->initTranslations();
     }
 
     public static function create(Type $type, string $name): self
     {
+        self::validateName($name);
         $product = new self();
         $product->setType($type);
         $product->setName($name);
-        $product->enabled = true;
-
         return $product;
     }
 
     public static function createEmpty(): self
     {
         return new self();
+    }
+
+    public static function createFromDatabase(
+        int $id,
+        Type $type,
+        string $name,
+        bool $enabled = true
+    ): self {
+        $material = new self($id);
+        $material->type = $type;
+        $material->name = $name;
+        $material->enabled = $enabled;
+
+        return $material;
     }
 
     /**
@@ -112,13 +126,16 @@ class Material implements TranslatableInterface
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    protected function setId(?int $id): void
     {
         $this->id = $id;
     }
 
     public function getName(): string
     {
+        if (!isset($this->name)) {
+            throw new \LogicException('Material name is not initialized');
+        }
         return $this->name;
     }
 
@@ -156,6 +173,9 @@ class Material implements TranslatableInterface
 
     public function getType(): Type
     {
+        if (!isset($this->type)) {
+            throw new \LogicException('Material type is not initialized');
+        }
         return $this->type;
     }
 
