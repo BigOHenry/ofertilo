@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests\Unit\Entity;
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Exception\DuplicatePriceThicknessException;
@@ -12,7 +14,7 @@ class MaterialRelationshipTest extends TestCase
 {
     public function testComplexMaterialWithMultiplePrices(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
+        $material = Material::create(Type::VOLUME, 'oak_wood');
         $material->setLatinName('Quercus robur');
         $material->setDryDensity(750);
         $material->setHardness(85);
@@ -23,7 +25,7 @@ class MaterialRelationshipTest extends TestCase
         $material->addPrice(30, 140.0);
 
         $this->assertCount(3, $material->getPrices());
-        $this->assertSame('Oak Wood', $material->getName());
+        $this->assertSame('oak_wood', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());
 
         foreach ($material->getPrices() as $price) {
@@ -35,7 +37,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testMaterialWithTranslationsAndPrices(): void
     {
-        $material = Material::create(Type::VOLUME, 'Beech');
+        $material = Material::create(Type::VOLUME, 'beech');
         $material->setDescription('Hardwood tree', 'en');
         $material->setDescription('Listnatý strom', 'cs');
         $material->setPlaceOfOrigin('Europe', 'en');
@@ -53,7 +55,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testBidirectionalRelationship(): void
     {
-        $material = Material::create(Type::VOLUME, 'Pine Wood');
+        $material = Material::create(Type::VOLUME, 'pine_wood');
         $material->addPrice(15, 35.0);
 
         $price = $material->getPrices()->first();
@@ -67,7 +69,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testMaterialPriceIntegrity(): void
     {
-        $material = Material::create(Type::VOLUME, 'Walnut');
+        $material = Material::create(Type::VOLUME, 'walnut');
         $material->addPrice(12, 120.0);
         $material->addPrice(18, 180.0);
         $material->addPrice(24, 240.0);
@@ -87,7 +89,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testDuplicatePriceThicknessThrowsException(): void
     {
-        $material = Material::create(Type::VOLUME, 'Cherry');
+        $material = Material::create(Type::VOLUME, 'cherry');
         $material->addPrice(15, 80.0);
 
         $this->expectException(DuplicatePriceThicknessException::class);
@@ -98,8 +100,8 @@ class MaterialRelationshipTest extends TestCase
 
     public function testRemoveNonExistentPriceThrowsException(): void
     {
-        $material = Material::create(Type::VOLUME, 'Maple');
-        $otherMaterial = Material::create(Type::VOLUME, 'Birch');
+        $material = Material::create(Type::VOLUME, 'maple');
+        $otherMaterial = Material::create(Type::VOLUME, 'birch');
 
         $otherMaterial->addPrice(10, 50.0);
         $otherPrice = $otherMaterial->getPrices()->first();
@@ -111,7 +113,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testMaterialWithAllPropertiesAndMultiplePrices(): void
     {
-        $material = Material::create(Type::VOLUME, 'Premium Mahogany');
+        $material = Material::create(Type::VOLUME, 'premium_mahogany');
         $material->setLatinName('Swietenia mahagoni');
         $material->setDryDensity(850);
         $material->setHardness(95);
@@ -125,7 +127,7 @@ class MaterialRelationshipTest extends TestCase
         $material->addPrice(16, 320.0);
         $material->addPrice(20, 400.0);
 
-        $this->assertSame('Premium Mahogany', $material->getName());
+        $this->assertSame('premium_mahogany', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());
         $this->assertSame('Swietenia mahagoni', $material->getLatinName());
         $this->assertSame(850, $material->getDryDensity());
@@ -151,7 +153,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testMaterialPriceCollectionOperations(): void
     {
-        $material = Material::create(Type::VOLUME, 'Ash Wood');
+        $material = Material::create(Type::VOLUME, 'ash_wood');
 
         $this->assertCount(0, $material->getPrices());
         $this->assertTrue($material->getPrices()->isEmpty());
@@ -188,7 +190,7 @@ class MaterialRelationshipTest extends TestCase
 
     public function testMaterialTranslationConsistency(): void
     {
-        $material = Material::create(Type::VOLUME, 'Teak');
+        $material = Material::create(Type::VOLUME, 'teak');
 
         $material->setDescription('Tropical hardwood', 'en');
         $material->setDescription('Tropické tvrdé dřevo', 'cs');

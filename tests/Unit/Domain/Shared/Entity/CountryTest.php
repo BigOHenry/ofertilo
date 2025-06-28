@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Domain\Shared\Entity;
 
 use App\Domain\Shared\Entity\Country;
 use PHPUnit\Framework\TestCase;

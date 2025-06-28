@@ -76,7 +76,7 @@ class MaterialPrice
         int $id,
         Material $material,
         int $thickness,
-        float $price
+        float $price,
     ): self {
         $materialPrice = new self($material, $id);
         $materialPrice->thickness = $thickness;
@@ -90,16 +90,12 @@ class MaterialPrice
         return $this->id;
     }
 
-    protected function setId(?int $id = null): void
-    {
-        $this->id = $id;
-    }
-
     public function getThickness(): int
     {
         if ($this->thickness === null) {
             throw new \LogicException('MaterialPrice thickness is not initialized');
         }
+
         return $this->thickness;
     }
 
@@ -114,6 +110,7 @@ class MaterialPrice
         if ($this->price === null) {
             throw new \LogicException('MaterialPrice price is not initialized');
         }
+
         return $this->price;
     }
 
@@ -131,6 +128,11 @@ class MaterialPrice
     public function setMaterial(Material $material): void
     {
         $this->material = $material;
+    }
+
+    protected function setId(?int $id = null): void
+    {
+        $this->id = $id;
     }
 
     private static function validatePrice(float $price): void

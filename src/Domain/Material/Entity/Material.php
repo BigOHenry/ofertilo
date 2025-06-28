@@ -91,6 +91,7 @@ class Material implements TranslatableInterface
         $product = new self();
         $product->setType($type);
         $product->setName($name);
+
         return $product;
     }
 
@@ -103,7 +104,7 @@ class Material implements TranslatableInterface
         int $id,
         Type $type,
         string $name,
-        bool $enabled = true
+        bool $enabled = true,
     ): self {
         $material = new self($id);
         $material->type = $type;
@@ -126,16 +127,12 @@ class Material implements TranslatableInterface
         return $this->id;
     }
 
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
     public function getName(): string
     {
         if (!isset($this->name)) {
             throw new \LogicException('Material name is not initialized');
         }
+
         return $this->name;
     }
 
@@ -176,6 +173,7 @@ class Material implements TranslatableInterface
         if (!isset($this->type)) {
             throw new \LogicException('Material type is not initialized');
         }
+
         return $this->type;
     }
 
@@ -259,6 +257,11 @@ class Material implements TranslatableInterface
         }
 
         $this->prices->removeElement($price);
+    }
+
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     private static function validateName(string $name): void

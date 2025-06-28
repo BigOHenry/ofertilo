@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Domain\Color\Entity;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\InvalidColorException;
@@ -67,7 +67,6 @@ class ColorTest extends TestCase
         $color->setCode(10000);
     }
 
-
     public function testMultipleTranslationsForDescription(): void
     {
         $color = Color::createEmpty();
@@ -104,7 +103,6 @@ class ColorTest extends TestCase
 
         $this->assertTrue($color->isEnabled());
     }
-
 
     public function testSetEnabled(): void
     {

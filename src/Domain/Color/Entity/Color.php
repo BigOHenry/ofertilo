@@ -63,7 +63,7 @@ class Color implements TranslatableInterface
         int $id,
         int $code,
         bool $in_stock,
-        bool $enabled = true
+        bool $enabled = true,
     ): self {
         $material = new self($id);
         $material->code = $code;
@@ -96,6 +96,7 @@ class Color implements TranslatableInterface
         if (!isset($this->code)) {
             throw new \LogicException('Color code is not initialized');
         }
+
         return $this->code;
     }
 

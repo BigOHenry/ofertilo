@@ -39,4 +39,4 @@
 
 - kvalita kódu je kontrolována dle PSR-12 pomocí CodeSniffer `vendor/bin/phpcs` nebo automatický fix `PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix`
 - statickou analýzu kódu provádí PHPStan `vendor/bin/phpstan analyse`
-- 
+- unit testy jsou řešené pomocí PHPUnit `php bin/phpunit`

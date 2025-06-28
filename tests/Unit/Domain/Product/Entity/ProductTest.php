@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,39 +17,55 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductTest extends TestCase
 {
-    public function testConstructor(): void
+    private Type $type;
+    private Country $country;
+
+    protected function setUp(): void
     {
-        $product = new Product();
+        $this->type = Type::FLAG;
+        $this->country = new Country('Czech Republic', 'cz', 'cze');
+    }
+
+    public function testCreateEmptyProduct(): void
+    {
+        $product = Product::createEmpty();
 
         $this->assertNull($product->getId());
-        $this->assertTrue($product->isEnabled()); // default true
+        $this->assertTrue($product->isEnabled());
         $this->assertInstanceOf(ArrayCollection::class, $product->getProductColors());
         $this->assertCount(0, $product->getProductColors());
         $this->assertNull($product->getImageFilename());
         $this->assertNull($product->getImageOriginalName());
         $this->assertNull($product->getImageFile());
+
+        $this->expectException(\LogicException::class);
+        $product->getType();
     }
 
-    public function testSetAndGetId(): void
+    public function testCreateEmptyProductCountry(): void
     {
-        $product = new Product();
-        $product->setId(123);
+        $product = Product::createEmpty();
 
-        $this->assertSame(123, $product->getId());
+        $this->expectException(\LogicException::class);
+        $product->getCountry();
     }
 
-    public function testSetIdWithNull(): void
+    public function testCreateProductWithTypeAndCountry(): void
     {
-        $product = new Product();
-        $product->setId(null);
+        $product = Product::create($this->type, $this->country);
 
         $this->assertNull($product->getId());
+        $this->assertSame($this->type, $product->getType());
+        $this->assertSame($this->country, $product->getCountry());
+        $this->assertTrue($product->isEnabled());
+        $this->assertCount(0, $product->getProductColors());
     }
 
     public function testSetAndGetType(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setType(Type::FLAG);
+
         $this->assertSame(Type::FLAG, $product->getType());
 
         $product->setType(Type::COAT_OF_ARMS);
@@ -56,24 +74,22 @@ class ProductTest extends TestCase
 
     public function testSetAndGetCountry(): void
     {
-        $product = new Product();
-        $country = new Country('Czech Republic', 'cz', 'cze');
+        $product = Product::createEmpty();
+        $product->setCountry($this->country);
 
-        $product->setCountry($country);
-
-        $this->assertSame($country, $product->getCountry());
+        $this->assertSame($this->country, $product->getCountry());
     }
 
     public function testIsEnabledByDefault(): void
     {
-        $product = new Product();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertTrue($product->isEnabled());
     }
 
     public function testSetEnabled(): void
     {
-        $product = new Product();
+        $product = Product::create($this->type, $this->country);
         $product->setEnabled(false);
 
         $this->assertFalse($product->isEnabled());
@@ -81,13 +97,11 @@ class ProductTest extends TestCase
 
     public function testToggleEnabled(): void
     {
-        $product = new Product();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertTrue($product->isEnabled());
-
         $product->setEnabled(false);
         $this->assertFalse($product->isEnabled());
-
         $product->setEnabled(true);
         $this->assertTrue($product->isEnabled());
     }
@@ -103,7 +117,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetDescription(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setDescription('Product description', 'en');
 
         $this->assertSame('Product description', $product->getDescription('en'));
@@ -111,7 +125,7 @@ class ProductTest extends TestCase
 
     public function testDescriptionWithDefaultLocale(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setDescription('Default description');
 
         $this->assertSame('Default description', $product->getDescription());
@@ -120,7 +134,7 @@ class ProductTest extends TestCase
 
     public function testMultipleTranslationsForDescription(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setDescription('English description', 'en');
         $product->setDescription('Czech description', 'cs');
         $product->setDescription('German description', 'de');
@@ -132,8 +146,8 @@ class ProductTest extends TestCase
 
     public function testAddColor(): void
     {
-        $product = new Product();
-        $color = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
 
         $result = $product->addColor($color, 'Red variant');
 
@@ -145,23 +159,22 @@ class ProductTest extends TestCase
 
     public function testAddColorThrowsExceptionWhenColorAlreadyExists(): void
     {
-        $product = new Product();
-        $color = new Color();
-
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
         $product->addColor($color, 'Red variant');
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Color is already assigned to this Product');
+        $this->expectException(DuplicateProductColorException::class);
+        $this->expectExceptionMessage("Color '3025' is already assigned to product");
 
         $product->addColor($color, 'Another description');
     }
 
     public function testRemoveColor(): void
     {
-        $product = new Product();
-        $color = new Color();
-
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
         $product->addColor($color, 'Red variant');
+
         $this->assertTrue($product->hasColor($color));
 
         $result = $product->removeColor($color);
@@ -171,22 +184,21 @@ class ProductTest extends TestCase
         $this->assertCount(0, $product->getProductColors());
     }
 
-    public function testRemoveColorWhenColorNotExists(): void
+    public function testRemoveColorWhenColorNotExistsThrowsException(): void
     {
-        $product = new Product();
-        $color = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
 
-        $result = $product->removeColor($color);
+        $this->expectException(ProductColorNotFoundException::class);
+        $this->expectExceptionMessage("Color '3025' is not assigned to product");
 
-        $this->assertSame($product, $result);
-        $this->assertFalse($product->hasColor($color));
+        $product->removeColor($color);
     }
 
     public function testUpdateColorDescription(): void
     {
-        $product = new Product();
-        $color = new Color();
-
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
         $product->addColor($color, 'Original description');
 
         $result = $product->updateColorDescription($color, 'Updated description');
@@ -197,20 +209,20 @@ class ProductTest extends TestCase
 
     public function testUpdateColorDescriptionThrowsExceptionWhenColorNotExists(): void
     {
-        $product = new Product();
-        $color = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Color is not assigned to this product');
+        $this->expectException(ProductColorNotFoundException::class);
+        $this->expectExceptionMessage("Color '3025' is not assigned to product");
 
         $product->updateColorDescription($color, 'New description');
     }
 
     public function testHasColor(): void
     {
-        $product = new Product();
-        $color1 = new Color();
-        $color2 = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color1 = Color::create(3025);
+        $color2 = Color::create(3026);
 
         $product->addColor($color1, 'Red variant');
 
@@ -220,9 +232,8 @@ class ProductTest extends TestCase
 
     public function testGetColorDescription(): void
     {
-        $product = new Product();
-        $color = new Color();
-
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
         $product->addColor($color, 'Red variant');
 
         $this->assertSame('Red variant', $product->getColorDescription($color));
@@ -230,15 +241,15 @@ class ProductTest extends TestCase
 
     public function testGetColorDescriptionReturnsNullWhenColorNotExists(): void
     {
-        $product = new Product();
-        $color = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color = Color::create(3025);
 
         $this->assertNull($product->getColorDescription($color));
     }
 
     public function testGetProductColors(): void
     {
-        $product = new Product();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertInstanceOf(ArrayCollection::class, $product->getProductColors());
         $this->assertCount(0, $product->getProductColors());
@@ -246,7 +257,7 @@ class ProductTest extends TestCase
 
     public function testSetProductColors(): void
     {
-        $product = new Product();
+        $product = Product::create($this->type, $this->country);
         $productColors = new ArrayCollection();
 
         $product->setProductColors($productColors);
@@ -256,17 +267,17 @@ class ProductTest extends TestCase
 
     public function testSetAndGetImageFilename(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $result = $product->setImageFilename('image.jpg');
 
         $this->assertSame('image.jpg', $product->getImageFilename());
-        $this->assertSame($product, $result); // Test fluent interface
+        $this->assertSame($product, $result);
     }
 
     public function testSetImageFilenameWithNull(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $result = $product->setImageFilename(null);
 
@@ -276,7 +287,7 @@ class ProductTest extends TestCase
 
     public function testHasImage(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $this->assertFalse($product->hasImage());
 
@@ -289,13 +300,13 @@ class ProductTest extends TestCase
 
     public function testRemoveImage(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setImageFilename('image.jpg');
         $product->setImageOriginalName('original.jpg');
 
         $result = $product->removeImage();
 
-        $this->assertSame($product, $result); // Test fluent interface
+        $this->assertSame($product, $result);
         $this->assertNull($product->getImageFilename());
         $this->assertNull($product->getImageOriginalName());
         $this->assertFalse($product->hasImage());
@@ -303,7 +314,7 @@ class ProductTest extends TestCase
 
     public function testGetEncodedFilename(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $product->setImageFilename('test.jpg');
 
         $encoded = $product->getEncodedFilename();
@@ -313,17 +324,17 @@ class ProductTest extends TestCase
 
     public function testSetAndGetImageOriginalName(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $result = $product->setImageOriginalName('original.jpg');
 
         $this->assertSame('original.jpg', $product->getImageOriginalName());
-        $this->assertSame($product, $result); // Test fluent interface
+        $this->assertSame($product, $result);
     }
 
     public function testSetImageOriginalNameWithNull(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $result = $product->setImageOriginalName(null);
 
@@ -333,7 +344,7 @@ class ProductTest extends TestCase
 
     public function testGetImageFile(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $this->assertNull($product->getImageFile());
     }
@@ -343,7 +354,7 @@ class ProductTest extends TestCase
      */
     public function testSetImageFile(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('getClientOriginalName')->willReturn('uploaded.jpg');
 
@@ -356,7 +367,7 @@ class ProductTest extends TestCase
 
     public function testSetImageFileWithNull(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $result = $product->setImageFile(null);
 
@@ -366,19 +377,19 @@ class ProductTest extends TestCase
 
     public function testGetEntityFolder(): void
     {
-        $product = new Product();
+        $product = Product::createEmpty();
 
         $this->assertSame('products', $product->getEntityFolder());
     }
 
     public function testMultipleColorsManagement(): void
     {
-        $product = new Product();
-        $color1 = new Color();
-        $color2 = new Color();
-        $color3 = new Color();
+        $product = Product::create($this->type, $this->country);
+        $color1 = Color::create(3025);
+        $color2 = Color::create(3026);
+        $color3 = Color::create(3027);
 
-        // Adding more colours
+        // Adding multiple colours
         $product->addColor($color1, 'Red');
         $product->addColor($color2, 'Blue');
         $product->addColor($color3, 'Green');
@@ -403,14 +414,9 @@ class ProductTest extends TestCase
 
     public function testCompleteProductConfiguration(): void
     {
-        $product = new Product();
-        $type = Type::COAT_OF_ARMS;
-        $country = new Country('Czech Republic', 'cz', 'cze');
-        $color = new Color();
+        $product = Product::create(Type::COAT_OF_ARMS, $this->country);
+        $color = Color::create(3025);
 
-        $product->setId(1);
-        $product->setType($type);
-        $product->setCountry($country);
         $product->setEnabled(true);
         $product->setDescription('Test product', 'en');
         $product->setImageFilename('product.jpg');
@@ -418,9 +424,9 @@ class ProductTest extends TestCase
         $product->addColor($color, 'Default color');
 
         // Verification of all properties
-        $this->assertSame(1, $product->getId());
-        $this->assertSame($type, $product->getType());
-        $this->assertSame($country, $product->getCountry());
+        $this->assertNull($product->getId());
+        $this->assertSame(Type::COAT_OF_ARMS, $product->getType());
+        $this->assertSame($this->country, $product->getCountry());
         $this->assertTrue($product->isEnabled());
         $this->assertSame('Test product', $product->getDescription('en'));
         $this->assertSame('product.jpg', $product->getImageFilename());

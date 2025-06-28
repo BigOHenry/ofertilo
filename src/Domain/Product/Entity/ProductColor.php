@@ -25,7 +25,7 @@ class ProductColor
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productColors')]
     #[ORM\JoinColumn(nullable: false)]
@@ -35,14 +35,15 @@ class ProductColor
     #[ORM\ManyToOne(targetEntity: Color::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
-    private Color $color;
+    private ?Color $color = null;
 
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
     #[Assert\Length(max: 500, maxMessage: 'max_length')]
     private ?string $description = null;
 
-    protected function __construct(Product $product)
+    protected function __construct(Product $product, ?int $id = null)
     {
+        $this->id = $id;
         $this->product = $product;
     }
 
@@ -64,9 +65,17 @@ class ProductColor
         return new self($product);
     }
 
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
+    public static function createFromDatabase(
+        int $id,
+        Product $product,
+        Color $color,
+        ?string $description = null,
+    ): self {
+        $productColor = new self($product, $id);
+        $productColor->color = $color;
+        $productColor->description = $description;
+
+        return $productColor;
     }
 
     public function getId(): ?int
@@ -81,6 +90,10 @@ class ProductColor
 
     public function getColor(): Color
     {
+        if ($this->color === null) {
+            throw new \LogicException('ProductColor color is not initialized');
+        }
+
         return $this->color;
     }
 
@@ -102,6 +115,11 @@ class ProductColor
     public function setColor(Color $color): void
     {
         $this->color = $color;
+    }
+
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     private static function validateDescription(string $description): void

@@ -79,8 +79,9 @@ class Product implements TranslatableInterface
     #[Assert\Valid]
     private Collection $productColors;
 
-    protected function __construct()
+    protected function __construct(?int $id = null)
     {
+        $this->id = $id;
         $this->productColors = new ArrayCollection();
         $this->initTranslations();
     }
@@ -95,6 +96,24 @@ class Product implements TranslatableInterface
         return $product;
     }
 
+    public static function createFromDatabase(
+        int $id,
+        Type $type,
+        Country $country,
+        ?string $imageFilename = null,
+        ?string $imageOriginalName = null,
+        bool $enabled = true,
+    ): self {
+        $product = new self($id);
+        $product->type = $type;
+        $product->country = $country;
+        $product->imageFilename = $imageFilename;
+        $product->imageOriginalName = $imageOriginalName;
+        $product->enabled = $enabled;
+
+        return $product;
+    }
+
     public static function createEmpty(): self
     {
         return new self();
@@ -105,13 +124,12 @@ class Product implements TranslatableInterface
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
     public function getType(): Type
     {
+        if (!isset($this->type)) {
+            throw new \LogicException('Product Type is not initialized');
+        }
+
         return $this->type;
     }
 
@@ -122,6 +140,10 @@ class Product implements TranslatableInterface
 
     public function getCountry(): Country
     {
+        if (!isset($this->country)) {
+            throw new \LogicException('Product Country is not initialized');
+        }
+
         return $this->country;
     }
 
@@ -161,7 +183,7 @@ class Product implements TranslatableInterface
     public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw DuplicateProductColorException::forProduct($this, $color->getCode());
+            throw DuplicateProductColorException::forProduct($color->getCode());
         }
 
         $productColor = ProductColor::create($this, $color, $description);
@@ -174,7 +196,7 @@ class Product implements TranslatableInterface
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($this, $color->getCode());
+            throw ProductColorNotFoundException::forProduct($color->getCode());
         }
 
         $this->productColors->removeElement($productColor);
@@ -186,7 +208,7 @@ class Product implements TranslatableInterface
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($this, $color->getCode());
+            throw ProductColorNotFoundException::forProduct($color->getCode());
         }
 
         $productColor->setDescription($description);
@@ -287,10 +309,15 @@ class Product implements TranslatableInterface
         return 'products';
     }
 
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
     private function findProductColorByColor(Color $color): ?ProductColor
     {
         foreach ($this->productColors as $productColor) {
-            if ($productColor->getColor()->getId() === $color->getId()) {
+            if ($productColor->getColor()->getCode() === $color->getCode()) {
                 return $productColor;
             }
         }

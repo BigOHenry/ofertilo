@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
@@ -14,7 +16,7 @@ class MaterialPriceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->material = Material::create(Type::VOLUME, 'Test Material');
+        $this->material = Material::create(Type::VOLUME, 'test_material');
     }
 
     public function testCreateEmptyMaterialPrice(): void
@@ -73,7 +75,7 @@ class MaterialPriceTest extends TestCase
     public function testCreateWithTooHighPriceThrowsException(): void
     {
         $this->expectException(InvalidMaterialPriceException::class);
-        $this->expectExceptionMessage('Price 1000000.0 exceeds maximum allowed price 999999.99');
+        $this->expectExceptionMessage('Price 1000000 exceeds maximum allowed price 999999.99');
 
         MaterialPrice::create($this->material, 10, 1000000.0);
     }
@@ -97,7 +99,7 @@ class MaterialPriceTest extends TestCase
     public function testSetMaterial(): void
     {
         $price = MaterialPrice::createEmpty($this->material);
-        $newMaterial = Material::create(Type::VOLUME, 'New Material');
+        $newMaterial = Material::create(Type::VOLUME, 'new_material');
 
         $price->setMaterial($newMaterial);
 
@@ -139,7 +141,7 @@ class MaterialPriceTest extends TestCase
 
         $this->assertSame($this->material, $price->getMaterial());
 
-        $newMaterial = Material::create(Type::VOLUME, 'New Material');
+        $newMaterial = Material::create(Type::VOLUME, 'new_material');
         $price->setMaterial($newMaterial);
 
         $this->assertSame($newMaterial, $price->getMaterial());

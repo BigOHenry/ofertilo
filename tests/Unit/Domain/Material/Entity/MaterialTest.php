@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
@@ -30,22 +30,29 @@ class MaterialTest extends TestCase
 
     public function testCreateMaterialWithTypeAndName(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
+        $material = Material::create(Type::VOLUME, 'oak_wood');
 
         $this->assertNull($material->getId());
-        $this->assertSame('Oak Wood', $material->getName());
+        $this->assertSame('oak_wood', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());
         $this->assertTrue($material->isEnabled());
         $this->assertEmpty($material->getPrices());
     }
 
+    public function testCreateMaterialWithTypeAndInvalidName(): void
+    {
+        $this->expectException(InvalidMaterialException::class);
+        $this->expectExceptionMessage('Material name contains invalid characters');
+
+        Material::create(Type::VOLUME, 'Oak Wood');
+    }
 
     public function testSetValidName(): void
     {
         $material = Material::createEmpty();
-        $material->setName('Oak Wood');
+        $material->setName('oak_wood');
 
-        $this->assertSame('Oak Wood', $material->getName());
+        $this->assertSame('oak_wood', $material->getName());
     }
 
     public function testSetInvalidNameThrowsException(): void
@@ -216,7 +223,7 @@ class MaterialTest extends TestCase
 
     public function testAddPriceWithValidData(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
+        $material = Material::create(Type::VOLUME, 'oak');
         $material->addPrice(10, 50.0);
 
         $this->assertCount(1, $material->getPrices());
@@ -228,7 +235,7 @@ class MaterialTest extends TestCase
 
     public function testAddDuplicateThicknessThrowsException(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
+        $material = Material::create(Type::VOLUME, 'oak');
         $material->addPrice(10, 50.0);
 
         $this->expectException(DuplicatePriceThicknessException::class);
@@ -239,7 +246,7 @@ class MaterialTest extends TestCase
 
     public function testRemovePriceSuccessfully(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
+        $material = Material::create(Type::VOLUME, 'oak');
         $material->addPrice(10, 50.0);
         $price = $material->getPrices()->first();
 
@@ -250,8 +257,8 @@ class MaterialTest extends TestCase
 
     public function testRemoveNonExistentPriceThrowsException(): void
     {
-        $material = Material::create(Type::VOLUME, 'Oak Wood');
-        $otherMaterial = Material::create(Type::VOLUME, 'Beech Wood');
+        $material = Material::create(Type::VOLUME, 'oak');
+        $otherMaterial = Material::create(Type::VOLUME, 'beech_wood');
         $price = MaterialPrice::create($otherMaterial, 10, 50.0);
 
         $this->expectException(MaterialPriceNotFoundException::class);
@@ -291,7 +298,7 @@ class MaterialTest extends TestCase
 
     public function testComplexMaterialWithAllProperties(): void
     {
-        $material = Material::create(Type::VOLUME, 'Premium Oak');
+        $material = Material::create(Type::VOLUME, 'premium_oak');
         $material->setLatinName('Quercus robur');
         $material->setDryDensity(750);
         $material->setHardness(85);
@@ -302,7 +309,7 @@ class MaterialTest extends TestCase
         $material->addPrice(10, 50.0);
         $material->addPrice(20, 95.0);
 
-        $this->assertSame('Premium Oak', $material->getName());
+        $this->assertSame('premium_oak', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());
         $this->assertSame('Quercus robur', $material->getLatinName());
         $this->assertSame(750, $material->getDryDensity());
