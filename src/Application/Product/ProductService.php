@@ -13,7 +13,9 @@ use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Repository\TranslationLoaderInterface;
+use App\Infrastructure\Service\FileUploader;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -24,6 +26,7 @@ final readonly class ProductService
         private ProductFactory $productFactory,
         private TranslationLoaderInterface $translationLoader,
         private TranslatorInterface $translator,
+        private FileUploader $fileUploader,
     ) {
     }
 
@@ -48,6 +51,39 @@ final readonly class ProductService
 
     public function delete(Product $product): void
     {
+        $this->productRepository->remove($product);
+    }
+
+    public function createWithImage(Product $product, ?UploadedFile $imageFile = null): void
+    {
+        if ($imageFile) {
+            $this->handleImageUpload($product, $imageFile);
+        }
+
+        $this->productRepository->save($product);
+    }
+
+    public function updateWithImage(Product $product, ?UploadedFile $imageFile = null): void
+    {
+        if ($imageFile) {
+            $oldImageFilename = $product->getImageFilename();
+            if ($oldImageFilename) {
+                $this->removeProductImage($product, $oldImageFilename);
+            }
+
+            $this->handleImageUpload($product, $imageFile);
+        }
+
+        $this->productRepository->save($product);
+    }
+
+    public function deleteWithImage(Product $product): void
+    {
+        $imageFilename = $product->getImageFilename();
+        if ($imageFilename) {
+            $this->removeProductImage($product, $imageFilename);
+        }
+
         $this->productRepository->remove($product);
     }
 
@@ -148,5 +184,25 @@ final readonly class ProductService
             'product_id' => $product->getId(),
             'total_colors' => \count($data),
         ];
+    }
+
+    private function handleImageUpload(Product $product, UploadedFile $imageFile): void
+    {
+        try {
+            $uploadResult = $this->fileUploader->upload($imageFile, $product->getEntityFolder());
+            $product->setImageFilename($uploadResult['filename']);
+            $product->setImageOriginalName($uploadResult['originalName']);
+        } catch (\RuntimeException $e) {
+            // TODO throw exception
+        }
+    }
+
+    private function removeProductImage(Product $product, string $filename): void
+    {
+        try {
+            $this->fileUploader->remove($product->getEntityFolder(), $filename);
+        } catch (\Exception $e) {
+            // TODO Log error but don't fail the operation
+        }
     }
 }

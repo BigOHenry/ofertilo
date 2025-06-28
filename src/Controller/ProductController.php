@@ -11,8 +11,8 @@ use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ProductColorType;
 use App\Form\ProductType;
-use App\Infrastructure\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +36,7 @@ final class ProductController extends AbstractController
 
     #[Route('/product/new', name: 'product_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, FileUploader $fileUploader): Response
+    public function new(Request $request): Response
     {
         $product = $this->productService->createEmpty();
 
@@ -48,23 +48,20 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('imageFile')->getData();
+            try {
+                $imageFile = $form->get('imageFile')->getData();
+                $this->productService->createWithImage($product, $imageFile);
 
-            if ($imageFile) {
-                $uploadResult = $fileUploader->upload($imageFile, $product->getEntityFolder());
-                $product->setImageFilename($uploadResult['filename']);
-                $product->setImageOriginalName($uploadResult['originalName']);
+                if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                return $this->redirectToRoute('product_index', [], Response::HTTP_SEE_OTHER);
+            } catch (ProductException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
-
-            $this->productService->save($product);
-
-            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->render('components/stream_modal_cleanup.html.twig');
-            }
-
-            return $this->redirectToRoute('product_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('components/form_frame.html.twig', [
@@ -91,46 +88,35 @@ final class ProductController extends AbstractController
 
     #[Route('/product/{id}/edit', name: 'product_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function productEdit(
-        Request $request,
-        Product $product,
-        FileUploader $fileUploader,
-    ): Response {
+    public function productEdit(Request $request, Product $product): Response
+    {
         $form = $this->createForm(ProductType::class, $product, [
             'action' => $this->generateUrl('product_edit', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
-        $oldImageFilename = $product->getImageFilename();
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('imageFile')->getData();
+            try {
+                $imageFile = $form->get('imageFile')->getData();
+                $this->productService->updateWithImage($product, $imageFile);
 
-            if ($imageFile) {
-                if ($oldImageFilename) {
-                    $fileUploader->remove($product->getEntityFolder(), $oldImageFilename);
-                }
-
-                $uploadResult = $fileUploader->upload($imageFile, $product->getEntityFolder());
-                $product->setImageFilename($uploadResult['filename']);
-                $product->setImageOriginalName($uploadResult['originalName']);
-            }
-
-            $this->productService->save($product);
-
-            $frameId = $request->request->get('frame_id');
-            $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-            if ($frameId === 'productModal_frame') {
+                $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('components/stream_modal_cleanup.html.twig');
-            }
+                if ($frameId === 'productModal_frame') {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-            if ($frameId === 'productDetailModal_frame') {
-                return $this->render('product/_streams/product_card.stream.html.twig', [
-                    'product' => $product,
-                ]);
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                if ($frameId === 'productDetailModal_frame') {
+                    return $this->render('product/_streams/product_card.stream.html.twig', [
+                        'product' => $product,
+                    ]);
+                }
+            } catch (ProductException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
         }
 

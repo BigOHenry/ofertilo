@@ -6,7 +6,6 @@ namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Exception\DuplicateProductColorException;
-use App\Domain\Product\Exception\InvalidProductException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
