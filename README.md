@@ -20,6 +20,10 @@
 - PHP 8.4.x
 - Bootstrap 5.3
 - PostgreSQL 17.4
+- Symfony 7.x
+- Doctrine ORM
+- Tabulator.js
+- Webpack
 
 ## 📦 Instalace
 
