@@ -23,4 +23,11 @@ interface ColorRepositoryInterface
     public function findOutOfStock(): array;
 
     public function countOutOfStock(): int;
+
+    /**
+     * @param int[] $excludeIds
+     *
+     * @return Color[]
+     */
+    public function findAvailableColors(array $excludeIds = []): array;
 }

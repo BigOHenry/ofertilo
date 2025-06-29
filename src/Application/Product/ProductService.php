@@ -33,7 +33,7 @@ final readonly class ProductService
         private TranslationLoaderInterface $translationLoader,
         private TranslatorInterface $translator,
         private FileUploader $fileUploader,
-        private ColorRepositoryInterface $colorRepository
+        private ColorRepositoryInterface $colorRepository,
     ) {
     }
 
@@ -262,6 +262,23 @@ final readonly class ProductService
         ];
     }
 
+    /**
+     * @return Color[]
+     */
+    public function getAvailableColorsForProduct(Product $product, ?Color $currentColor = null): array
+    {
+        $assignedColorIds = [];
+        foreach ($product->getProductColors() as $productColor) {
+            $colorId = $productColor->getColor()->getId();
+
+            if ($colorId !== null && ($currentColor === null || $colorId !== $currentColor->getId())) {
+                $assignedColorIds[] = $colorId;
+            }
+        }
+
+        return $this->colorRepository->findAvailableColors($assignedColorIds);
+    }
+
     private function handleImageUpload(Product $product, UploadedFile $imageFile): void
     {
         try {
@@ -280,19 +297,5 @@ final readonly class ProductService
         } catch (\Exception $e) {
             // TODO Log error but don't fail the operation
         }
-    }
-
-    public function getAvailableColorsForProduct(Product $product, ?Color $currentColor = null): array
-    {
-        $assignedColorIds = [];
-        foreach ($product->getProductColors() as $productColor) {
-            $colorId = $productColor->getColor()->getId();
-
-            if ($currentColor === null || $colorId !== $currentColor->getId()) {
-                $assignedColorIds[] = $colorId;
-            }
-        }
-
-        return $this->colorRepository->findAvailableColors($assignedColorIds);
     }
 }
