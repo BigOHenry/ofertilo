@@ -19,7 +19,7 @@ class ColorType extends AbstractType
         $builder
             ->add('code', TextType::class, [
                 'label' => 'field.code',
-                'property_path' => 'code'
+                'property_path' => 'code',
             ])
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,

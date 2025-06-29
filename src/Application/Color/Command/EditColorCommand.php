@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Color\Command;
 
+use App\Domain\Translation\Entity\TranslationEntity;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class EditColorCommand
 {
-
     #[Assert\NotNull(message: 'not_null')]
     #[Assert\Range(
         notInRangeMessage: 'range',
@@ -20,6 +22,9 @@ class EditColorCommand
 
     private bool $enabled;
 
+    /**
+     * @var Collection<int, TranslationEntity>
+     */
     private Collection $translations;
 
     public function getCode(): int
@@ -52,11 +57,17 @@ class EditColorCommand
         $this->enabled = $enabled;
     }
 
+    /**
+     * @return Collection<int, TranslationEntity>
+     */
     public function getTranslations(): Collection
     {
         return $this->translations;
     }
 
+    /**
+     * @param Collection<int, TranslationEntity> $translations
+     */
     public function setTranslations(Collection $translations): void
     {
         $this->translations = $translations;

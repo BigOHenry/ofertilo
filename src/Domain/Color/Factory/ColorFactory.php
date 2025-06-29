@@ -14,14 +14,6 @@ readonly class ColorFactory
     {
     }
 
-    public function createEmpty(): Color
-    {
-        $product = Color::createEmpty();
-        TranslationInitializer::prepare($product, $this->localeService->getSupportedLocales());
-
-        return $product;
-    }
-
     public function create(int $code): Color
     {
         $color = Color::create($code);

@@ -35,7 +35,7 @@ class ProductColor
     #[ORM\ManyToOne(targetEntity: Color::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
-    private ?Color $color = null;
+    private Color $color;
 
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
     #[Assert\Length(max: 500, maxMessage: 'max_length')]
@@ -88,7 +88,7 @@ class ProductColor
         return $this->product;
     }
 
-    public function getColor(): ?Color
+    public function getColor(): Color
     {
         return $this->color;
     }

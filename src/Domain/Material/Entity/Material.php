@@ -95,11 +95,6 @@ class Material implements TranslatableInterface
         return $product;
     }
 
-    public static function createEmpty(): self
-    {
-        return new self();
-    }
-
     public static function createFromDatabase(
         int $id,
         Type $type,
@@ -239,7 +234,7 @@ class Material implements TranslatableInterface
         return $this->prices;
     }
 
-    public function addPrice(int $thickness, float $price): void
+    public function addPrice(int $thickness, string $price): void
     {
         foreach ($this->prices as $existingPrice) {
             if ($existingPrice->getThickness() === $thickness) {

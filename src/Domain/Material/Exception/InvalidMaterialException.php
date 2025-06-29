@@ -11,6 +11,11 @@ class InvalidMaterialException extends MaterialException
         return new self('Material name cannot be empty');
     }
 
+    public static function emptyType(): self
+    {
+        return new self('Material Type cannot be empty');
+    }
+
     public static function nameTooShort(int $minLength): self
     {
         return new self("Material name must be at least {$minLength} characters");

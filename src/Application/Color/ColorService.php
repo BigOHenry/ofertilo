@@ -8,9 +8,9 @@ use App\Application\Color\Command\CreateColorCommand;
 use App\Application\Color\Command\EditColorCommand;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
+use App\Domain\Color\Exception\InvalidColorException;
 use App\Domain\Color\Factory\ColorFactory;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
-use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,31 +26,33 @@ final readonly class ColorService
     ) {
     }
 
-    public function createEmpty(): Color
-    {
-        return $this->colorFactory->createEmpty();
-    }
-
     public function createFromCommand(CreateColorCommand $command): Color
     {
-        if ($this->colorRepository->findByCode($command->getCode())) {
-            throw ColorAlreadyExistsException::withCode($command->getCode());
+        $code = $command->getCode();
+
+        if ($code === null) {
+            throw InvalidColorException::emptyCode();
         }
 
-        $color = Color::create($command->getCode());
+        if ($this->colorRepository->findByCode($code)) {
+            throw ColorAlreadyExistsException::withCode($code);
+        }
+
+        $color = Color::create($code);
         $color->setInStock($command->isInStock());
         $color->setEnabled($command->isEnabled());
 
         foreach ($command->getTranslations() as $translation) {
-            if ($translation instanceof TranslationEntity) {
-                $value = $translation->getValue();
-                if (!empty(trim($value))) {
-                    $color->setDescription($value, $translation->getLocale());
-                }
+            $value = mb_trim($translation->getValue() ?? '');
+            if (!empty($value)) {
+                $color->setDescription($value, $translation->getLocale());
+            } else {
+                $color->setDescription(null, $translation->getLocale());
             }
         }
 
         $this->colorRepository->save($color);
+
         return $color;
     }
 
@@ -65,13 +67,11 @@ final readonly class ColorService
         $color->setEnabled($command->isEnabled());
 
         foreach ($command->getTranslations() as $translation) {
-            if ($translation instanceof TranslationEntity) {
-                $value = trim($translation->getValue());
-                if (!empty($value)) {
-                    $color->setDescription($value, $translation->getLocale());
-                } else {
-                    $color->setDescription(null, $translation->getLocale());
-                }
+            $value = mb_trim($translation->getValue() ?? '');
+            if (!empty($value)) {
+                $color->setDescription($value, $translation->getLocale());
+            } else {
+                $color->setDescription(null, $translation->getLocale());
             }
         }
 

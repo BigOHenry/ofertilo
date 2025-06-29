@@ -6,6 +6,16 @@ namespace App\Domain\Material\Exception;
 
 class InvalidMaterialPriceException extends MaterialException
 {
+    public static function emptyThickness(): self
+    {
+        return new self('MaterialPrice thickness cannot be empty');
+    }
+
+    public static function emptyPrice(): self
+    {
+        return new self('MaterialPrice price cannot be empty');
+    }
+
     public static function priceTooLow(string $price, float $minPrice): self
     {
         return new self("Price {$price} is lower than minimum allowed price {$minPrice}");

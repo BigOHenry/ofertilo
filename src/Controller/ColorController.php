@@ -12,7 +12,6 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ColorType;
-use App\Infrastructure\Service\LocaleService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,7 +26,7 @@ final class ColorController extends AbstractController
 {
     public function __construct(
         private readonly ColorService $colorService,
-        private readonly ColorCommandFactory $commandFactory
+        private readonly ColorCommandFactory $commandFactory,
     ) {
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Color\Factory;
 
 use App\Application\Color\Command\CreateColorCommand;
@@ -12,8 +14,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 final readonly class ColorCommandFactory
 {
     public function __construct(
-        private LocaleService $localeService
-    ) {}
+        private LocaleService $localeService,
+    ) {
+    }
 
     public function createCreateCommand(): CreateColorCommand
     {
@@ -39,6 +42,7 @@ final readonly class ColorCommandFactory
         $command->setInStock($color->isInStock());
         $command->setEnabled($color->isEnabled());
         $command->setTranslations($color->getTranslations());
+
         return $command;
     }
 }

@@ -54,11 +54,6 @@ class Color implements TranslatableInterface
         return $product;
     }
 
-    public static function createEmpty(): self
-    {
-        return new self();
-    }
-
     public static function createFromDatabase(
         int $id,
         int $code,
@@ -84,11 +79,6 @@ class Color implements TranslatableInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getCode(): int
@@ -137,6 +127,11 @@ class Color implements TranslatableInterface
     public function setInStock(bool $inStock): void
     {
         $this->in_stock = $inStock;
+    }
+
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     private static function validateDescription(string $description): void

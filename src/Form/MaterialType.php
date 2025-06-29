@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Domain\Material\Entity\Material;
 use App\Domain\Material\ValueObject\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -65,7 +64,7 @@ class MaterialType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Material::class,
+            'data_class' => null,
             'translation_domain' => 'messages',
         ]);
     }

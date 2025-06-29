@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\Material\Factory\MaterialCommandFactory;
 use App\Application\Material\MaterialService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
@@ -24,7 +25,7 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MaterialController extends AbstractController
 {
-    public function __construct(private readonly MaterialService $materialService)
+    public function __construct(private readonly MaterialService $materialService, private readonly MaterialCommandFactory $materialCommandFactory)
     {
     }
 
@@ -39,9 +40,8 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $material = $this->materialService->createEmpty();
-
-        $form = $this->createForm(MaterialType::class, $material, [
+        $command = $this->materialCommandFactory->createCreateCommand();
+        $form = $this->createForm(MaterialType::class, $command, [
             'action' => $this->generateUrl('material_new'),
             'method' => 'POST',
         ]);
@@ -50,8 +50,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->save($material);
-
+                $material = $this->materialService->createFromCommand($command);
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -79,7 +78,8 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function materialEdit(Request $request, Material $material): Response
     {
-        $form = $this->createForm(MaterialType::class, $material, [
+        $command = $this->materialCommandFactory->createEditCommand($material);
+        $form = $this->createForm(MaterialType::class, $command, [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -87,7 +87,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->save($material);
+                $this->materialService->updateFromCommand($material, $command);
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -155,8 +155,8 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function newPrice(Request $request, Material $material): Response
     {
-        $materialPrice = $this->materialService->createEmptyPrice($material);
-        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+        $command = $this->materialCommandFactory->createCreatePriceCommand($material);
+        $form = $this->createForm(MaterialPriceType::class, $command, [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -165,11 +165,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->addPriceToMaterial(
-                    $material,
-                    $materialPrice->getThickness(),
-                    $materialPrice->getPrice()
-                );
+                $this->materialService->createPriceFromCommand($command);
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -197,7 +193,8 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function editPrice(Request $request, MaterialPrice $materialPrice): Response
     {
-        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+        $command = $this->materialCommandFactory->createEditPriceCommand($materialPrice);
+        $form = $this->createForm(MaterialPriceType::class, $command, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
             'method' => 'POST',
         ]);
@@ -205,11 +202,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->updateMaterialPrice(
-                    $materialPrice,
-                    $materialPrice->getThickness(),
-                    $materialPrice->getPrice()
-                );
+                $this->materialService->updatePriceFromCommand($materialPrice, $command);
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
