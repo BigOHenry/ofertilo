@@ -18,9 +18,11 @@ class MaterialPriceType extends AbstractType
         $builder
             ->add('thickness', IntegerType::class, [
                 'label' => 'field.thickness',
+                'property_path' => 'thickness',
             ])
             ->add('price', TextType::class, [
                 'label' => 'field.price',
+                'property_path' => 'price',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

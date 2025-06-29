@@ -37,7 +37,8 @@ RUN docker-php-ext-install \
     pdo \
     pgsql \
     pdo_pgsql \
-    intl
+    intl \
+    bcmath
 
 RUN docker-php-ext-enable pdo_pgsql
 

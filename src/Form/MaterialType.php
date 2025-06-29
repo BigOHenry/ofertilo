@@ -26,18 +26,21 @@ class MaterialType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'field.name',
+                'property_path' => 'name',
             ])
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,
                 'mapped' => true,
                 'by_reference' => false,
                 'label' => false,
+                'property_path' => 'translations',
                 'entry_options' => [
                     'label' => false,
                 ],
             ])
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
+                'property_path' => 'type',
                 'choices' => array_combine(
                     array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
                     Type::cases()
@@ -45,14 +48,17 @@ class MaterialType extends AbstractType
             ])
             ->add('latin_name', TextType::class, [
                 'label' => 'field.latin_name',
+                'property_path' => 'latin_name',
                 'required' => false,
             ])
             ->add('dry_density', IntegerType::class, [
                 'label' => 'field.dry_density',
+                'property_path' => 'dry_density',
                 'required' => false,
             ])
             ->add('hardness', IntegerType::class, [
                 'label' => 'field.hardness',
+                'property_path' => 'hardness',
                 'required' => false,
             ])
             ->add('save', SubmitType::class, [
