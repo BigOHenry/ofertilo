@@ -29,24 +29,16 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     App\EventListener\LocaleRedirectListener:
-        arguments:
-            $supportedLocales: '%app.supported_locales%'
-            $defaultLocale: '%app.default_locale%'
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-    App\Controller\RedirectToLocaleController:
-        arguments:
-            $supportedLocales: '%app.supported_locales%'
-            $defaultLocale: '%app.default_locale%'
+    App\EventListener\TwoFactorSetupListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
     App\Domain\User\Repository\UserRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
     App\Domain\Material\Repository\MaterialRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
-    App\Domain\Material\Repository\MaterialPriceRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialPriceRepository
-    App\EventListener\TwoFactorSetupListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     App\Domain\Color\Repository\ColorRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
@@ -57,6 +49,19 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
     App\Domain\Shared\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+
     App\Infrastructure\Service\FileUploader:
+        autowire: true
         arguments:
             $secureUploadsDirectory: '%secure_uploads_directory%'
+    App\Infrastructure\Service\LocaleService:
+        autowire: true
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+            $defaultLocale: '%app.default_locale%'
+    App\Domain\Product\Factory\ProductFactory:
+        autowire: true
+    App\Domain\Material\Factory\MaterialFactory:
+        autowire: true
+    App\Domain\Color\Factory\ColorFactory:
+        autowire: true

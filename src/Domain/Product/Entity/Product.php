@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DoctrineProductRepository::class)]
 #[ORM\Table(name: 'product')]
@@ -27,24 +31,40 @@ class Product implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(type: 'string', enumType: Type::class)]
+    #[Assert\NotNull(message: 'not_null')]
     private Type $type;
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: false)]
+    #[Assert\NotNull(message: 'not_null')]
     private Country $country;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageFilename = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageOriginalName = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
+    #[Assert\File(
+        maxSize: '5M',
+        mimeTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'image/svg+xml',
+            'image/svg',
+        ],
+        mimeTypesMessage: 'image.invalid_format'
+    )]
     private ?UploadedFile $imageFile = null;
 
     /**
@@ -56,16 +76,47 @@ class Product implements TranslatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[Assert\Valid]
     private Collection $productColors;
+
+    protected function __construct(?int $id = null)
+    {
+        $this->id = $id;
+        $this->productColors = new ArrayCollection();
+        $this->initTranslations();
+    }
+
+    public static function create(Type $type, Country $country): self
+    {
+        $product = new self();
+        $product->type = $type;
+        $product->country = $country;
+        $product->enabled = true;
+
+        return $product;
+    }
+
+    public static function createFromDatabase(
+        int $id,
+        Type $type,
+        Country $country,
+        ?string $imageFilename = null,
+        ?string $imageOriginalName = null,
+        bool $enabled = true,
+    ): self {
+        $product = new self($id);
+        $product->type = $type;
+        $product->country = $country;
+        $product->imageFilename = $imageFilename;
+        $product->imageOriginalName = $imageOriginalName;
+        $product->enabled = $enabled;
+
+        return $product;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getType(): Type
@@ -111,18 +162,18 @@ class Product implements TranslatableInterface
         return $this->getTranslationFromMemory('description', $locale ?? 'en');
     }
 
-    public function setDescription(string $value, string $locale = 'en'): void
+    public function setDescription(?string $value, string $locale = 'en'): void
     {
         $this->addOrUpdateTranslation('description', $value, $locale);
     }
 
-    public function addColor(Color $color, string $description): self
+    public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw new \InvalidArgumentException('Color is already assigned to this Product');
+            throw DuplicateProductColorException::forProduct($color->getCode());
         }
 
-        $productColor = new ProductColor($this);
+        $productColor = ProductColor::create($this, $color, $description);
         $this->productColors->add($productColor);
 
         return $this;
@@ -131,18 +182,20 @@ class Product implements TranslatableInterface
     public function removeColor(Color $color): self
     {
         $productColor = $this->findProductColorByColor($color);
-        if ($productColor) {
-            $this->productColors->removeElement($productColor);
+        if (!$productColor) {
+            throw ProductColorNotFoundException::forProduct($color->getCode());
         }
+
+        $this->productColors->removeElement($productColor);
 
         return $this;
     }
 
-    public function updateColorDescription(Color $color, string $description): self
+    public function updateColorDescription(Color $color, ?string $description = null): self
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw new \InvalidArgumentException('Color is not assigned to this product');
+            throw ProductColorNotFoundException::forProduct($color->getCode());
         }
 
         $productColor->setDescription($description);
@@ -201,8 +254,12 @@ class Product implements TranslatableInterface
         return $this;
     }
 
-    public function getEncodedFilename(): string
+    public function getEncodedFilename(): ?string
     {
+        if (empty($this->imageFilename)) {
+            return null;
+        }
+
         return base64_encode($this->imageFilename);
     }
 
@@ -239,10 +296,15 @@ class Product implements TranslatableInterface
         return 'products';
     }
 
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
     private function findProductColorByColor(Color $color): ?ProductColor
     {
         foreach ($this->productColors as $productColor) {
-            if ($productColor->getColor()->getId() === $color->getId()) {
+            if ($productColor->getColor()->getCode() === $color->getCode()) {
                 return $productColor;
             }
         }

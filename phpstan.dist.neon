@@ -2,10 +2,9 @@ includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    level: 7
+    level: 8
     paths:
         - bin/
         - config/
         - public/
         - src/
-        - tests/

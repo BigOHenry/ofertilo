@@ -13,7 +13,7 @@ services:
       - .:/var/www/app
 
   database:
-    image: library/postgres:17.4-alpine
+    image: library/postgres:17.5-alpine
     container_name: postgresql
     env_file:
       - .env.docker

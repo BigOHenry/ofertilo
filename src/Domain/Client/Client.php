@@ -7,6 +7,9 @@ namespace App\Domain\Client;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * TODO finish Client.
+ */
 #[ORM\Entity]
 class Client
 {

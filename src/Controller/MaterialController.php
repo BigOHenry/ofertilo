@@ -4,35 +4,33 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\Material\Command\CreateMaterialCommand;
+use App\Application\Material\Command\CreateMaterialPriceCommand;
+use App\Application\Material\Command\EditMaterialCommand;
+use App\Application\Material\Command\EditMaterialPriceCommand;
+use App\Application\Material\Factory\MaterialCommandFactory;
+use App\Application\Material\MaterialService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
-use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
-use App\Domain\Material\Repository\MaterialRepositoryInterface;
-use App\Domain\Translation\Service\TranslationInitializer;
+use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\MaterialException;
 use App\Domain\User\ValueObject\Role;
 use App\Form\MaterialPriceType;
 use App\Form\MaterialType;
-use App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MaterialController extends AbstractController
 {
-    /**
-     * @param array<int, string> $locales
-     */
-    public function __construct(
-        #[Autowire('%app.supported_locales%')] private readonly array $locales,
-    ) {
+    public function __construct(private readonly MaterialService $materialService, private readonly MaterialCommandFactory $materialCommandFactory)
+    {
     }
 
     #[Route('/materials', name: 'material_index')]
@@ -44,12 +42,10 @@ final class MaterialController extends AbstractController
 
     #[Route('/material/new', name: 'material_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function new(Request $request, MaterialRepositoryInterface $materialRepository): Response
+    public function new(Request $request): Response
     {
-        $material = new Material();
-        TranslationInitializer::prepare($material, $this->locales);
-
-        $form = $this->createForm(MaterialType::class, $material, [
+        $command = $this->materialCommandFactory->createCreateCommand();
+        $form = $this->createForm(MaterialType::class, $command, [
             'action' => $this->generateUrl('material_new'),
             'method' => 'POST',
         ]);
@@ -57,18 +53,24 @@ final class MaterialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialRepository->save($material);
-            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+            try {
+                $material = $this->materialService->createFromCommand($command);
+                if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('components/stream_modal_cleanup.html.twig');
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                return $this->redirectToRoute('material_index', [], Response::HTTP_SEE_OTHER);
+            } catch (MaterialException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
-
-            return $this->redirectToRoute('material_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateMaterialCommand::class,
             'frame_id' => 'materialModal_frame',
+            'modal_id' => 'materialModal',
             'form_template' => 'components/material_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
@@ -77,86 +79,42 @@ final class MaterialController extends AbstractController
         ]);
     }
 
-    #[Route('/api/materials', name: 'api_materials')]
-    #[IsGranted(Role::READER->value)]
-    public function materialsApi(
-        Request $request,
-        MaterialRepositoryInterface $materialRepository,
-        DoctrineTranslationLoader $translationLoader,
-        TranslatorInterface $translator,
-    ): JsonResponse {
-        $page = max((int) $request->query->get('page', 1), 1);
-        $size = min((int) $request->query->get('size', 10), 100);
-        $offset = ($page - 1) * $size;
-
-        // TODO rework this to get translated Material
-        $qb = $materialRepository->createQueryBuilder('m')
-                   ->setFirstResult($offset)
-                   ->setMaxResults($size)
-        ;
-
-        $sortField = $request->query->get('sort')['field'] ?? null;
-        $sortDir = $request->query->get('sort')['dir'] ?? 'asc';
-        if (\in_array($sortField, ['name', 'type', 'pricePerUnit'], true)) {
-            $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
-        }
-
-        $paginator = new Paginator($qb);
-        $total = \count($paginator);
-
-        $data = [];
-        /** @var Material $material */
-        foreach ($paginator as $material) {
-            $translationLoader->loadTranslations($material);
-            $data[] = [
-                'id' => $material->getId(),
-                'name' => $material->getName(),
-                'description' => $material->getDescription($request->getLocale()),
-                'type' => $translator->trans('material.type.' . $material->getType()->value, domain: 'enum'),
-            ];
-        }
-
-        return $this->json([
-            'data' => $data,
-            'last_page' => ceil($total / $size),
-            'total' => $total,
-        ]);
-    }
-
     #[Route('/material/{id}/edit', name: 'material_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function materialEdit(
-        Request $request,
-        Material $material,
-        MaterialRepositoryInterface $materialRepository,
-    ): Response {
-        TranslationInitializer::prepare($material, $this->locales);
-
-        $form = $this->createForm(MaterialType::class, $material, [
+    public function materialEdit(Request $request, Material $material): Response
+    {
+        $command = $this->materialCommandFactory->createEditCommand($material);
+        $form = $this->createForm(MaterialType::class, $command, [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialRepository->save($material);
-            $frameId = $request->request->get('frame_id');
-            $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+            try {
+                $this->materialService->updateFromCommand($material, $command);
 
-            if ($frameId === 'materialModal_frame') {
+                $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('components/stream_modal_cleanup.html.twig');
-            }
+                if ($frameId === 'materialModal_frame') {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-            if ($frameId === 'materialDetailModal_frame') {
-                return $this->render('material/_streams/material_card.stream.html.twig', [
-                    'material' => $material,
-                ]);
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                if ($frameId === 'materialDetailModal_frame') {
+                    return $this->render('material/_streams/material_card.stream.html.twig', [
+                        'material' => $material,
+                    ]);
+                }
+            } catch (MaterialException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditMaterialCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialModal_frame',
             'form_template' => 'components/material_form.html.twig',
             'form_context' => [
@@ -177,19 +135,34 @@ final class MaterialController extends AbstractController
 
     #[Route('/material/{id}', name: 'material_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function deleteMaterial(Material $material, MaterialRepositoryInterface $materialRepository): JsonResponse
+    public function deleteMaterial(Material $material): JsonResponse
     {
-        $materialRepository->remove($material);
+        try {
+            $this->materialService->delete($material);
 
-        return new JsonResponse(['success' => true]);
+            return new JsonResponse(['success' => true]);
+        } catch (MaterialException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/api/materials', name: 'api_materials')]
+    #[IsGranted(Role::READER->value)]
+    public function materialsApi(Request $request): JsonResponse
+    {
+        try {
+            return $this->json($this->materialService->getPaginatedMaterials($request));
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 
     #[Route('/material/{id}/price/new', name: 'material_price_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function newPrice(Request $request, Material $material, MaterialPriceRepositoryInterface $materialPriceRepository): Response
+    public function newPrice(Request $request, Material $material): Response
     {
-        $materialPrice = new MaterialPrice($material);
-        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+        $command = $this->materialCommandFactory->createCreatePriceCommand($material);
+        $form = $this->createForm(MaterialPriceType::class, $command, [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -197,17 +170,23 @@ final class MaterialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialPriceRepository->save($materialPrice);
-            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+            try {
+                $this->materialService->createPriceFromCommand($command);
 
-                return $this->render('components/stream_modal_cleanup.html.twig');
+                if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                return $this->redirectToRoute('material_detail', ['id' => $material->getId()], Response::HTTP_SEE_OTHER);
+            } catch (DuplicatePriceThicknessException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
-
-            return $this->redirectToRoute('material_detail', ['id' => $material->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateMaterialPriceCommand::class,
             'frame_id' => 'materialPriceModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
@@ -219,30 +198,33 @@ final class MaterialController extends AbstractController
 
     #[Route('/material/price/{id}/edit', name: 'material_price_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function editPrice(
-        Request $request,
-        MaterialPrice $materialPrice,
-        MaterialPriceRepositoryInterface $materialPriceRepository,
-    ): Response {
-        $form = $this->createForm(MaterialPriceType::class, $materialPrice, [
+    public function editPrice(Request $request, MaterialPrice $materialPrice): Response
+    {
+        $command = $this->materialCommandFactory->createEditPriceCommand($materialPrice);
+        $form = $this->createForm(MaterialPriceType::class, $command, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $materialPriceRepository->save($materialPrice);
+            try {
+                $this->materialService->updatePriceFromCommand($materialPrice, $command);
 
-            if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+                if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
+                    $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                return $this->render('components/stream_modal_cleanup.html.twig');
+                    return $this->render('components/stream_modal_cleanup.html.twig');
+                }
+
+                return $this->redirectToRoute('material_detail', ['id' => $materialPrice->getMaterial()->getId()], Response::HTTP_SEE_OTHER);
+            } catch (MaterialException $e) {
+                $form->addError(new FormError($e->getMessage()));
             }
-
-            return $this->redirectToRoute('material_detail', ['id' => $materialPrice->getMaterial()->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditMaterialPriceCommand::class,
             'frame_id' => 'materialPriceModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
@@ -254,28 +236,27 @@ final class MaterialController extends AbstractController
 
     #[Route('/api/material_prices/{id}', name: 'api_material_prices')]
     #[IsGranted(Role::READER->value)]
-    public function materialPricesApi(Material $material, Request $request): JsonResponse
+    public function materialPricesApi(Material $material): JsonResponse
     {
-        $data = [];
-        foreach ($material->getPrices() as $price) {
-            $data[] = [
-                'id' => $price->getId(),
-                'thickness' => $price->getThickness(),
-                'price' => $price->getPrice(),
-            ];
+        try {
+            return $this->json($this->materialService->getMaterialPricesData($material));
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
-
-        return $this->json([
-            'data' => $data,
-        ]);
     }
 
     #[Route('/material/price/{id}', name: 'material_price_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(MaterialPrice $materialPrice, MaterialPriceRepositoryInterface $materialPriceRepository): JsonResponse
+    public function priceDelete(MaterialPrice $materialPrice): JsonResponse
     {
-        $materialPriceRepository->remove($materialPrice);
+        try {
+            $this->materialService->removePriceFromMaterial($materialPrice);
 
-        return new JsonResponse(['success' => true]);
+            return new JsonResponse(['success' => true]);
+        } catch (MaterialException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'An error occurred while deleting the price'], 500);
+        }
     }
 }

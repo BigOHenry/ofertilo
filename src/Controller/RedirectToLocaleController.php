@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 readonly class RedirectToLocaleController
 {
-    /**
-     * @param string[] $supportedLocales
-     */
-    public function __construct(private array $supportedLocales = [], private string $defaultLocale = '')
+    public function __construct(private LocaleService $localeService)
     {
     }
 
     #[Route(path: '/', name: 'homepage_redirect')]
     public function redirect(Request $request): RedirectResponse
     {
-        $locale = $request->getPreferredLanguage($this->supportedLocales) ?? $this->defaultLocale;
+        $locale = $request->getPreferredLanguage($this->localeService->getSupportedLocales()) ?? $this->localeService->getDefaultLocale();
 
         return new RedirectResponse('/' . $locale . '/');
     }

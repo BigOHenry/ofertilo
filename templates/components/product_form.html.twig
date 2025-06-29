@@ -13,7 +13,7 @@
     {{ form_row(form.country) }}
     {{ form_row(form.imageFile) }}
   </div>
-  {% if product.hasImage %}
+  {% if product and product.hasImage %}
     <div class="col-auto">
       <div class="current-image mt-3">
         <img src="{{ path('secure_image', {

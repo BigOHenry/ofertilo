@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Domain\Color\Entity\Color;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -20,12 +19,14 @@ class ColorType extends AbstractType
         $builder
             ->add('code', TextType::class, [
                 'label' => 'field.code',
+                'property_path' => 'code',
             ])
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,
                 'mapped' => true,
                 'by_reference' => false,
                 'label' => false,
+                'property_path' => 'translations',
                 'entry_options' => [
                     'label' => false,
                 ],
@@ -33,6 +34,7 @@ class ColorType extends AbstractType
             ->add('in_stock', CheckboxType::class, [
                 'label' => 'field.in_stock',
                 'required' => false,
+                'property_path' => 'in_stock',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',
@@ -43,7 +45,7 @@ class ColorType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Color::class,
+            'data_class' => null,
             'translation_domain' => 'messages',
         ]);
     }

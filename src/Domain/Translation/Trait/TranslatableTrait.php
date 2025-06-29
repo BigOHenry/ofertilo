@@ -32,7 +32,7 @@ trait TranslatableTrait
         return $this->translations;
     }
 
-    public function addOrUpdateTranslation(string $field, string $value, string $locale): void
+    public function addOrUpdateTranslation(string $field, ?string $value, string $locale): void
     {
         $this->initTranslations();
 
@@ -47,7 +47,7 @@ trait TranslatableTrait
         $this->addTranslation($field, $value, $locale);
     }
 
-    public function addTranslation(string $field, string $value, string $locale): void
+    public function addTranslation(string $field, ?string $value, string $locale): void
     {
         $t = new TranslationEntity();
         $t->setField($field);
@@ -83,7 +83,7 @@ trait TranslatableTrait
         $result = [];
 
         foreach ($this->translations as $t) {
-            if ($t->getObjectId() === null) {
+            if ($t->getObjectId() === null && $this->getId() !== null) {
                 $t->setObjectId($this->getId());
             }
 

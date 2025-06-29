@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Domain\Material\Entity\MaterialPrice;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,9 +18,11 @@ class MaterialPriceType extends AbstractType
         $builder
             ->add('thickness', IntegerType::class, [
                 'label' => 'field.thickness',
+                'property_path' => 'thickness',
             ])
             ->add('price', TextType::class, [
                 'label' => 'field.price',
+                'property_path' => 'price',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',
@@ -32,7 +33,7 @@ class MaterialPriceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => MaterialPrice::class,
+            'data_class' => null,
             'translation_domain' => 'messages',
         ]);
     }

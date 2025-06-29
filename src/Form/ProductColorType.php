@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Entity\ProductColor;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,44 +16,20 @@ class ProductColorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Product|null $product */
-        $product = $options['product'];
-
-        /** @var ProductColor|null $productColor */
-        $productColor = $options['data'];
-
+        $availableColors = $options['available_colors'];
         $builder
             ->add('color', EntityType::class, [
                 'label' => 'field.color',
                 'class' => Color::class,
                 'choice_label' => 'code',
-                'query_builder' => function (EntityRepository $er) use ($product, $productColor) {
-                    $qb = $er->createQueryBuilder('c')
-                             ->where('c.enabled = :enabled')
-                             ->setParameter('enabled', true)
-                             ->orderBy('c.code', 'ASC')
-                    ;
-
-                    if ($product && $product->getId() && (!$productColor || !$productColor->getId())) {
-                        $assignedColorIds = [];
-                        foreach ($product->getProductColors() as $productColor) {
-                            $assignedColorIds[] = $productColor->getColor()->getId();
-                        }
-
-                        if (!empty($assignedColorIds)) {
-                            $qb->andWhere('c.id NOT IN (:assignedColors)')
-                               ->setParameter('assignedColors', $assignedColorIds)
-                            ;
-                        }
-                    }
-
-                    return $qb;
-                },
+                'property_path' => 'color',
+                'choices' => $availableColors,
                 'placeholder' => 'form.choose_color',
                 'required' => true,
             ])
             ->add('description', TextType::class, [
                 'label' => 'field.description',
+                'property_path' => 'description',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',
@@ -67,11 +40,11 @@ class ProductColorType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => ProductColor::class,
-            'product' => null,
+            'data_class' => null,
+            'available_colors' => [],
             'translation_domain' => 'messages',
         ]);
 
-        $resolver->setAllowedTypes('product', ['null', Product::class]);
+        $resolver->setAllowedTypes('available_colors', 'array');
     }
 }

@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
+use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly class LocaleRedirectListener
 {
-    /**
-     * @param string[] $supportedLocales
-     */
-    public function __construct(private array $supportedLocales, private string $defaultLocale)
+    public function __construct(private LocaleService $localeService)
     {
     }
 
@@ -21,7 +19,7 @@ readonly class LocaleRedirectListener
         $request = $event->getRequest();
         $path = $request->getPathInfo();
 
-        // přeskočit interní Symfony routy
+        // skip internal Symfony routes
         $excluded = ['/_wdt', '/_profiler', '/_fragment', '/_error', '/favicon.ico'];
         if (array_any($excluded, static fn ($prefix) => str_starts_with($path, $prefix))) {
             return;
@@ -31,15 +29,14 @@ readonly class LocaleRedirectListener
             return;
         }
 
-        // Pokud URL již obsahuje validní locale, nic nedělej
-        if (preg_match('#^/(' . implode('|', $this->supportedLocales) . ')(/|$)#', $path)) {
+        // If the URL already contains a valid locale, do nothing
+        if (preg_match('#^/(' . implode('|', $this->localeService->getSupportedLocales()) . ')(/|$)#', $path)) {
             return;
         }
 
-        // Urči preferovaný jazyk
-        $locale = $request->getPreferredLanguage($this->supportedLocales) ?? $this->defaultLocale;
+        $locale = $request->getPreferredLanguage($this->localeService->getSupportedLocales()) ?? $this->localeService->getDefaultLocale();
 
-        // Přesměruj na locale-prefixed URL
+        // Redirect to locale-prefixed URL
         $event->setResponse(new RedirectResponse('/' . $locale . $path));
     }
 }

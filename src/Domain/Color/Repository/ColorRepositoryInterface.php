@@ -11,7 +11,7 @@ interface ColorRepositoryInterface
 {
     public function createQueryBuilder(string $alias): QueryBuilder;
 
-    public function findByName(string $name): ?Color;
+    public function findByCode(int $code): ?Color;
 
     public function save(Color $color): void;
 
@@ -23,4 +23,11 @@ interface ColorRepositoryInterface
     public function findOutOfStock(): array;
 
     public function countOutOfStock(): int;
+
+    /**
+     * @param int[] $excludeIds
+     *
+     * @return Color[]
+     */
+    public function findAvailableColors(array $excludeIds = []): array;
 }

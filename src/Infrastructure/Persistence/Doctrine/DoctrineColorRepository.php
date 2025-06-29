@@ -28,8 +28,12 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
 
         foreach ($color->getTranslations() as $translation) {
             if ($translation->getId() === null) {
-                $translation->setObjectId($color->getId());
-                $em->persist($translation);
+                $color_id = $color->getId();
+
+                if ($color_id !== null) {
+                    $translation->setObjectId($color_id);
+                    $em->persist($translation);
+                }
             }
         }
 
@@ -42,9 +46,9 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
         $this->getEntityManager()->flush();
     }
 
-    public function findByName(string $name): ?Color
+    public function findByCode(int $code): ?Color
     {
-        return $this->findOneBy(['name' => $name]);
+        return $this->findOneBy(['code' => $code]);
     }
 
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Color
@@ -92,5 +96,27 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
                           ->getQuery()
                           ->getSingleScalarResult()
         ;
+    }
+
+    /**
+     * @param int[] $excludeIds
+     *
+     * @return Color[]
+     */
+    public function findAvailableColors(array $excludeIds = []): array
+    {
+        $qb = $this->createQueryBuilder('c')
+                   ->where('c.enabled = :enabled')
+                   ->setParameter('enabled', true)
+                   ->orderBy('c.code', 'ASC')
+        ;
+
+        if (!empty($excludeIds)) {
+            $qb->andWhere('c.id NOT IN (:excludeIds)')
+               ->setParameter('excludeIds', $excludeIds)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

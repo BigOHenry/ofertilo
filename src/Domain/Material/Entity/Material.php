@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Material\Entity;
 
+use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\InvalidMaterialException;
+use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
@@ -11,6 +14,7 @@ use App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DoctrineMaterialRepository::class)]
 #[ORM\Table(name: 'material')]
@@ -23,19 +27,46 @@ class Material implements TranslatableInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 200, nullable: false)]
-    private ?string $name = null;
+    #[ORM\Column(length: 50, nullable: false)]
+    #[Assert\NotBlank(message: 'not_null')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'length_min',
+        maxMessage: 'length_max',
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-z\s\-_]+$/',
+        message: 'invalid_characters'
+    )]
+    private string $name;
 
     #[ORM\Column(nullable: false, enumType: Type::class)]
-    private ?Type $type = null;
+    #[Assert\NotNull(message: 'not_null')]
+    private Type $type;
 
     #[ORM\Column(length: 300, nullable: true)]
+    #[Assert\Length(max: 300, maxMessage: 'length_max')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z\s]+$/',
+        message: 'invalid_characters'
+    )]
     private ?string $latin_name = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
+    #[Assert\Range(
+        notInRangeMessage: 'range³',
+        min: 10,
+        max: 2000
+    )]
     private ?int $dry_density = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
+    #[Assert\Range(
+        notInRangeMessage: 'range',
+        min: 1,
+        max: 9999
+    )]
     private ?int $hardness = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
@@ -47,9 +78,35 @@ class Material implements TranslatableInterface
     #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prices;
 
-    public function __construct()
+    protected function __construct(?int $id = null)
     {
+        $this->id = $id;
         $this->prices = new ArrayCollection();
+        $this->initTranslations();
+    }
+
+    public static function create(Type $type, string $name): self
+    {
+        self::validateName($name);
+        $product = new self();
+        $product->setType($type);
+        $product->setName($name);
+
+        return $product;
+    }
+
+    public static function createFromDatabase(
+        int $id,
+        Type $type,
+        string $name,
+        bool $enabled = true,
+    ): self {
+        $material = new self($id);
+        $material->type = $type;
+        $material->name = $name;
+        $material->enabled = $enabled;
+
+        return $material;
     }
 
     /**
@@ -65,18 +122,18 @@ class Material implements TranslatableInterface
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    public function getName(): string
     {
-        $this->id = $id;
-    }
+        if (!isset($this->name)) {
+            throw new \LogicException('Material name is not initialized');
+        }
 
-    public function getName(): ?string
-    {
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
+        self::validateName($name);
         $this->name = $name;
     }
 
@@ -85,9 +142,12 @@ class Material implements TranslatableInterface
         return $this->getTranslationFromMemory('description', $locale ?? 'en');
     }
 
-    public function setDescription(string $value, string $locale = 'en'): void
+    public function setDescription(?string $description, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        if ($description !== null) {
+            self::validateDescription($description);
+        }
+        $this->addOrUpdateTranslation('description', $description, $locale);
     }
 
     public function getPlaceOfOrigin(?string $locale = null): ?string
@@ -95,13 +155,20 @@ class Material implements TranslatableInterface
         return $this->getTranslationFromMemory('place_of_origin', $locale ?? 'en');
     }
 
-    public function setPlaceOfOrigin(string $value, string $locale = 'en'): void
+    public function setPlaceOfOrigin(?string $place_of_origin, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('place_of_origin', $value, $locale);
+        if ($place_of_origin !== null) {
+            self::validatePlaceOfOrigin($place_of_origin);
+        }
+        $this->addOrUpdateTranslation('place_of_origin', $place_of_origin, $locale);
     }
 
-    public function getType(): ?Type
+    public function getType(): Type
     {
+        if (!isset($this->type)) {
+            throw new \LogicException('Material type is not initialized');
+        }
+
         return $this->type;
     }
 
@@ -127,6 +194,9 @@ class Material implements TranslatableInterface
 
     public function setLatinName(?string $latin_name): void
     {
+        if ($latin_name !== null) {
+            self::validateLatinName($latin_name);
+        }
         $this->latin_name = $latin_name;
     }
 
@@ -137,6 +207,9 @@ class Material implements TranslatableInterface
 
     public function setDryDensity(?int $dry_density): void
     {
+        if ($dry_density !== null) {
+            self::validateDryDensity($dry_density);
+        }
         $this->dry_density = $dry_density;
     }
 
@@ -147,6 +220,9 @@ class Material implements TranslatableInterface
 
     public function setHardness(?int $hardness): void
     {
+        if ($hardness !== null) {
+            self::validateHardness($hardness);
+        }
         $this->hardness = $hardness;
     }
 
@@ -158,14 +234,102 @@ class Material implements TranslatableInterface
         return $this->prices;
     }
 
-    public function addPrice(MaterialPrice $price): void
+    public function addPrice(int $thickness, string $price): void
     {
-        $this->prices[] = $price;
-        $price->setMaterial($this);
+        foreach ($this->prices as $existingPrice) {
+            if ($existingPrice->getThickness() === $thickness) {
+                throw DuplicatePriceThicknessException::forThickness($thickness);
+            }
+        }
+        $materialPrice = MaterialPrice::create($this, $thickness, $price);
+        $this->prices->add($materialPrice);
     }
 
     public function removePrice(MaterialPrice $price): void
     {
+        if (!$this->prices->contains($price)) {
+            throw MaterialPriceNotFoundException::withThickness($price->getThickness());
+        }
+
         $this->prices->removeElement($price);
+    }
+
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    private static function validateName(string $name): void
+    {
+        $trimmed = mb_trim($name);
+        if (empty($trimmed)) {
+            throw InvalidMaterialException::emptyName();
+        }
+
+        if (mb_strlen($trimmed) < 2) {
+            throw InvalidMaterialException::nameTooShort(2);
+        }
+
+        if (mb_strlen($trimmed) > 100) {
+            throw InvalidMaterialException::nameTooLong(100);
+        }
+
+        if (!preg_match('/^[a-z\s\-_]+$/', $trimmed)) {
+            throw InvalidMaterialException::nameInvalidCharacters();
+        }
+    }
+
+    private static function validateLatinName(string $latinName): void
+    {
+        $trimmed = mb_trim($latinName);
+        if (mb_strlen($trimmed) > 300) {
+            throw InvalidMaterialException::latinNameTooLong(300);
+        }
+
+        if (!preg_match('/^[a-zA-Z\s]+$/u', $trimmed)) {
+            throw InvalidMaterialException::latinNameInvalidCharacters();
+        }
+    }
+
+    private static function validateDryDensity(int $density): void
+    {
+        if ($density < 10) {
+            throw InvalidMaterialException::dryDensityTooLow(10);
+        }
+
+        if ($density > 2000) {
+            throw InvalidMaterialException::dryDensityTooHigh(2000);
+        }
+    }
+
+    private static function validateHardness(int $hardness): void
+    {
+        if ($hardness < 1) {
+            throw InvalidMaterialException::hardnessTooLow(1);
+        }
+
+        if ($hardness > 9999) {
+            throw InvalidMaterialException::hardnessTooHigh(9999);
+        }
+    }
+
+    private static function validateDescription(string $description): void
+    {
+        $trimmed = mb_trim($description);
+        if (mb_strlen($trimmed) > 100) {
+            throw InvalidMaterialException::descriptionTooLong(100);
+        }
+    }
+
+    private static function validatePlaceOfOrigin(string $placeOfOrigin): void
+    {
+        $trimmed = mb_trim($placeOfOrigin);
+        if (mb_strlen($trimmed) > 200) {
+            throw InvalidMaterialException::placeOfOriginTooLong(200);
+        }
+
+        if (!preg_match('/^[\p{L}\s\-,]+$/u', $trimmed)) {
+            throw InvalidMaterialException::placeOfOriginInvalidCharacters();
+        }
     }
 }

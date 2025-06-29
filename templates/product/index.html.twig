@@ -63,7 +63,7 @@
                             formatter: (cell) => {
                                 const row = cell.getRow().getData()
                                 const id = row.id;
-                                const description = row.description;
+                                const description = row.type + ' - ' + row.country;
                                 return `<button class="btn btn-sm btn-primary me-1 edit-product" data-modal-src="/product/${id}/edit" data-modal-id="productModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-danger delete-product" data-id="${id}"><i class="fa fa-trash"></i></button>`;
                             },
