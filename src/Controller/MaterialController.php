@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\Material\Command\CreateMaterialCommand;
+use App\Application\Material\Command\CreateMaterialPriceCommand;
+use App\Application\Material\Command\EditMaterialCommand;
+use App\Application\Material\Command\EditMaterialPriceCommand;
 use App\Application\Material\Factory\MaterialCommandFactory;
 use App\Application\Material\MaterialService;
 use App\Domain\Material\Entity\Material;
@@ -64,6 +68,7 @@ final class MaterialController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateMaterialCommand::class,
             'frame_id' => 'materialModal_frame',
             'modal_id' => 'materialModal',
             'form_template' => 'components/material_form.html.twig',
@@ -109,6 +114,7 @@ final class MaterialController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditMaterialCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialModal_frame',
             'form_template' => 'components/material_form.html.twig',
             'form_context' => [
@@ -180,6 +186,7 @@ final class MaterialController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateMaterialPriceCommand::class,
             'frame_id' => 'materialPriceModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
@@ -217,6 +224,7 @@ final class MaterialController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditMaterialPriceCommand::class,
             'frame_id' => 'materialPriceModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [

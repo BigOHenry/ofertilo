@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Domain\Product\Entity\Product;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\ORM\EntityRepository;
@@ -34,12 +33,14 @@ class ProductType extends AbstractType
                 'mapped' => true,
                 'by_reference' => false,
                 'label' => false,
+                'property_path' => 'translations',
                 'entry_options' => [
                     'label' => false,
                 ],
             ])
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
+                'property_path' => 'type',
                 'choices' => array_combine(
                     array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
                     Type::cases()
@@ -49,6 +50,7 @@ class ProductType extends AbstractType
                 'label' => 'field.country',
                 'class' => Country::class,
                 'choice_label' => 'name',
+                'property_path' => 'country',
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                               ->where('c.enabled = :enabled')
@@ -61,8 +63,9 @@ class ProductType extends AbstractType
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'field.image',
-                'mapped' => false, // Není mapováno přímo na entitu
+                'mapped' => true,
                 'required' => false,
+                'property_path' => 'imageFile',
                 'constraints' => [
                     new File([
                         'maxSize' => '2M',
@@ -81,6 +84,7 @@ class ProductType extends AbstractType
             ->add('enabled', CheckboxType::class, [
                 'label' => 'field.enabled',
                 'required' => false,
+                'property_path' => 'enabled',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',
@@ -91,7 +95,7 @@ class ProductType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Product::class,
+            'data_class' => null,
             'translation_domain' => 'messages',
         ]);
     }

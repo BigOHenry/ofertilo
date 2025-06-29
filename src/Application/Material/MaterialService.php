@@ -217,11 +217,6 @@ final readonly class MaterialService
         $this->materialRepository->save($material);
     }
 
-    public function createEmptyPrice(Material $material): MaterialPrice
-    {
-        return MaterialPrice::createEmpty($material);
-    }
-
     /**
      * @return array<string, mixed>
      */

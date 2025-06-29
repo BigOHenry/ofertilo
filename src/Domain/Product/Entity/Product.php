@@ -31,7 +31,7 @@ class Product implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(type: 'string', enumType: Type::class)]
     #[Assert\NotNull(message: 'not_null')]
@@ -167,7 +167,7 @@ class Product implements TranslatableInterface
         return $this->getTranslationFromMemory('description', $locale ?? 'en');
     }
 
-    public function setDescription(string $value, string $locale = 'en'): void
+    public function setDescription(?string $value, string $locale = 'en'): void
     {
         $this->addOrUpdateTranslation('description', $value, $locale);
     }

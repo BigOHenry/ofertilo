@@ -16,14 +16,6 @@ readonly class ProductFactory
     {
     }
 
-    public function createEmpty(): Product
-    {
-        $product = Product::createEmpty();
-        TranslationInitializer::prepare($product, $this->localeService->getSupportedLocales());
-
-        return $product;
-    }
-
     public function create(Type $type, Country $country): Product
     {
         $product = Product::create($type, $country);

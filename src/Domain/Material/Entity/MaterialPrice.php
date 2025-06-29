@@ -129,19 +129,19 @@ class MaterialPrice
 
     private static function validatePrice(string $price): void
     {
-        if (!\is_numeric($price)) {
+        if (!is_numeric($price)) {
             throw InvalidMaterialPriceException::invalidPriceFormat($price);
         }
 
-        if (!\preg_match('/^\d{1,7}(\.\d{1,2})?$/', $price)) {
+        if (!preg_match('/^\d{1,7}(\.\d{1,2})?$/', $price)) {
             throw InvalidMaterialPriceException::invalidPriceFormat($price);
         }
 
-        if (\bccomp($price, '1.00', 2) < 0) {
+        if (bccomp($price, '1.00', 2) < 0) {
             throw InvalidMaterialPriceException::priceTooLow($price, 1);
         }
 
-        if (\bccomp($price, '999999.99', 2) > 0) {
+        if (bccomp($price, '999999.99', 2) > 0) {
             throw InvalidMaterialPriceException::priceTooHigh($price, 999999.99);
         }
     }

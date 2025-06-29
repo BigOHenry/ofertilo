@@ -15,4 +15,14 @@ class InvalidProductException extends ProductException
     {
         return new self("Color description cannot exceed {$maxLength} characters");
     }
+
+    public static function emptyType(): self
+    {
+        return new self('Product Type cannot be empty');
+    }
+
+    public static function emptyCountry(): self
+    {
+        return new self('Product Country cannot be empty');
+    }
 }

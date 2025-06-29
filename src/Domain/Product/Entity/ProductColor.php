@@ -60,11 +60,6 @@ class ProductColor
         return $productColor;
     }
 
-    public static function createEmpty(Product $product): self
-    {
-        return new self($product);
-    }
-
     public static function createFromDatabase(
         int $id,
         Product $product,

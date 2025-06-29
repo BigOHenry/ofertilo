@@ -97,4 +97,19 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
                           ->getSingleScalarResult()
         ;
     }
+
+    public function findAvailableColors(array $excludeIds = []): array
+    {
+        $qb = $this->createQueryBuilder('c')
+                   ->where('c.enabled = :enabled')
+                   ->setParameter('enabled', true)
+                   ->orderBy('c.code', 'ASC');
+
+        if (!empty($excludeIds)) {
+            $qb->andWhere('c.id NOT IN (:excludeIds)')
+               ->setParameter('excludeIds', $excludeIds);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\Product\Command\CreateProductColorCommand;
+use App\Application\Product\Command\EditProductColorCommand;
+use App\Application\Product\Command\EditProductCommand;
+use App\Application\Product\Factory\ProductCommandFactory;
 use App\Application\Product\ProductService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
@@ -23,8 +27,10 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ProductController extends AbstractController
 {
-    public function __construct(private readonly ProductService $productService)
-    {
+    public function __construct(
+        private readonly ProductService $productService,
+        private readonly ProductCommandFactory $commandFactory,
+    ) {
     }
 
     #[Route('/products', name: 'product_index')]
@@ -38,9 +44,8 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $product = $this->productService->createEmpty();
-
-        $form = $this->createForm(ProductType::class, $product, [
+        $command = $this->commandFactory->createCreateCommand();
+        $form = $this->createForm(ProductType::class, $command, [
             'action' => $this->generateUrl('product_new'),
             'method' => 'POST',
         ]);
@@ -49,8 +54,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $imageFile = $form->get('imageFile')->getData();
-                $this->productService->createWithImage($product, $imageFile);
+                $product = $this->productService->createFromCommand($command);
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -65,12 +69,13 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditProductCommand::class,
             'frame_id' => 'productModal_frame',
             'form_template' => 'components/product_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'product-form',
-                'product' => $product,
+                'product' => null,
             ],
         ]);
     }
@@ -90,7 +95,8 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function productEdit(Request $request, Product $product): Response
     {
-        $form = $this->createForm(ProductType::class, $product, [
+        $command = $this->commandFactory->createEditCommand($product);
+        $form = $this->createForm(ProductType::class, $command, [
             'action' => $this->generateUrl('product_edit', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
@@ -98,8 +104,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $imageFile = $form->get('imageFile')->getData();
-                $this->productService->updateWithImage($product, $imageFile);
+                $this->productService->updateFromCommand($product, $command);
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -121,6 +126,7 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditProductCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productModal_frame',
             'form_template' => 'components/product_form.html.twig',
             'form_context' => [
@@ -157,23 +163,19 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function newColor(Request $request, Product $product): Response
     {
-        $productColor = $this->productService->createEmptyColor($product);
-        $form = $this->createForm(ProductColorType::class, $productColor, [
+        $command = $this->commandFactory->createCreateColorCommand($product);
+        $availableColors = $this->productService->getAvailableColorsForProduct($product);
+
+        $form = $this->createForm(ProductColorType::class, $command, [
             'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
-            'product' => $product,
+            'available_colors' => $availableColors,
             'method' => 'POST',
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->productService->addColorToProduct(
-                $product,
-                $productColor->getColor(),
-                $productColor->getDescription(),
-            );
-
-            $this->productService->save($product);
+            $this->productService->createColorFromCommand($command);
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -184,6 +186,7 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateProductColorCommand::class,
             'frame_id' => 'productColorModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
@@ -197,21 +200,19 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function editColor(Request $request, ProductColor $productColor): Response
     {
-        $form = $this->createForm(ProductColorType::class, $productColor, [
+        $command = $this->commandFactory->createEditColorCommand($productColor);
+
+        $availableColors = $this->productService->getAvailableColorsForProduct($productColor->getProduct(), $productColor->getColor());
+
+        $form = $this->createForm(ProductColorType::class, $command, [
             'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
-            'product' => $productColor->getProduct(),
+            'available_colors' => $availableColors,
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->productService->updateProductColor(
-                $productColor,
-                $productColor->getColor(),
-                $productColor->getDescription()
-            );
-
-            $this->productService->save($productColor->getProduct());
+            $this->productService->updateColorFromCommand($productColor, $command);
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -223,6 +224,7 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditProductColorCommand::class,
             'frame_id' => 'productColorModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [

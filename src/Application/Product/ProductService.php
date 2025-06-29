@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Product;
 
+use App\Application\Product\Command\CreateProductColorCommand;
+use App\Application\Product\Command\CreateProductCommand;
+use App\Application\Product\Command\EditProductColorCommand;
+use App\Application\Product\Command\EditProductCommand;
 use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Repository\ColorRepositoryInterface;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
+use App\Domain\Product\Exception\InvalidProductException;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
 use App\Domain\Product\Factory\ProductFactory;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
@@ -27,12 +33,86 @@ final readonly class ProductService
         private TranslationLoaderInterface $translationLoader,
         private TranslatorInterface $translator,
         private FileUploader $fileUploader,
+        private ColorRepositoryInterface $colorRepository
     ) {
     }
 
-    public function createEmpty(): Product
+    public function createFromCommand(CreateProductCommand $command): Product
     {
-        return $this->productFactory->createEmpty();
+        $type = $command->getType();
+        $country = $command->getCountry();
+
+        if ($type === null) {
+            throw InvalidProductException::emptyType();
+        }
+
+        if ($country === null) {
+            throw InvalidProductException::emptyCountry();
+        }
+
+        $product = $this->productFactory->create($type, $country);
+        $product->setEnabled($command->isEnabled());
+
+        if ($command->getImageFile()) {
+            $this->handleImageUpload($product, $command->getImageFile());
+        }
+
+        foreach ($command->getTranslations() as $translation) {
+            $value = mb_trim($translation->getValue() ?? '');
+            if (!empty($value)) {
+                $product->setDescription($value, $translation->getLocale());
+            } else {
+                $product->setDescription(null, $translation->getLocale());
+            }
+        }
+
+        $this->productRepository->save($product);
+
+        return $product;
+    }
+
+    public function updateFromCommand(Product $product, EditProductCommand $command): void
+    {
+        $product->setType($command->getType());
+        $product->setCountry($command->getCountry());
+        $product->setEnabled($command->isEnabled());
+
+        if ($command->getImageFile()) {
+            $oldImageFilename = $product->getImageFilename();
+            if ($oldImageFilename) {
+                $this->removeProductImage($product, $oldImageFilename);
+            }
+            $this->handleImageUpload($product, $command->getImageFile());
+        }
+
+        foreach ($command->getTranslations() as $translation) {
+            $value = mb_trim($translation->getValue() ?? '');
+            if (!empty($value)) {
+                $product->setDescription($value, $translation->getLocale());
+            } else {
+                $product->setDescription(null, $translation->getLocale());
+            }
+        }
+
+        $this->productRepository->save($product);
+    }
+
+    public function createColorFromCommand(CreateProductColorCommand $command): void
+    {
+        $color = $command->getColor();
+        if ($color === null) {
+            throw new \InvalidArgumentException('Color is required');
+        }
+
+        $command->getProduct()->addColor($color, $command->getDescription());
+        $this->productRepository->save($command->getProduct());
+    }
+
+    public function updateColorFromCommand(ProductColor $productColor, EditProductColorCommand $command): void
+    {
+        $productColor->setColor($command->getColor());
+        $productColor->setDescription($command->getDescription());
+        $this->productRepository->save($productColor->getProduct());
     }
 
     public function create(Type $type, Country $country): Product
@@ -157,11 +237,6 @@ final readonly class ProductService
         $this->productRepository->save($product);
     }
 
-    public function createEmptyColor(Product $product): ProductColor
-    {
-        return ProductColor::createEmpty($product);
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -205,5 +280,19 @@ final readonly class ProductService
         } catch (\Exception $e) {
             // TODO Log error but don't fail the operation
         }
+    }
+
+    public function getAvailableColorsForProduct(Product $product, ?Color $currentColor = null): array
+    {
+        $assignedColorIds = [];
+        foreach ($product->getProductColors() as $productColor) {
+            $colorId = $productColor->getColor()->getId();
+
+            if ($currentColor === null || $colorId !== $currentColor->getId()) {
+                $assignedColorIds[] = $colorId;
+            }
+        }
+
+        return $this->colorRepository->findAvailableColors($assignedColorIds);
     }
 }
