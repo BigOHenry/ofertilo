@@ -27,18 +27,16 @@ class ProductColorTest extends TestCase
 
     public function testCreateEmptyProductColor(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $this->assertNull($productColor->getId());
         $this->assertSame($this->product, $productColor->getProduct());
-
-        $this->expectException(\LogicException::class);
-        $productColor->getColor();
+        $this->assertSame($this->color, $productColor->getColor());
     }
 
     public function testCreateEmptyProductColorDescription(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $this->assertNull($productColor->getDescription());
     }
@@ -74,22 +72,24 @@ class ProductColorTest extends TestCase
 
     public function testGetProduct(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $this->assertSame($this->product, $productColor->getProduct());
     }
 
     public function testSetAndGetColor(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
-        $productColor->setColor($this->color);
+        $productColor = ProductColor::create($this->product, $this->color);
 
-        $this->assertSame($this->color, $productColor->getColor());
+        $color = Color::create(3030);
+        $productColor->setColor($color);
+
+        $this->assertSame($color, $productColor->getColor());
     }
 
     public function testSetAndGetDescription(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $result = $productColor->setDescription('Shield red color');
 
@@ -99,7 +99,7 @@ class ProductColorTest extends TestCase
 
     public function testSetDescriptionWithNull(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $result = $productColor->setDescription(null);
 
@@ -109,7 +109,8 @@ class ProductColorTest extends TestCase
 
     public function testSetDescriptionTooLongThrowsException(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
+
         $longDescription = str_repeat('A', 501);
 
         $this->expectException(InvalidProductColorException::class);
@@ -122,7 +123,7 @@ class ProductColorTest extends TestCase
     {
         $productColor = ProductColor::create($this->product, $this->color, 'Lion body');
 
-        $this->assertNull($productColor->getId()); // ID bude nastaveno při persist
+        $this->assertNull($productColor->getId());
         $this->assertSame($this->product, $productColor->getProduct());
         $this->assertSame($this->color, $productColor->getColor());
         $this->assertSame('Lion body', $productColor->getDescription());
@@ -130,7 +131,7 @@ class ProductColorTest extends TestCase
 
     public function testFluentInterface(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $result = $productColor
             ->setDescription('Blue light')
@@ -143,7 +144,7 @@ class ProductColorTest extends TestCase
 
     public function testValidDescriptionBoundaries(): void
     {
-        $productColor = ProductColor::createEmpty($this->product);
+        $productColor = ProductColor::create($this->product, $this->color);
 
         $productColor->setDescription('');
         $this->assertSame('', $productColor->getDescription());

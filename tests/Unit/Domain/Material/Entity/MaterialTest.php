@@ -14,11 +14,21 @@ use PHPUnit\Framework\TestCase;
 
 class MaterialTest extends TestCase
 {
+    private Type $type;
+
+    protected function setUp(): void
+    {
+        $this->type = Type::VOLUME;
+    }
+
     public function testConstructor(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->assertNull($material->getId());
+        $this->assertSame($this->type, $material->getType());
+        $this->assertSame('ash', $material->getName());
+        $this->assertNull($material->getLatinName());
         $this->assertNull($material->getLatinName());
         $this->assertNull($material->getDryDensity());
         $this->assertNull($material->getHardness());
@@ -49,7 +59,7 @@ class MaterialTest extends TestCase
 
     public function testSetValidName(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setName('oak_wood');
 
         $this->assertSame('oak_wood', $material->getName());
@@ -57,7 +67,7 @@ class MaterialTest extends TestCase
 
     public function testSetInvalidNameThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material name cannot be empty');
@@ -67,7 +77,7 @@ class MaterialTest extends TestCase
 
     public function testSetNameTooShortThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material name must be at least 2 characters');
@@ -77,7 +87,7 @@ class MaterialTest extends TestCase
 
     public function testSetNameTooLongThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $longName = str_repeat('A', 101);
 
         $this->expectException(InvalidMaterialException::class);
@@ -88,7 +98,7 @@ class MaterialTest extends TestCase
 
     public function testSetNameWithInvalidCharactersThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material name contains invalid characters');
@@ -98,7 +108,7 @@ class MaterialTest extends TestCase
 
     public function testSetValidLatinName(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setLatinName('Quercus robur');
 
         $this->assertSame('Quercus robur', $material->getLatinName());
@@ -106,7 +116,7 @@ class MaterialTest extends TestCase
 
     public function testSetLatinNameTooLongThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $longLatinName = str_repeat('A', 301);
 
         $this->expectException(InvalidMaterialException::class);
@@ -117,7 +127,7 @@ class MaterialTest extends TestCase
 
     public function testSetLatinNameWithInvalidCharactersThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material latin name contains invalid characters');
@@ -127,7 +137,7 @@ class MaterialTest extends TestCase
 
     public function testSetValidDryDensity(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setDryDensity(750);
 
         $this->assertSame(750, $material->getDryDensity());
@@ -135,7 +145,7 @@ class MaterialTest extends TestCase
 
     public function testSetDryDensityTooLowThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material dry density is lower than minimum allowed value 10 kg/m³');
@@ -145,7 +155,7 @@ class MaterialTest extends TestCase
 
     public function testSetDryDensityTooHighThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material dry density exceeds maximum allowed value 2000 kg/m³');
@@ -155,7 +165,7 @@ class MaterialTest extends TestCase
 
     public function testSetValidHardness(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setHardness(85);
 
         $this->assertSame(85, $material->getHardness());
@@ -163,7 +173,7 @@ class MaterialTest extends TestCase
 
     public function testSetHardnessTooLowThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material hardness is lower than minimum allowed value 1');
@@ -173,7 +183,7 @@ class MaterialTest extends TestCase
 
     public function testSetHardnessTooHighThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
 
         $this->expectException(InvalidMaterialException::class);
         $this->expectExceptionMessage('Material hardness exceeds maximum allowed value 9999');
@@ -183,7 +193,7 @@ class MaterialTest extends TestCase
 
     public function testSetDescriptionTooLongThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $longDescription = str_repeat('A', 101);
 
         $this->expectException(InvalidMaterialException::class);
@@ -194,7 +204,7 @@ class MaterialTest extends TestCase
 
     public function testSetAndGetDescriptionTranslation(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setDescription('Oak', 'en');
         $material->setDescription('Dub', 'cs');
         $this->assertSame('Oak', $material->getDescription('en'));
@@ -203,7 +213,7 @@ class MaterialTest extends TestCase
 
     public function testSetAndGetPlaceOfOriginTranslation(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setPlaceOfOrigin('Czech republic', 'en');
         $material->setPlaceOfOrigin('Česká republika', 'cs');
         $this->assertSame('Czech republic', $material->getPlaceOfOrigin('en'));
@@ -212,7 +222,7 @@ class MaterialTest extends TestCase
 
     public function testSetPlaceOfOriginTooLongThrowsException(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $longPlace = str_repeat('A', 201);
 
         $this->expectException(InvalidMaterialException::class);
@@ -224,30 +234,30 @@ class MaterialTest extends TestCase
     public function testAddPriceWithValidData(): void
     {
         $material = Material::create(Type::VOLUME, 'oak');
-        $material->addPrice(10, 50.0);
+        $material->addPrice(10, '50.0');
 
         $this->assertCount(1, $material->getPrices());
         $price = $material->getPrices()->first();
         $this->assertSame(10, $price->getThickness());
-        $this->assertSame(50.0, $price->getPrice());
+        $this->assertSame('50.0', $price->getPrice());
         $this->assertSame($material, $price->getMaterial());
     }
 
     public function testAddDuplicateThicknessThrowsException(): void
     {
         $material = Material::create(Type::VOLUME, 'oak');
-        $material->addPrice(10, 50.0);
+        $material->addPrice(10, '50.0');
 
         $this->expectException(DuplicatePriceThicknessException::class);
         $this->expectExceptionMessage('Price for thickness 10mm already exists');
 
-        $material->addPrice(10, 60.0);
+        $material->addPrice(10, '60.0');
     }
 
     public function testRemovePriceSuccessfully(): void
     {
         $material = Material::create(Type::VOLUME, 'oak');
-        $material->addPrice(10, 50.0);
+        $material->addPrice(10, '50.0');
         $price = $material->getPrices()->first();
 
         $material->removePrice($price);
@@ -278,7 +288,7 @@ class MaterialTest extends TestCase
 
     public function testSetAndGetType(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $material->setType(Type::VOLUME);
 
         $this->assertSame(Type::VOLUME, $material->getType());
@@ -286,7 +296,7 @@ class MaterialTest extends TestCase
 
     public function testSetAndGetEnabled(): void
     {
-        $material = Material::createEmpty();
+        $material = Material::create($this->type, 'ash');
         $this->assertTrue($material->isEnabled());
 
         $material->setEnabled(false);
@@ -306,8 +316,8 @@ class MaterialTest extends TestCase
         $material->setDescription('Prémiová kvalita dubového dřeva', 'cs');
         $material->setPlaceOfOrigin('Czech Republic', 'en');
         $material->setPlaceOfOrigin('Česká republika', 'cs');
-        $material->addPrice(10, 50.0);
-        $material->addPrice(20, 95.0);
+        $material->addPrice(10, '50.0');
+        $material->addPrice(20, '95.0');
 
         $this->assertSame('premium_oak', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());

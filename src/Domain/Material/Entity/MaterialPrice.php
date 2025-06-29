@@ -67,11 +67,6 @@ class MaterialPrice
         return $product;
     }
 
-    public static function createEmpty(Material $material): self
-    {
-        return new self($material);
-    }
-
     public static function createFromDatabase(
         int $id,
         Material $material,

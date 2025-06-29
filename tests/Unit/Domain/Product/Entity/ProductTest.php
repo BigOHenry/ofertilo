@@ -28,7 +28,7 @@ class ProductTest extends TestCase
 
     public function testCreateEmptyProduct(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertNull($product->getId());
         $this->assertTrue($product->isEnabled());
@@ -38,16 +38,7 @@ class ProductTest extends TestCase
         $this->assertNull($product->getImageOriginalName());
         $this->assertNull($product->getImageFile());
 
-        $this->expectException(\LogicException::class);
-        $product->getType();
-    }
-
-    public function testCreateEmptyProductCountry(): void
-    {
-        $product = Product::createEmpty();
-
-        $this->expectException(\LogicException::class);
-        $product->getCountry();
+        $this->assertSame($this->type, $product->getType());
     }
 
     public function testCreateProductWithTypeAndCountry(): void
@@ -63,7 +54,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetType(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setType(Type::FLAG);
 
         $this->assertSame(Type::FLAG, $product->getType());
@@ -74,7 +65,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetCountry(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setCountry($this->country);
 
         $this->assertSame($this->country, $product->getCountry());
@@ -117,7 +108,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetDescription(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setDescription('Product description', 'en');
 
         $this->assertSame('Product description', $product->getDescription('en'));
@@ -125,7 +116,7 @@ class ProductTest extends TestCase
 
     public function testDescriptionWithDefaultLocale(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setDescription('Default description');
 
         $this->assertSame('Default description', $product->getDescription());
@@ -134,7 +125,7 @@ class ProductTest extends TestCase
 
     public function testMultipleTranslationsForDescription(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setDescription('English description', 'en');
         $product->setDescription('Czech description', 'cs');
         $product->setDescription('German description', 'de');
@@ -267,7 +258,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetImageFilename(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $result = $product->setImageFilename('image.jpg');
 
@@ -277,7 +268,7 @@ class ProductTest extends TestCase
 
     public function testSetImageFilenameWithNull(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $result = $product->setImageFilename(null);
 
@@ -287,7 +278,7 @@ class ProductTest extends TestCase
 
     public function testHasImage(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertFalse($product->hasImage());
 
@@ -300,7 +291,7 @@ class ProductTest extends TestCase
 
     public function testRemoveImage(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setImageFilename('image.jpg');
         $product->setImageOriginalName('original.jpg');
 
@@ -314,7 +305,7 @@ class ProductTest extends TestCase
 
     public function testGetEncodedFilename(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $product->setImageFilename('test.jpg');
 
         $encoded = $product->getEncodedFilename();
@@ -324,7 +315,7 @@ class ProductTest extends TestCase
 
     public function testSetAndGetImageOriginalName(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $result = $product->setImageOriginalName('original.jpg');
 
@@ -334,7 +325,7 @@ class ProductTest extends TestCase
 
     public function testSetImageOriginalNameWithNull(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $result = $product->setImageOriginalName(null);
 
@@ -344,7 +335,7 @@ class ProductTest extends TestCase
 
     public function testGetImageFile(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertNull($product->getImageFile());
     }
@@ -354,7 +345,7 @@ class ProductTest extends TestCase
      */
     public function testSetImageFile(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('getClientOriginalName')->willReturn('uploaded.jpg');
 
@@ -367,7 +358,7 @@ class ProductTest extends TestCase
 
     public function testSetImageFileWithNull(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $result = $product->setImageFile(null);
 
@@ -377,7 +368,7 @@ class ProductTest extends TestCase
 
     public function testGetEntityFolder(): void
     {
-        $product = Product::createEmpty();
+        $product = Product::create($this->type, $this->country);
 
         $this->assertSame('products', $product->getEntityFolder());
     }

@@ -20,9 +20,9 @@ class MaterialRelationshipTest extends TestCase
         $material->setHardness(85);
         $material->setEnabled(true);
 
-        $material->addPrice(10, 50.0);
-        $material->addPrice(20, 95.0);
-        $material->addPrice(30, 140.0);
+        $material->addPrice(10, '50.0');
+        $material->addPrice(20, '95.0');
+        $material->addPrice(30, '140.0');
 
         $this->assertCount(3, $material->getPrices());
         $this->assertSame('oak_wood', $material->getName());
@@ -43,20 +43,20 @@ class MaterialRelationshipTest extends TestCase
         $material->setPlaceOfOrigin('Europe', 'en');
         $material->setPlaceOfOrigin('Evropa', 'cs');
 
-        $material->addPrice(25, 75.5);
+        $material->addPrice(25, '75.5');
 
         $this->assertSame('Hardwood tree', $material->getDescription('en'));
         $this->assertSame('Listnatý strom', $material->getDescription('cs'));
         $this->assertSame('Europe', $material->getPlaceOfOrigin('en'));
         $this->assertSame('Evropa', $material->getPlaceOfOrigin('cs'));
         $this->assertCount(1, $material->getPrices());
-        $this->assertSame(75.5, $material->getPrices()->first()->getPrice());
+        $this->assertSame('75.5', $material->getPrices()->first()->getPrice());
     }
 
     public function testBidirectionalRelationship(): void
     {
         $material = Material::create(Type::VOLUME, 'pine_wood');
-        $material->addPrice(15, 35.0);
+        $material->addPrice(15, '35.0');
 
         $price = $material->getPrices()->first();
 
@@ -70,9 +70,9 @@ class MaterialRelationshipTest extends TestCase
     public function testMaterialPriceIntegrity(): void
     {
         $material = Material::create(Type::VOLUME, 'walnut');
-        $material->addPrice(12, 120.0);
-        $material->addPrice(18, 180.0);
-        $material->addPrice(24, 240.0);
+        $material->addPrice(12, '120.0');
+        $material->addPrice(18, '180.0');
+        $material->addPrice(24, '240.0');
 
         $prices = $material->getPrices();
         $this->assertCount(3, $prices);
@@ -90,12 +90,12 @@ class MaterialRelationshipTest extends TestCase
     public function testDuplicatePriceThicknessThrowsException(): void
     {
         $material = Material::create(Type::VOLUME, 'cherry');
-        $material->addPrice(15, 80.0);
+        $material->addPrice(15, '80.0');
 
         $this->expectException(DuplicatePriceThicknessException::class);
         $this->expectExceptionMessage('Price for thickness 15mm already exists');
 
-        $material->addPrice(15, 90.0);
+        $material->addPrice(15, '90.0');
     }
 
     public function testRemoveNonExistentPriceThrowsException(): void
@@ -103,7 +103,7 @@ class MaterialRelationshipTest extends TestCase
         $material = Material::create(Type::VOLUME, 'maple');
         $otherMaterial = Material::create(Type::VOLUME, 'birch');
 
-        $otherMaterial->addPrice(10, 50.0);
+        $otherMaterial->addPrice(10, '50.0');
         $otherPrice = $otherMaterial->getPrices()->first();
 
         $this->expectException(MaterialPriceNotFoundException::class);
@@ -122,10 +122,10 @@ class MaterialRelationshipTest extends TestCase
         $material->setPlaceOfOrigin('Central America', 'en');
         $material->setPlaceOfOrigin('Střední Amerika', 'cs');
 
-        $material->addPrice(8, 180.0);
-        $material->addPrice(12, 250.0);
-        $material->addPrice(16, 320.0);
-        $material->addPrice(20, 400.0);
+        $material->addPrice(8, '180.0');
+        $material->addPrice(12, '250.0');
+        $material->addPrice(16, '320.0');
+        $material->addPrice(20, '400.0');
 
         $this->assertSame('premium_mahogany', $material->getName());
         $this->assertSame(Type::VOLUME, $material->getType());
@@ -158,12 +158,12 @@ class MaterialRelationshipTest extends TestCase
         $this->assertCount(0, $material->getPrices());
         $this->assertTrue($material->getPrices()->isEmpty());
 
-        $material->addPrice(10, 45.0);
+        $material->addPrice(10, '45.0');
         $this->assertCount(1, $material->getPrices());
         $this->assertFalse($material->getPrices()->isEmpty());
 
-        $material->addPrice(15, 67.5);
-        $material->addPrice(20, 90.0);
+        $material->addPrice(15, '67.5');
+        $material->addPrice(20, '90.0');
         $this->assertCount(3, $material->getPrices());
 
         $priceToRemove = null;
@@ -200,7 +200,7 @@ class MaterialRelationshipTest extends TestCase
         $material->setPlaceOfOrigin('Jihovýchodní Asie', 'cs');
         $material->setPlaceOfOrigin('Südostasien', 'de');
 
-        $material->addPrice(22, 450.0);
+        $material->addPrice(22, '450.0');
 
         $this->assertSame('Tropical hardwood', $material->getDescription('en'));
         $this->assertSame('Tropické tvrdé dřevo', $material->getDescription('cs'));
@@ -211,6 +211,6 @@ class MaterialRelationshipTest extends TestCase
         $this->assertSame('Südostasien', $material->getPlaceOfOrigin('de'));
 
         $this->assertCount(1, $material->getPrices());
-        $this->assertSame(450.0, $material->getPrices()->first()->getPrice());
+        $this->assertSame('450.0', $material->getPrices()->first()->getPrice());
     }
 }

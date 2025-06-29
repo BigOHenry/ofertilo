@@ -114,11 +114,6 @@ class Product implements TranslatableInterface
         return $product;
     }
 
-    public static function createEmpty(): self
-    {
-        return new self();
-    }
-
     public function getId(): ?int
     {
         return $this->id;

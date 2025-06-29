@@ -12,9 +12,10 @@ class ColorTest extends TestCase
 {
     public function testCreateEmptyColor(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
 
         $this->assertNull($color->getId());
+        $this->assertSame(1023, $color->getCode());
         $this->assertFalse($color->isInStock());
         $this->assertTrue($color->isEnabled());
     }
@@ -45,7 +46,7 @@ class ColorTest extends TestCase
 
     public function testSetValidCode(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setCode(3025);
 
         $this->assertSame(3025, $color->getCode());
@@ -53,7 +54,7 @@ class ColorTest extends TestCase
 
     public function testSetInvalidCodeThrowsException(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
 
         $this->expectException(InvalidColorException::class);
         $color->setCode(999);
@@ -61,7 +62,7 @@ class ColorTest extends TestCase
 
     public function testSetTooHighCodeThrowsException(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
 
         $this->expectException(InvalidColorException::class);
         $color->setCode(10000);
@@ -69,7 +70,7 @@ class ColorTest extends TestCase
 
     public function testMultipleTranslationsForDescription(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setDescription('Red color', 'en');
         $color->setDescription('Červená barva', 'cs');
 
@@ -79,7 +80,7 @@ class ColorTest extends TestCase
 
     public function testGetDescriptionWithDefaultLocale(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setDescription('Default description');
 
         $this->assertSame('Default description', $color->getDescription());
@@ -88,7 +89,7 @@ class ColorTest extends TestCase
 
     public function testSetTooLongDescriptionThrowsException(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $longDescription = str_repeat('a', 101);
 
         $this->expectException(InvalidColorException::class);
@@ -99,14 +100,14 @@ class ColorTest extends TestCase
 
     public function testIsEnabledByDefault(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
 
         $this->assertTrue($color->isEnabled());
     }
 
     public function testSetEnabled(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setEnabled(false);
 
         $this->assertFalse($color->isEnabled());
@@ -117,14 +118,14 @@ class ColorTest extends TestCase
 
     public function testIsInStockByDefault(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
 
         $this->assertFalse($color->isInStock());
     }
 
     public function testSetInStock(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setInStock(true);
 
         $this->assertTrue($color->isInStock());
@@ -180,7 +181,7 @@ class ColorTest extends TestCase
 
     public function testDescriptionWithExactlyMaxLength(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $description = str_repeat('a', 100);
 
         $color->setDescription($description);
@@ -189,7 +190,7 @@ class ColorTest extends TestCase
 
     public function testEmptyDescriptionIsAllowed(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setDescription('');
 
         $this->assertSame('', $color->getDescription());
@@ -197,7 +198,7 @@ class ColorTest extends TestCase
 
     public function testNullDescriptionIsAllowed(): void
     {
-        $color = Color::createEmpty();
+        $color = Color::create(1023);
         $color->setDescription(null);
 
         $this->assertNull($color->getDescription());

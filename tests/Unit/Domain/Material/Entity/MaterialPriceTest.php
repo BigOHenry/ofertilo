@@ -25,7 +25,7 @@ class MaterialPriceTest extends TestCase
 
         $this->assertSame($this->material, $price->getMaterial());
         $this->assertSame(10, $price->getThickness());
-        $this->assertSame(50.0, $price->getPrice());
+        $this->assertSame('50.0', $price->getPrice());
         $this->assertNull($price->getId());
     }
 
@@ -56,14 +56,14 @@ class MaterialPriceTest extends TestCase
     public function testCreateWithTooHighPriceThrowsException(): void
     {
         $this->expectException(InvalidMaterialPriceException::class);
-        $this->expectExceptionMessage('Price 1000000 exceeds maximum allowed price 999999.99');
+        $this->expectExceptionMessage('Price 1000000.0 exceeds maximum allowed price 999999.99');
 
         MaterialPrice::create($this->material, 10, '1000000.0');
     }
 
     public function testSetValidThickness(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.5');
         $price->setThickness(25);
 
         $this->assertSame(25, $price->getThickness());
@@ -71,15 +71,15 @@ class MaterialPriceTest extends TestCase
 
     public function testSetValidPrice(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.5');
         $price->setPrice('150.50');
 
-        $this->assertSame(150.50, $price->getPrice());
+        $this->assertSame('150.50', $price->getPrice());
     }
 
     public function testSetMaterial(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.5');
         $newMaterial = Material::create(Type::VOLUME, 'new_material');
 
         $price->setMaterial($newMaterial);
@@ -99,21 +99,21 @@ class MaterialPriceTest extends TestCase
     public function testValidPriceBoundaries(): void
     {
         $price1 = MaterialPrice::create($this->material, 10, '1.0');
-        $this->assertSame(1.0, $price1->getPrice());
+        $this->assertSame('1.0', $price1->getPrice());
 
         $price2 = MaterialPrice::create($this->material, 10, '999999.99');
-        $this->assertSame(999999.99, $price2->getPrice());
+        $this->assertSame('999999.99', $price2->getPrice());
     }
 
     public function testFloatPriceHandling(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.5');
 
         $price->setPrice('99.99');
-        $this->assertSame(99.99, $price->getPrice());
+        $this->assertSame('99.99', $price->getPrice());
 
         $price->setPrice('1.01');
-        $this->assertSame(1.01, $price->getPrice());
+        $this->assertSame('1.01', $price->getPrice());
     }
 
     public function testMaterialRelationship(): void
@@ -130,18 +130,18 @@ class MaterialPriceTest extends TestCase
 
     public function testBusinessMethodsWithValidation(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.0');
 
         $price->setThickness(25);
         $price->setPrice('150.0');
 
         $this->assertSame(25, $price->getThickness());
-        $this->assertSame(150.0, $price->getPrice());
+        $this->assertSame('150.0', $price->getPrice());
     }
 
     public function testBusinessMethodValidationThrowsException(): void
     {
-        $price = MaterialPrice::createEmpty($this->material);
+        $price = MaterialPrice::create($this->material, 10, '50.0');
 
         $this->expectException(InvalidMaterialPriceException::class);
         $price->setThickness(0);
