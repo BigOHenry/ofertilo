@@ -88,12 +88,8 @@ class ProductColor
         return $this->product;
     }
 
-    public function getColor(): Color
+    public function getColor(): ?Color
     {
-        if ($this->color === null) {
-            throw new \LogicException('ProductColor color is not initialized');
-        }
-
         return $this->color;
     }
 

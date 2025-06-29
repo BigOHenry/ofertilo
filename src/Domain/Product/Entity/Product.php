@@ -126,10 +126,6 @@ class Product implements TranslatableInterface
 
     public function getType(): Type
     {
-        if (!isset($this->type)) {
-            throw new \LogicException('Product Type is not initialized');
-        }
-
         return $this->type;
     }
 
@@ -140,10 +136,6 @@ class Product implements TranslatableInterface
 
     public function getCountry(): Country
     {
-        if (!isset($this->country)) {
-            throw new \LogicException('Product Country is not initialized');
-        }
-
         return $this->country;
     }
 

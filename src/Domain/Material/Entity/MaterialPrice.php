@@ -33,7 +33,7 @@ class MaterialPrice
         min: 1,
         max: 100
     )]
-    private ?int $thickness = null;
+    private int $thickness;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
@@ -42,7 +42,7 @@ class MaterialPrice
         min: 1.00,
         max: 999999.99
     )]
-    private ?float $price = null;
+    private string $price;
 
     #[ORM\ManyToOne(targetEntity: Material::class, inversedBy: 'prices')]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,7 +55,7 @@ class MaterialPrice
         $this->material = $material;
     }
 
-    public static function create(Material $material, int $thickness, float $price): self
+    public static function create(Material $material, int $thickness, string $price): self
     {
         self::validateThickness($thickness);
         self::validatePrice($price);
@@ -76,7 +76,7 @@ class MaterialPrice
         int $id,
         Material $material,
         int $thickness,
-        float $price,
+        string $price,
     ): self {
         $materialPrice = new self($material, $id);
         $materialPrice->thickness = $thickness;
@@ -92,10 +92,6 @@ class MaterialPrice
 
     public function getThickness(): int
     {
-        if ($this->thickness === null) {
-            throw new \LogicException('MaterialPrice thickness is not initialized');
-        }
-
         return $this->thickness;
     }
 
@@ -105,16 +101,12 @@ class MaterialPrice
         $this->thickness = $thickness;
     }
 
-    public function getPrice(): float
+    public function getPrice(): string
     {
-        if ($this->price === null) {
-            throw new \LogicException('MaterialPrice price is not initialized');
-        }
-
         return $this->price;
     }
 
-    public function setPrice(float $price): void
+    public function setPrice(string $price): void
     {
         self::validatePrice($price);
         $this->price = $price;
@@ -135,13 +127,21 @@ class MaterialPrice
         $this->id = $id;
     }
 
-    private static function validatePrice(float $price): void
+    private static function validatePrice(string $price): void
     {
-        if ($price < 1) {
+        if (!is_numeric($price)) {
+            throw InvalidMaterialPriceException::invalidPriceFormat($price);
+        }
+
+        if (!preg_match('/^\d{1,7}(\.\d{1,2})?$/', $price)) {
+            throw InvalidMaterialPriceException::invalidPriceFormat($price);
+        }
+
+        if (bccomp($price, '1.00', 2) < 0) {
             throw InvalidMaterialPriceException::priceTooLow($price, 1);
         }
 
-        if ($price > 999999.99) {
+        if (bccomp($price, '999999.99', 2) > 0) {
             throw InvalidMaterialPriceException::priceTooHigh($price, 999999.99);
         }
     }

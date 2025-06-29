@@ -259,7 +259,7 @@ class MaterialTest extends TestCase
     {
         $material = Material::create(Type::VOLUME, 'oak');
         $otherMaterial = Material::create(Type::VOLUME, 'beech_wood');
-        $price = MaterialPrice::create($otherMaterial, 10, 50.0);
+        $price = MaterialPrice::create($otherMaterial, 10, '50.0');
 
         $this->expectException(MaterialPriceNotFoundException::class);
 

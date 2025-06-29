@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Application\Color\ColorService;
+use App\Application\Color\Command\CreateColorCommand;
+use App\Application\Color\Command\EditColorCommand;
+use App\Application\Color\Factory\ColorCommandFactory;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;
 use App\Form\ColorType;
+use App\Infrastructure\Service\LocaleService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,8 +25,10 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ColorController extends AbstractController
 {
-    public function __construct(private readonly ColorService $colorService)
-    {
+    public function __construct(
+        private readonly ColorService $colorService,
+        private readonly ColorCommandFactory $commandFactory
+    ) {
     }
 
     #[Route('/colors', name: 'color_index')]
@@ -36,9 +42,8 @@ final class ColorController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $color = $this->colorService->createEmpty();
-
-        $form = $this->createForm(ColorType::class, $color, [
+        $command = $this->commandFactory->createCreateCommand();
+        $form = $this->createForm(ColorType::class, $command, [
             'action' => $this->generateUrl('color_new'),
             'method' => 'POST',
         ]);
@@ -47,7 +52,7 @@ final class ColorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->colorService->save($color);
+                $color = $this->colorService->createFromCommand($command);
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -60,7 +65,8 @@ final class ColorController extends AbstractController
             }
         }
 
-        return $this->render('components/form_frame.html.twig', [
+        $response = $this->render('components/form_frame.html.twig', [
+            'data_class' => CreateColorCommand::class,
             'frame_id' => 'colorModal_frame',
             'form_template' => 'components/color_form.html.twig',
             'form_context' => [
@@ -68,13 +74,20 @@ final class ColorController extends AbstractController
                 'form_id' => 'color-form',
             ],
         ]);
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $response->setStatusCode(422);
+        }
+
+        return $response;
     }
 
     #[Route('/color/{id}/edit', name: 'color_edit')]
     #[IsGranted(Role::WRITER->value)]
     public function colorEdit(Request $request, Color $color): Response
     {
-        $form = $this->createForm(ColorType::class, $color, [
+        $command = $this->commandFactory->createEditCommand($color);
+        $form = $this->createForm(ColorType::class, $command, [
             'action' => $this->generateUrl('color_edit', ['id' => $color->getId()]),
             'method' => 'POST',
         ]);
@@ -82,7 +95,7 @@ final class ColorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->colorService->save($color);
+                $this->colorService->updateFromCommand($color, $command);
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -104,6 +117,7 @@ final class ColorController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
+            'data_class' => EditColorCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'colorModal_frame',
             'form_template' => 'components/color_form.html.twig',
             'form_context' => [

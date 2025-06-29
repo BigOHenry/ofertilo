@@ -20,7 +20,7 @@ class Color implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(type: 'integer', length: 4, unique: true, nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
@@ -86,7 +86,7 @@ class Color implements TranslatableInterface
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    protected function setId(?int $id): void
     {
         $this->id = $id;
     }
