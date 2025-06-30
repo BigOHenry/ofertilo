@@ -1,10 +1,11 @@
 # Ofertilo
 
-**Ofertilo** je interní nástroj pro správu zakázek, evidenci materiálů a tvorbu cenových nabídek. Byl vytvořen jako podpora výrobního procesu mého e-shopu [woodflag.eu](https://woodflag.eu) a zároveň jako ukázka programátorských dovedností v PHP.
+**Ofertilo** je interní nástroj pro správu zakázek, evidenci materiálů a tvorbu cenových nabídek. Byl vytvořen jako podpora výrobního procesu mého e-shopu [woodflag.eu](https://woodflag.eu).
 
 ![Coverage](https://github.com/BigOHenry/ofertilo/blob/image-data/coverage.svg)
 
 ## ✨ Funkce
+- [x] První spuštění s vytvořením SuperAdmin uživatele s možností aktivace 2FA autorizace (env)
 - [x] Evidence materiálů a jejich cen dle tloušťky (MDF/překližka, dřevo, spárovky)
 - [x] Evidence barev (barvy vzorníku RAL)
 - [x] Evidence produktů a přiřazení použitých barev s popiskem
@@ -20,7 +21,7 @@
 - PHP 8.4.x
 - Bootstrap 5.3
 - PostgreSQL 17.5
-- Symfony 7.x
+- Symfony 7.2 + Turbo
 - Doctrine ORM
 - Tabulator.js
 - Webpack

@@ -6,6 +6,7 @@
 parameters:
     app.supported_locales: ['cs', 'en']
     app.default_locale: 'cs'
+    app.force_superadmin_2fa: '%env(bool:FORCE_SUPERADMIN_2FA)%'
     secure_uploads_directory: '%kernel.project_dir%/var/uploads'
 services:
     # default configuration for services in *this* file

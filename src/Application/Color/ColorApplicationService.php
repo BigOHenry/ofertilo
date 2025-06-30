@@ -16,7 +16,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final readonly class ColorService
+final readonly class ColorApplicationService
 {
     public function __construct(
         private ColorRepositoryInterface $colorRepository,
