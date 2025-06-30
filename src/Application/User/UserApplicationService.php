@@ -68,16 +68,6 @@ readonly class UserApplicationService
         return $this->userRepository->hasSuperAdmin();
     }
 
-    /**
-     * @param string[]|Role[] $roles
-     * @return bool
-     */
-    private function isSuperAdmin(array $roles): bool
-    {
-        return in_array(Role::SUPER_ADMIN, $roles, true) ||
-            in_array(Role::SUPER_ADMIN->value, $roles, true);
-    }
-
     public function createSuperAdmin(string $email, string $password): User
     {
         $command = $this->commandFactory->createSuperAdminCommand($email, $password);
@@ -93,5 +83,14 @@ readonly class UserApplicationService
     public function delete(User $user): void
     {
         $this->userRepository->remove($user);
+    }
+
+    /**
+     * @param string[]|Role[] $roles
+     */
+    private function isSuperAdmin(array $roles): bool
+    {
+        return \in_array(Role::SUPER_ADMIN, $roles, true)
+            || \in_array(Role::SUPER_ADMIN->value, $roles, true);
     }
 }
