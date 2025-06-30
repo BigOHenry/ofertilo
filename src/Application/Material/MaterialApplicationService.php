@@ -21,7 +21,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final readonly class MaterialService
+final readonly class MaterialApplicationService
 {
     public function __construct(
         private MaterialRepositoryInterface $materialRepository,

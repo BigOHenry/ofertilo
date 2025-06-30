@@ -8,7 +8,7 @@ use App\Application\Product\Command\CreateProductColorCommand;
 use App\Application\Product\Command\EditProductColorCommand;
 use App\Application\Product\Command\EditProductCommand;
 use App\Application\Product\Factory\ProductCommandFactory;
-use App\Application\Product\ProductService;
+use App\Application\Product\ProductApplicationService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;
@@ -28,7 +28,7 @@ use Symfony\UX\Turbo\TurboBundle;
 final class ProductController extends AbstractController
 {
     public function __construct(
-        private readonly ProductService $productService,
+        private readonly ProductApplicationService $productService,
         private readonly ProductCommandFactory $commandFactory,
     ) {
     }

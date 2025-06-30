@@ -4,30 +4,34 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application\User\Factory\UserCommandFactory;
+use App\Application\User\UserApplicationService;
 use App\Domain\User\Entity\User;
-use App\Domain\User\Repository\UserRepositoryInterface;
-use App\Domain\User\ValueObject\Role;
+use App\Domain\User\Exception\UserException;
 use App\Form\FirstRunSetupType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class SecurityController extends AbstractController
 {
+    public function __construct(
+        private readonly UserApplicationService $userService,
+        private readonly UserCommandFactory $commandFactory,
+        private readonly CacheInterface $cache,
+    ) {
+    }
+
     #[Route('/first-run', name: 'app_first_run_setup')]
-    public function setup(
-        Request $request,
-        UserRepositoryInterface $userRepository,
-        UserPasswordHasherInterface $passwordHasher,
-        CacheInterface $cache,
-    ): Response {
-        $is_installed = $cache->get('ofertilo.first_run_done', function () use ($userRepository) {
-            return $userRepository->hasSuperAdmin();
+    public function setup(Request $request): Response
+    {
+        $is_installed = $this->cache->get('ofertilo.first_run_done', function () {
+            return $this->userService->isSystemInstalled();
         });
 
         if ($is_installed) {
@@ -38,23 +42,22 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if ($request->isMethod('POST') && $form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+            try {
+                $data = $form->getData();
+                $command = $this->commandFactory->createSuperAdminCommand(
+                    $data['email'],
+                    $data['password']
+                );
 
-            $user = new User($data['email']);
-            $user->setName('SuperAdmin');
-            $user->setPassword(
-                $passwordHasher->hashPassword($user, $data['password'])
-            );
-            $user->setRoles([Role::SUPER_ADMIN]);
-            $user->setForceEmailChange(false);
-            $user->setForcePasswordChange(false);
-            $userRepository->save($user);
+                $this->userService->createFromCommand($command);
+                $this->cache->delete('ofertilo.first_run_done');
 
-            $cache->delete('ofertilo.first_run_done');
+                $this->addFlash('success', 'SuperAdmin has been successfully created.');
 
-            $this->addFlash('success', 'SuperAdmin has been successfully created.');
-
-            return $this->redirectToRoute('app_login');
+                return $this->redirectToRoute('app_login');
+            } catch (UserException $e) {
+                $form->addError(new FormError($e->getMessage()));
+            }
         }
 
         return $this->render('security/first_run_setup.html.twig', [
@@ -69,9 +72,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_home_index');
         }
 
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Entity;
 
+use App\Domain\User\Exception\InvalidUserException;
 use App\Domain\User\ValueObject\Role;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
@@ -19,25 +20,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
-    #[ORM\Column(length: 180, unique: true, nullable: false)]
+    #[ORM\Column(name: 'email', type: 'string', length: 255, unique: true)]
     private string $email;
 
-    #[ORM\Column(length: 200)]
-    private ?string $name = null;
+    #[ORM\Column(type: 'string', length: 200, nullable: false)]
+    private string $password;
 
-    #[ORM\Column]
-    private ?string $password = null;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $forcePasswordChange = true;
-
-    #[ORM\Column(type: 'boolean')]
-    private bool $forceEmailChange = true;
+    #[ORM\Column(type: 'string', length: 200, nullable: false)]
+    private string $name;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
-    private bool $is_two_fa_enabled = false;
+    private bool $forcePasswordChange = false;
+
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $forceEmailChange = false;
+
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $two_fa_enabled = false;
 
     #[ORM\Column(nullable: true)]
     private ?string $two_fa_secret = null;
@@ -48,17 +49,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
-    public function __construct(string $email)
-    {
-        if (mb_trim($email) === '') {
-            throw new \InvalidArgumentException('Email cannot be empty');
-        }
-        $this->email = $email;
-    }
-
-    public function setId(?int $id): void
+    protected function __construct(?int $id = null)
     {
         $this->id = $id;
+    }
+
+    public static function create(string $email): self
+    {
+        $user = new self();
+        $user->setEmail($email);
+
+        return $user;
+    }
+
+    /**
+     * @param string[]|Role[] $roles
+     */
+    public static function createFromDatabase(
+        int $id,
+        string $email,
+        string $password,
+        string $name,
+        bool $forcePasswordChange = false,
+        bool $forceEmailChange = false,
+        bool $is_two_fa_enabled = false,
+        ?string $two_fa_secret = null,
+        array $roles = [],
+    ): self {
+        $user = new self($id);
+        $user->setEmail($email);
+        $user->password = $password;
+        $user->name = $name;
+        $user->forcePasswordChange = $forcePasswordChange;
+        $user->forceEmailChange = $forceEmailChange;
+        $user->two_fa_enabled = $is_two_fa_enabled;
+        $user->two_fa_secret = $two_fa_secret;
+        $user->roles = $roles;
+
+        return $user;
     }
 
     public function getId(): ?int
@@ -71,14 +99,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): void
     {
-        if (mb_trim($email) === '') {
-            throw new \InvalidArgumentException('Email cannot be empty');
-        }
-        $this->email = $email;
-
-        return $this;
+        $this->validateEmail($email);
+        $this->email = mb_strtolower(mb_trim($email));
     }
 
     public function getUserIdentifier(): string
@@ -88,7 +112,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->email;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -142,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -181,12 +205,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getTotpAuthenticationUsername(): string
     {
-        return $this->getEmail();
+        return $this->email;
     }
 
     public function isTotpAuthenticationEnabled(): bool
     {
-        return $this->is_two_fa_enabled && $this->two_fa_secret !== null;
+        return $this->two_fa_enabled && $this->two_fa_secret !== null;
     }
 
     public function setTotpSecret(?string $secret): void
@@ -196,12 +220,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function isTwoFactorEnabled(): bool
     {
-        return $this->is_two_fa_enabled;
+        return $this->two_fa_enabled;
     }
 
     public function setTwoFactorEnabled(bool $enabled): void
     {
-        $this->is_two_fa_enabled = $enabled;
+        $this->two_fa_enabled = $enabled;
     }
 
     public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
@@ -215,5 +239,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         }
 
         return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+    }
+
+    protected function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    private function validateEmail(string $email): void
+    {
+        $trimmed = mb_trim($email);
+
+        if ($trimmed === '') {
+            throw InvalidUserException::emptyEmail();
+        }
+
+        if (!filter_var($trimmed, \FILTER_VALIDATE_EMAIL)) {
+            throw InvalidUserException::invalidEmailFormat($trimmed);
+        }
     }
 }

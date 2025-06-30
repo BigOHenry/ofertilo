@@ -8,7 +8,6 @@ use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Domain\User\ValueObject\Role;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,13 +20,18 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         parent::__construct($registry, User::class);
     }
 
+    public function findById(int $id): ?User
+    {
+        return $this->find($id);
+    }
+
     public function findByEmail(string $email): ?User
     {
         return $this->findOneBy(['email' => $email]);
     }
 
     /**
-     * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      * @throws \JsonException
      */
     public function hasSuperAdmin(): bool
@@ -36,14 +40,19 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->bindValue('role', json_encode([Role::SUPER_ADMIN], \JSON_THROW_ON_ERROR));
-        $result = $stmt->executeQuery();
 
-        return $result->fetchOne() !== false;
+        return $stmt->executeQuery()->fetchOne() > 0;
     }
 
     public function save(User $user): void
     {
         $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
+    public function remove(User $user): void
+    {
+        $this->getEntityManager()->remove($user);
         $this->getEntityManager()->flush();
     }
 }

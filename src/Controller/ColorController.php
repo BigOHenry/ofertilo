@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Application\Color\ColorService;
+use App\Application\Color\ColorApplicationService;
 use App\Application\Color\Command\CreateColorCommand;
 use App\Application\Color\Command\EditColorCommand;
 use App\Application\Color\Factory\ColorCommandFactory;
@@ -25,7 +25,7 @@ use Symfony\UX\Turbo\TurboBundle;
 final class ColorController extends AbstractController
 {
     public function __construct(
-        private readonly ColorService $colorService,
+        private readonly ColorApplicationService $colorService,
         private readonly ColorCommandFactory $commandFactory,
     ) {
     }

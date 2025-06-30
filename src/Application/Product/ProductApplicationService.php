@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final readonly class ProductService
+final readonly class ProductApplicationService
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,

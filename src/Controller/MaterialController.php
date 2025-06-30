@@ -9,7 +9,7 @@ use App\Application\Material\Command\CreateMaterialPriceCommand;
 use App\Application\Material\Command\EditMaterialCommand;
 use App\Application\Material\Command\EditMaterialPriceCommand;
 use App\Application\Material\Factory\MaterialCommandFactory;
-use App\Application\Material\MaterialService;
+use App\Application\Material\MaterialApplicationService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\DuplicatePriceThicknessException;
@@ -29,8 +29,10 @@ use Symfony\UX\Turbo\TurboBundle;
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class MaterialController extends AbstractController
 {
-    public function __construct(private readonly MaterialService $materialService, private readonly MaterialCommandFactory $materialCommandFactory)
-    {
+    public function __construct(
+        private readonly MaterialApplicationService $materialService,
+        private readonly MaterialCommandFactory $materialCommandFactory,
+    ) {
     }
 
     #[Route('/materials', name: 'material_index')]
