@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Infrastructure\Controller\Web;
 
-use App\Application\User\Factory\UserCommandFactory;
+use App\Application\Command\User\CreateFirstSuperAdminUser\CreateFirstSuperAdminUserCommand;
 use App\Application\User\UserApplicationService;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Exception\UserException;
@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -22,7 +23,7 @@ class SecurityController extends AbstractController
 {
     public function __construct(
         private readonly UserApplicationService $userService,
-        private readonly UserCommandFactory $commandFactory,
+        private readonly MessageBusInterface $bus,
         private readonly CacheInterface $cache,
     ) {
     }
@@ -44,12 +45,8 @@ class SecurityController extends AbstractController
         if ($request->isMethod('POST') && $form->isSubmitted() && $form->isValid()) {
             try {
                 $data = $form->getData();
-                $command = $this->commandFactory->createSuperAdminCommand(
-                    $data['email'],
-                    $data['password']
-                );
+                $this->bus->dispatch(new CreateFirstSuperAdminUserCommand($data['email'], $data['password']));
 
-                $this->userService->createFromCommand($command);
                 $this->cache->delete('ofertilo.first_run_done');
 
                 $this->addFlash('success', 'SuperAdmin has been successfully created.');

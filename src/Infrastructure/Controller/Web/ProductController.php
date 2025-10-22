@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Infrastructure\Controller\Web;
 
 use App\Application\Product\Command\CreateProductColorCommand;
 use App\Application\Product\Command\EditProductColorCommand;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Infrastructure\Controller\Web;
 
 use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
