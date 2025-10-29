@@ -36,7 +36,7 @@ field:
   price: "Cena"
   2fa_code: "Zadejte ověřovací kód z aplikace"
   code: 'Kód'
-  in_stock: 'Na skladě'
+  inStock: 'Na skladě'
   image: "Obrázek"
   enabled: "Aktivní"
   country: "Stát"

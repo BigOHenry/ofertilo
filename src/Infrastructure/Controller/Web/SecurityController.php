@@ -8,7 +8,7 @@ use App\Application\Command\User\CreateFirstSuperAdminUser\CreateFirstSuperAdmin
 use App\Application\User\UserApplicationService;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Exception\UserException;
-use App\Form\FirstRunSetupType;
+use App\Infrastructure\Form\FirstRunSetupType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;

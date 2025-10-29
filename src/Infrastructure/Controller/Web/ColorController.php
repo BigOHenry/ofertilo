@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller\Web;
 
 use App\Application\Color\ColorApplicationService;
-use App\Application\Color\Command\CreateColorCommand;
-use App\Application\Color\Command\EditColorCommand;
-use App\Application\Color\Factory\ColorCommandFactory;
+use App\Application\Command\Color\CreateColor\CreateColorCommand;
+use App\Application\Command\Color\EditColor\EditColorCommand;
+use App\Application\Query\Color\GetColorFormData\GetColorFormDataQuery;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;
-use App\Form\ColorType;
+use App\Infrastructure\Form\ColorType;
+use App\Infrastructure\Form\Helper\TranslationFormHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
@@ -26,7 +29,8 @@ final class ColorController extends AbstractController
 {
     public function __construct(
         private readonly ColorApplicationService $colorService,
-        private readonly ColorCommandFactory $commandFactory,
+        private readonly MessageBusInterface $bus,
+        private readonly TranslationFormHelper $formHelper,
     ) {
     }
 
@@ -41,8 +45,7 @@ final class ColorController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $command = $this->commandFactory->createCreateCommand();
-        $form = $this->createForm(ColorType::class, $command, [
+        $form = $this->createForm(ColorType::class, data: $this->formHelper->prepareFormData(Color::class), options: [
             'action' => $this->generateUrl('color_new'),
             'method' => 'POST',
         ]);
@@ -51,7 +54,7 @@ final class ColorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $color = $this->colorService->createFromCommand($command);
+                $this->bus->dispatch(CreateColorCommand::createFromForm($form));
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -85,8 +88,10 @@ final class ColorController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function colorEdit(Request $request, Color $color): Response
     {
-        $command = $this->commandFactory->createEditCommand($color);
-        $form = $this->createForm(ColorType::class, $command, [
+        $envelope = $this->bus->dispatch(new GetColorFormDataQuery((int) $color->getId()));
+        $formData = $envelope->last(HandledStamp::class)?->getResult();
+
+        $form = $this->createForm(ColorType::class, data: $formData, options: [
             'action' => $this->generateUrl('color_edit', ['id' => $color->getId()]),
             'method' => 'POST',
         ]);
@@ -94,7 +99,7 @@ final class ColorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->colorService->updateFromCommand($color, $command);
+                $this->bus->dispatch(EditColorCommand::createFromForm($form));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);

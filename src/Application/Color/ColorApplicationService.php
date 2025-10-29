@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Color;
 
-use App\Application\Color\Command\CreateColorCommand;
-use App\Application\Color\Command\EditColorCommand;
 use App\Domain\Color\Entity\Color;
-use App\Domain\Color\Exception\ColorAlreadyExistsException;
-use App\Domain\Color\Exception\InvalidColorException;
-use App\Domain\Color\Factory\ColorFactory;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -20,71 +15,19 @@ final readonly class ColorApplicationService
 {
     public function __construct(
         private ColorRepositoryInterface $colorRepository,
-        private ColorFactory $colorFactory,
         private TranslationLoaderInterface $translationLoader,
         private TranslatorInterface $translator,
     ) {
     }
 
-    public function createFromCommand(CreateColorCommand $command): Color
+    public function findByCode(int $code): ?Color
     {
-        $code = $command->getCode();
-
-        if ($code === null) {
-            throw InvalidColorException::emptyCode();
-        }
-
-        if ($this->colorRepository->findByCode($code)) {
-            throw ColorAlreadyExistsException::withCode($code);
-        }
-
-        $color = Color::create($code);
-        $color->setInStock($command->isInStock());
-        $color->setEnabled($command->isEnabled());
-
-        foreach ($command->getTranslations() as $translation) {
-            $value = mb_trim($translation->getValue() ?? '');
-            if (!empty($value)) {
-                $color->setDescription($value, $translation->getLocale());
-            } else {
-                $color->setDescription(null, $translation->getLocale());
-            }
-        }
-
-        $this->colorRepository->save($color);
-
-        return $color;
+        return $this->colorRepository->findByCode($code);
     }
 
-    public function updateFromCommand(Color $color, EditColorCommand $command): void
+    public function findById(int $id): ?Color
     {
-        if (($color->getCode() !== $command->getCode()) && $this->colorRepository->findByCode($command->getCode())) {
-            throw ColorAlreadyExistsException::withCode($command->getCode());
-        }
-
-        $color->setCode($command->getCode());
-        $color->setInStock($command->isInStock());
-        $color->setEnabled($command->isEnabled());
-
-        foreach ($command->getTranslations() as $translation) {
-            $value = mb_trim($translation->getValue() ?? '');
-            if (!empty($value)) {
-                $color->setDescription($value, $translation->getLocale());
-            } else {
-                $color->setDescription(null, $translation->getLocale());
-            }
-        }
-
-        $this->colorRepository->save($color);
-    }
-
-    public function create(int $code): Color
-    {
-        if ($this->colorRepository->findByCode($code)) {
-            throw ColorAlreadyExistsException::withCode($code);
-        }
-
-        return $this->colorFactory->create($code);
+        return $this->colorRepository->findById($id);
     }
 
     public function save(Color $color): void
@@ -135,7 +78,7 @@ final readonly class ColorApplicationService
                 'id' => $color->getId(),
                 'code' => $color->getCode(),
                 'description' => $color->getDescription($request->getLocale()),
-                'in_stock' => $this->translator->trans($color->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'inStock' => $this->translator->trans($color->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
             ];
         }
 

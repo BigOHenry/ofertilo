@@ -6,13 +6,9 @@ namespace App\Application\Command\User\CreateFirstSuperAdminUser;
 
 final readonly class CreateFirstSuperAdminUserCommand
 {
-    /**
-     * @param string $email
-     * @param string $password
-     */
     public function __construct(
         private string $email,
-        private string $password
+        private string $password,
     ) {
     }
 

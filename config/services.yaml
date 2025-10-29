@@ -51,6 +51,8 @@ services:
     App\Domain\Shared\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
 
+    App\Infrastructure\Form\Helper\TranslationFormHelper:
+
     App\Infrastructure\Service\FileUploader:
         autowire: true
         arguments:
@@ -63,6 +65,4 @@ services:
     App\Domain\Product\Factory\ProductFactory:
         autowire: true
     App\Domain\Material\Factory\MaterialFactory:
-        autowire: true
-    App\Domain\Color\Factory\ColorFactory:
         autowire: true

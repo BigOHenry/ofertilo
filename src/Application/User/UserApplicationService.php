@@ -32,7 +32,7 @@ readonly class UserApplicationService
 
     public function findByEmail(string $email): ?User
     {
-       return $this->userRepository->findByEmail($email);
+        return $this->userRepository->findByEmail($email);
     }
 
     /**

@@ -19,7 +19,8 @@ final readonly class CreateFirstSuperAdminUserCommandHandler
         private UserApplicationService $userApplicationService,
         private UserPasswordHasherInterface $passwordHasher,
         private ParameterBagInterface $parameterBag,
-    ) {}
+    ) {
+    }
 
     public function __invoke(CreateFirstSuperAdminUserCommand $command): void
     {

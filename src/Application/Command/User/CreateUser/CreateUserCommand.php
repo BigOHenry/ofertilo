@@ -9,12 +9,7 @@ use App\Domain\User\ValueObject\Role;
 class CreateUserCommand
 {
     /**
-     * @param string|null $email
-     * @param string|null $password
-     * @param string|null $name
      * @param Role[]|string[] $roles
-     * @param bool $forcePasswordChange
-     * @param bool $two_fa_enabled
      */
     public function __construct(
         private readonly ?string $email,
@@ -22,7 +17,7 @@ class CreateUserCommand
         private readonly ?string $name,
         private readonly array $roles,
         private readonly bool $forcePasswordChange = false,
-        private readonly bool $two_fa_enabled = false
+        private readonly bool $two_fa_enabled = false,
     ) {
     }
 

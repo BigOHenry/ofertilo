@@ -59,33 +59,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $user;
     }
-//
-//    /**
-//     * @param string[]|Role[] $roles
-//     */
-//    public static function createFromDatabase(
-//        int $id,
-//        string $email,
-//        string $password,
-//        string $name,
-//        bool $forcePasswordChange = false,
-//        bool $forceEmailChange = false,
-//        bool $is_two_fa_enabled = false,
-//        ?string $two_fa_secret = null,
-//        array $roles = [],
-//    ): self {
-//        $user = new self($id);
-//        $user->setEmail($email);
-//        $user->password = $password;
-//        $user->name = $name;
-//        $user->forcePasswordChange = $forcePasswordChange;
-//        $user->forceEmailChange = $forceEmailChange;
-//        $user->two_fa_enabled = $is_two_fa_enabled;
-//        $user->two_fa_secret = $two_fa_secret;
-//        $user->roles = $roles;
-//
-//        return $user;
-//    }
 
     public function getId(): ?int
     {

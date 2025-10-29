@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Infrastructure\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,24 +18,23 @@ class ColorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('code', TextType::class, [
+            ->add('id', HiddenType::class)
+            ->add('code', NumberType::class, [
                 'label' => 'field.code',
-                'property_path' => 'code',
+                'scale' => 0,
             ])
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,
                 'mapped' => true,
                 'by_reference' => false,
                 'label' => false,
-                'property_path' => 'translations',
                 'entry_options' => [
                     'label' => false,
                 ],
             ])
-            ->add('in_stock', CheckboxType::class, [
-                'label' => 'field.in_stock',
+            ->add('inStock', CheckboxType::class, [
+                'label' => 'field.inStock',
                 'required' => false,
-                'property_path' => 'in_stock',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

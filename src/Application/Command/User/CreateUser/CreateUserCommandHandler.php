@@ -6,5 +6,4 @@ namespace App\Application\Command\User\CreateUser;
 
 class CreateUserCommandHandler
 {
-
 }

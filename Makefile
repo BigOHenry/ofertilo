@@ -32,7 +32,7 @@ phpcs:
 
 .PHONY: phpcs-fix
 phpcs-fix:
-	$(exec-app) PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix
+	$(exec-app) vendor/bin/php-cs-fixer fix
 
 .PHONY: phpstan
 phpstan:

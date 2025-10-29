@@ -249,7 +249,7 @@ final readonly class ProductApplicationService
                 'color' => $productColor->getColor()->getCode(),
                 'color_description' => $productColor->getColor()->getDescription(),
                 'description' => $productColor->getDescription(),
-                'in_stock' => $this->translator->trans($productColor->getColor()->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'inStock' => $this->translator->trans($productColor->getColor()->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
             ];
         }
 

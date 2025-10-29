@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Infrastructure\Form;
 
 use App\Domain\Material\ValueObject\Type;
 use Symfony\Component\Form\AbstractType;

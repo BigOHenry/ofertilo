@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Infrastructure\Form;
 
 use App\Domain\Translation\Entity\TranslationEntity;
 use Symfony\Component\Form\AbstractType;

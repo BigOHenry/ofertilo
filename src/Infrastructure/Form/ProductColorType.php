@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Infrastructure\Form;
 
 use App\Domain\Color\Entity\Color;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
