@@ -1,1 +1,1 @@
-<h1 id="material-title" class="mb-0">{{ material.description(app.request.locale) }}</h1>
+<h1 id="material-title" class="mb-0">{{ material.wood.description(app.request.locale) }} - {{ ('material.type.' ~ material.type.value)|trans({}, 'enum') }}</h1>

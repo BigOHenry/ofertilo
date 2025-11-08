@@ -35,23 +35,26 @@ services:
     App\EventListener\TwoFactorSetupListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+#    App\Infrastructure\Persistence\Doctrine\EventListener\TranslationListener:
+#        tags:
+#          - { name: doctrine.event_listener, event: postLoad }
 
     App\Domain\User\Repository\UserRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineUserRepository
     App\Domain\Material\Repository\MaterialRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMaterialRepository
     App\Domain\Color\Repository\ColorRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository
     App\Domain\Product\Repository\ProductColorRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductColorRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductColorRepository
     App\Domain\Translation\Repository\TranslationLoaderInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
     App\Domain\Shared\Repository\CountryRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineCountryRepository
     App\Domain\Wood\Repository\WoodRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineWoodRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository
 
     App\Infrastructure\Form\Helper\TranslationFormHelper:
 

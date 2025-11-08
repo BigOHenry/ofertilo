@@ -9,6 +9,9 @@ use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * @deprecated
+ */
 final class DoctrineTranslationLoader implements TranslationLoaderInterface
 {
     public function __construct(private EntityManagerInterface $em)

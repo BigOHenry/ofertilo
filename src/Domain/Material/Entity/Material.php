@@ -7,9 +7,8 @@ namespace App\Domain\Material\Entity;
 use App\Domain\Material\Exception\DuplicatePriceThicknessException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
-use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Domain\Wood\Entity\Wood;
-use App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMaterialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,8 +18,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'material')]
 class Material
 {
-    use TranslatableTrait;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,7 +43,6 @@ class Material
     {
         $this->id = $id;
         $this->prices = new ArrayCollection();
-        $this->initTranslations();
     }
 
     public static function create(Wood $wood, Type $type, bool $enabled = true): self

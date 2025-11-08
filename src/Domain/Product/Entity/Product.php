@@ -11,7 +11,7 @@ use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -83,7 +83,7 @@ class Product implements TranslatableInterface
     {
         $this->id = $id;
         $this->productColors = new ArrayCollection();
-        $this->initTranslations();
+        $this->initializeTranslations();
     }
 
     public static function create(Type $type, Country $country): self

@@ -52,7 +52,6 @@ final readonly class GetColorsForPaginatedGridQueryHandler
         $data = [];
         /** @var Color $color */
         foreach ($paginator as $color) {
-            $this->translationLoader->loadTranslations($color);
             $data[] = [
                 'id' => $color->getId(),
                 'code' => $color->getCode(),

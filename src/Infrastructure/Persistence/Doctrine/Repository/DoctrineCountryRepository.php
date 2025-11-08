@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Doctrine;
+namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Shared\Repository\CountryRepositoryInterface;

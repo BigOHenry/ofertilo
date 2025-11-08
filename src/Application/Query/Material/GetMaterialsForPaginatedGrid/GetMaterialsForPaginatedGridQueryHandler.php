@@ -6,7 +6,6 @@ namespace App\Application\Query\Material\GetMaterialsForPaginatedGrid;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
-use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use App\Infrastructure\Service\LocaleService;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -17,7 +16,6 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
 {
     public function __construct(
         private MaterialRepositoryInterface $materialRepository,
-        private TranslationLoaderInterface $translationLoader,
         private LocaleService $localeService,
         private TranslatorInterface $translator,
     ) {
@@ -49,15 +47,18 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
         $paginator = new Paginator($qb);
         $total = \count($paginator);
 
+        dump($this->localeService->getCurrentLocale());
+
         $data = [];
         /** @var Material $material */
         foreach ($paginator as $material) {
-            $wood = $material->getWood();
-            $this->translationLoader->loadTranslations($wood);
+            dump($material->getWood());
+            dump($material->getWood()->getDescription());
+            dump($material->getWood()->getDescription($this->localeService->getCurrentLocale()));
             $data[] = [
                 'id' => $material->getId(),
-                'name' => $material->getWood()->getName(),
-                'description' => $wood->getDescription($this->localeService->getCurrentLocale()),
+                'name' => $material->getWood()->getName() . '_' . $material->getType()->value,
+                'description' => $material->getWood()->getDescription($this->localeService->getCurrentLocale()),
                 'type' => $this->translator->trans(
                     'material.type.' . $material->getType()->value,
                     domain: 'enum'

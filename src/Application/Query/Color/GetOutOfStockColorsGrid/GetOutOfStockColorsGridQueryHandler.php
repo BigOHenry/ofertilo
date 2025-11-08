@@ -6,7 +6,6 @@ namespace App\Application\Query\Color\GetOutOfStockColorsGrid;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
-use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -15,7 +14,6 @@ final readonly class GetOutOfStockColorsGridQueryHandler
 {
     public function __construct(
         private ColorRepositoryInterface $colorRepository,
-        private TranslationLoaderInterface $translationLoader,
         private LocaleService $localeService,
     ) {
     }
@@ -27,11 +25,9 @@ final readonly class GetOutOfStockColorsGridQueryHandler
     public function __invoke(GetOutOfStockColorsGridQuery $query): array
     {
         $colors = $this->colorRepository->findOutOfStock();
-        $translationLoader = $this->translationLoader;
         $localeService = $this->localeService;
         $data = array_map(
-            static function (Color $color) use ($localeService, $translationLoader) {
-                $translationLoader->loadTranslations($color);
+            static function (Color $color) use ($localeService) {
 
                 return [
                     'id' => $color->getId(),

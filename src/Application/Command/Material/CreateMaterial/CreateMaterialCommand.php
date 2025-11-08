@@ -14,7 +14,6 @@ final readonly class CreateMaterialCommand
     {
     }
 
-
     public static function createFromForm(FormInterface $form): self
     {
         $data = $form->getData();

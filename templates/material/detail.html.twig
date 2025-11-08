@@ -6,7 +6,7 @@
     <div id="material_card" class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between">
             {% include 'material/components/_material_header.html.twig' with { material: material } %}
-            <a class="btn btn-sm btn-primary" data-modal-id="materialDetailModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+            <a class="btn btn-sm btn-primary" data-modal-id="materialDetailModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
         </div>
         <div class="card-body">
             {% include 'material/components/_material_detail.html.twig' with { material: material } %}

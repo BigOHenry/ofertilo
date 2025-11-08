@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Query\Wood\GetWoodsForPaginatedGrid;
 
-use App\Domain\Translation\Repository\TranslationLoaderInterface;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
 use App\Infrastructure\Service\LocaleService;
@@ -17,7 +16,6 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
 {
     public function __construct(
         private WoodRepositoryInterface $woodRepository,
-        private TranslationLoaderInterface $translationLoader,
         private LocaleService $localeService,
         private TranslatorInterface $translator,
     ) {
@@ -52,7 +50,6 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
         $data = [];
         /** @var Wood $wood */
         foreach ($paginator as $wood) {
-            $this->translationLoader->loadTranslations($wood);
             $data[] = [
                 'id' => $wood->getId(),
                 'name' => $wood->getName(),

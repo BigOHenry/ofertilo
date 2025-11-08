@@ -7,7 +7,7 @@ namespace App\Domain\Wood\Entity;
 use App\Domain\Material\Exception\InvalidMaterialException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineWoodRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -72,7 +72,7 @@ class Wood implements TranslatableInterface
 
     protected function __construct()
     {
-        $this->initTranslations();
+        $this->initializeTranslations();
     }
 
     public static function create(string $name, ?string $latin_name = null, ?int $dryDensity = null, ?int $hardness = null, bool $enabled = true): self
@@ -118,7 +118,7 @@ class Wood implements TranslatableInterface
 
     public function getDescription(?string $locale = null): ?string
     {
-        return $this->getTranslationFromMemory(self::TRANSLATION_FIELD_DESCRIPTION, $locale ?? 'en');
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale ?? 'en');
     }
 
     public function setDescription(?string $description, string $locale = 'en'): void
@@ -131,7 +131,7 @@ class Wood implements TranslatableInterface
 
     public function getPlaceOfOrigin(?string $locale = null): ?string
     {
-        return $this->getTranslationFromMemory(self::TRANSLATION_FIELD_PLACE_OF_ORIGIN, $locale ?? 'en');
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_PLACE_OF_ORIGIN, $locale ?? 'en');
     }
 
     public function setPlaceOfOrigin(?string $placeOfOrigin, string $locale = 'en'): void

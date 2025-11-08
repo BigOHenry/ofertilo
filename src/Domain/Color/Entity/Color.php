@@ -7,7 +7,7 @@ namespace App\Domain\Color\Entity;
 use App\Domain\Color\Exception\InvalidColorException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -45,7 +45,7 @@ class Color implements TranslatableInterface
 
     protected function __construct()
     {
-        $this->initTranslations();
+        $this->initializeTranslations();
     }
 
     public static function create(int $code, bool $inStock = false, bool $enabled = true): self
@@ -91,7 +91,7 @@ class Color implements TranslatableInterface
 
     public function getDescription(string $locale = 'en'): ?string
     {
-        return $this->getTranslationFromMemory(self::TRANSLATION_FIELD_DESCRIPTION, $locale);
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale);
     }
 
     public function setDescription(?string $value, string $locale = 'en'): self

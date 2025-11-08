@@ -2,20 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Doctrine;
+namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @phpstan-extends ServiceEntityRepository<\App\Domain\Color\Entity\Color>
- */
-class DoctrineColorRepository extends ServiceEntityRepository implements ColorRepositoryInterface
+class DoctrineColorRepository extends BaseRepository implements ColorRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry, private readonly DoctrineTranslationLoader $translationLoader)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Color::class);
     }
@@ -24,19 +19,6 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
     {
         $em = $this->getEntityManager();
         $em->persist($color);
-        $em->flush();
-
-        foreach ($color->getTranslations() as $translation) {
-            if ($translation->getId() === null) {
-                $color_id = $color->getId();
-
-                if ($color_id !== null) {
-                    $translation->setObjectId($color_id);
-                    $em->persist($translation);
-                }
-            }
-        }
-
         $em->flush();
     }
 
@@ -56,26 +38,6 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
         return $this->findOneBy(['id' => $id]);
     }
 
-    public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Color
-    {
-        $color = parent::find($id, $lockMode, $lockVersion);
-        if ($color) {
-            $this->translationLoader->loadTranslations($color);
-        }
-
-        return $color;
-    }
-
-    public function findOneBy(array $criteria, ?array $orderBy = null): ?Color
-    {
-        $color = parent::findOneBy($criteria, $orderBy);
-        if ($color) {
-            $this->translationLoader->loadTranslations($color);
-        }
-
-        return $color;
-    }
-
     /**
      * @return Color[]
      */
@@ -87,8 +49,7 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
                     ->setParameter('inStock', false)
                     ->orderBy('c.code', 'ASC')
                     ->getQuery()
-                    ->getResult()
-        ;
+                    ->getResult();
     }
 
     public function countOutOfStock(): int
@@ -99,13 +60,11 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
                           ->setParameter('enabled', true)
                           ->setParameter('inStock', false)
                           ->getQuery()
-                          ->getSingleScalarResult()
-        ;
+                          ->getSingleScalarResult();
     }
 
     /**
      * @param int[] $excludeIds
-     *
      * @return Color[]
      */
     public function findAvailableColors(array $excludeIds = []): array
@@ -113,13 +72,11 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
         $qb = $this->createQueryBuilder('c')
                    ->where('c.enabled = :enabled')
                    ->setParameter('enabled', true)
-                   ->orderBy('c.code', 'ASC')
-        ;
+                   ->orderBy('c.code', 'ASC');
 
         if (!empty($excludeIds)) {
             $qb->andWhere('c.id NOT IN (:excludeIds)')
-               ->setParameter('excludeIds', $excludeIds)
-            ;
+               ->setParameter('excludeIds', $excludeIds);
         }
 
         return $qb->getQuery()->getResult();
