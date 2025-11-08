@@ -12,7 +12,7 @@ use Doctrine\ORM\QueryBuilder;
 /**
  * @template T of object
  *
- * @extends() ServiceEntityRepository<T>
+ * @extends ServiceEntityRepository<T>
  */
 abstract class BaseRepository extends ServiceEntityRepository
 {

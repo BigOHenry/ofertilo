@@ -22,7 +22,8 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null, type: string, enabled: string}>, last_page: float, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null,
+     *      type: string, enabled: string}>, last_page: float, total: int<0, max>}
      */
     public function __invoke(GetMaterialsForPaginatedGridQuery $query): array
     {
@@ -47,14 +48,9 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
         $paginator = new Paginator($qb);
         $total = \count($paginator);
 
-        dump($this->localeService->getCurrentLocale());
-
         $data = [];
         /** @var Material $material */
         foreach ($paginator as $material) {
-            dump($material->getWood());
-            dump($material->getWood()->getDescription());
-            dump($material->getWood()->getDescription($this->localeService->getCurrentLocale()));
             $data[] = [
                 'id' => $material->getId(),
                 'name' => $material->getWood()->getName() . '_' . $material->getType()->value,

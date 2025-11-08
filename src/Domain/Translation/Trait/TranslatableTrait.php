@@ -125,14 +125,10 @@ trait TranslatableTrait
 
     private function lazyLoadTranslations(): void
     {
-        dump('lazyLoadTranslations');
-        // Pokud už jsou načtené, nedelej nic
         if ($this->translationsLoaded) {
             return;
         }
 
-        // Získáme EntityManager pomocí globální služby (fallback)
-        // V produkci by měl být preferován event listener
         global $entityManager;
 
         if (isset($entityManager)) {

@@ -19,7 +19,6 @@ final readonly class CreateWoodCommandHandler
 
     public function __invoke(CreateWoodCommand $command): void
     {
-        dump('CreateWoodCommandHandler');
         $name = $command->getName();
 
         if ($this->woodApplicationService->findByName($name)) {

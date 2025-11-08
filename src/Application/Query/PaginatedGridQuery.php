@@ -12,13 +12,13 @@ readonly class PaginatedGridQuery
     {
     }
 
-    public static function createFormRequest(Request $request): self
+    public static function createFormRequest(Request $request): static
     {
         $sortData = $request->query->all('sort');
         $sortField = $sortData['field'] ?? null;
         $sortDir = $sortData['dir'] ?? 'asc';
 
-        return new self((int) ($request->query->get('page') ?? 1), (int) ($request->query->get('size') ?? 10), $sortField, $sortDir);
+        return new static((int) ($request->query->get('page') ?? 1), (int) ($request->query->get('size') ?? 10), $sortField, $sortDir);
     }
 
     public function getPage(): int

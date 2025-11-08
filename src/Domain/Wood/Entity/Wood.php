@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Wood implements TranslatableInterface
 {
     use TranslatableTrait;
+
     public const string TRANSLATION_FIELD_PLACE_OF_ORIGIN = 'placeOfOrigin';
     public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
 
@@ -75,8 +76,13 @@ class Wood implements TranslatableInterface
         $this->initializeTranslations();
     }
 
-    public static function create(string $name, ?string $latin_name = null, ?int $dryDensity = null, ?int $hardness = null, bool $enabled = true): self
-    {
+    public static function create(
+        string $name,
+        ?string $latin_name = null,
+        ?int $dryDensity = null,
+        ?int $hardness = null,
+        bool $enabled = true
+    ): self {
         $product = new self();
         $product->name = $name;
         $product->latinName = $latin_name;
