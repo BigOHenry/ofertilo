@@ -8,6 +8,9 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @phpstan-extends BaseRepository<Color>
+ */
 class DoctrineColorRepository extends BaseRepository implements ColorRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
@@ -49,7 +52,8 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
                     ->setParameter('inStock', false)
                     ->orderBy('c.code', 'ASC')
                     ->getQuery()
-                    ->getResult();
+                    ->getResult()
+        ;
     }
 
     public function countOutOfStock(): int
@@ -60,11 +64,13 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
                           ->setParameter('enabled', true)
                           ->setParameter('inStock', false)
                           ->getQuery()
-                          ->getSingleScalarResult();
+                          ->getSingleScalarResult()
+        ;
     }
 
     /**
      * @param int[] $excludeIds
+     *
      * @return Color[]
      */
     public function findAvailableColors(array $excludeIds = []): array
@@ -72,11 +78,13 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
         $qb = $this->createQueryBuilder('c')
                    ->where('c.enabled = :enabled')
                    ->setParameter('enabled', true)
-                   ->orderBy('c.code', 'ASC');
+                   ->orderBy('c.code', 'ASC')
+        ;
 
         if (!empty($excludeIds)) {
             $qb->andWhere('c.id NOT IN (:excludeIds)')
-               ->setParameter('excludeIds', $excludeIds);
+               ->setParameter('excludeIds', $excludeIds)
+            ;
         }
 
         return $qb->getQuery()->getResult();

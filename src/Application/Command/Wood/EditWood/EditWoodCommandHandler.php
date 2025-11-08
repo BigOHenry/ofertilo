@@ -37,7 +37,8 @@ final readonly class EditWoodCommandHandler
               ->setLatinName($command->getLatinName())
               ->setDryDensity($command->getDryDensity())
               ->setHardness($command->getHardness())
-              ->setEnabled($command->isEnabled());
+              ->setEnabled($command->isEnabled())
+        ;
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');

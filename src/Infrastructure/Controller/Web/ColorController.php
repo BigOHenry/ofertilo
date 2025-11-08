@@ -138,6 +138,7 @@ final class ColorController extends AbstractController
     {
         try {
             $envelope = $this->bus->dispatch(GetColorsForPaginatedGridQuery::createFormRequest($request));
+
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
@@ -158,7 +159,7 @@ final class ColorController extends AbstractController
     public function deletePrice(Color $color): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteColorCommand::create($color->getId()));
+            $this->bus->dispatch(DeleteColorCommand::create((int) $color->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ColorException $e) {
@@ -171,6 +172,7 @@ final class ColorController extends AbstractController
     {
         try {
             $envelope = $this->bus->dispatch(GetOutOfStockColorsGridQuery::create());
+
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

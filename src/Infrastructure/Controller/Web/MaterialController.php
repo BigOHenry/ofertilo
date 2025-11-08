@@ -7,8 +7,6 @@ namespace App\Infrastructure\Controller\Web;
 use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
 use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
 use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
-use App\Application\Material\Command\CreateMaterialPriceCommand;
-use App\Application\Material\Command\EditMaterialPriceCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
 use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
 use App\Application\Service\MaterialApplicationService;
@@ -159,6 +157,7 @@ final class MaterialController extends AbstractController
     {
         try {
             $envelope = $this->bus->dispatch(GetMaterialsForPaginatedGridQuery::createFormRequest($request));
+
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

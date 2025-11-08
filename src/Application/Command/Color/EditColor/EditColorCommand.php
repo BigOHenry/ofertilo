@@ -11,10 +11,6 @@ use Symfony\Component\Form\FormInterface;
 final readonly class EditColorCommand
 {
     /**
-     * @param int        $id
-     * @param int        $code
-     * @param bool       $inStock
-     * @param bool       $enabled
      * @param Collection<int, TranslationEntity> $translations
      */
     public function __construct(

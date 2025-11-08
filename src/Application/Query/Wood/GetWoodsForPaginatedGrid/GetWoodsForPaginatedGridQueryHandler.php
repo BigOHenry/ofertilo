@@ -22,17 +22,17 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
     }
 
     /**
-     * @param GetWoodsForPaginatedGridQuery $query
-     * @return array{data: array{id: int, name: string, description: string, enabled: bool}, last_page: int, total: int}
+     * @return array{data: list<array{id: int|null, name: string, description: string|null, enabled: string}>, last_page: float, total: int<0, max>}
      */
     public function __invoke(GetWoodsForPaginatedGridQuery $query): array
     {
         $qb = $this->woodRepository->createQueryBuilder('w')
                                    ->setFirstResult($query->getOffset())
-                                   ->setMaxResults($query->getSize());
+                                   ->setMaxResults($query->getSize())
+        ;
 
         $sortField = $query->getSortField();
-        $sortDir = $query->getSortDirection();
+        $sortDir = $query->getSortDirection() ?? 'asc';
 
         $allowedFields = ['name', 'type'];
         $allowedDirections = ['asc', 'desc'];

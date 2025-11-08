@@ -113,6 +113,7 @@ class Wood implements TranslatableInterface
     {
         self::validateName($name);
         $this->name = $name;
+
         return $this;
     }
 
@@ -150,6 +151,7 @@ class Wood implements TranslatableInterface
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -164,6 +166,7 @@ class Wood implements TranslatableInterface
             self::validateLatinName($latinName);
         }
         $this->latinName = $latinName;
+
         return $this;
     }
 
@@ -178,6 +181,7 @@ class Wood implements TranslatableInterface
             self::validateDryDensity($dryDensity);
         }
         $this->dryDensity = $dryDensity;
+
         return $this;
     }
 
@@ -192,6 +196,7 @@ class Wood implements TranslatableInterface
             self::validateHardness($hardness);
         }
         $this->hardness = $hardness;
+
         return $this;
     }
 

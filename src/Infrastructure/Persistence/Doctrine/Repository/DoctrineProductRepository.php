@@ -8,11 +8,10 @@ use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<\App\Domain\Product\Entity\Product>
+ * @phpstan-extends BaseRepository<Product>
  */
 class DoctrineProductRepository extends BaseRepository implements ProductRepositoryInterface
 {

@@ -11,12 +11,6 @@ use Symfony\Component\Form\FormInterface;
 final readonly class EditWoodCommand
 {
     /**
-     * @param int                                $id
-     * @param string                             $name
-     * @param string|null                        $latinName
-     * @param int|null                           $dryDensity
-     * @param int|null                           $hardness
-     * @param bool                               $enabled
      * @param Collection<int, TranslationEntity> $translations
      */
     public function __construct(

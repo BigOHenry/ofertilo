@@ -14,6 +14,7 @@ interface MaterialRepositoryInterface
     public function createQueryBuilder(string $alias): QueryBuilder;
 
     public function findByWoodAndType(Wood $wood, Type $type): ?Material;
+
     public function findById(int $id): ?Material;
 
     public function save(Material $material): void;

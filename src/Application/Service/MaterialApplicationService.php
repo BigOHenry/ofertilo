@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
-use App\Application\Material\Command\CreateMaterialPriceCommand;
-use App\Application\Material\Command\EditMaterialPriceCommand;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\InvalidMaterialPriceException;
@@ -106,7 +104,7 @@ final readonly class MaterialApplicationService
         return [
             'data' => $data,
             'material_id' => $material->getId(),
-            'material_name' => $material->getWood()->getName() . '_' , $material->getType()->value,
+            'material_name' => $material->getWood()->getName() . '_', $material->getType()->value,
             'total_prices' => \count($data),
         ];
     }

@@ -21,7 +21,6 @@ final readonly class CreateMaterialCommand
         return new self($data['wood'], $data['type']);
     }
 
-
     public function getWood(): Wood
     {
         return $this->wood;

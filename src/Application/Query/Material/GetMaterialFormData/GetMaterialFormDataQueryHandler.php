@@ -17,8 +17,7 @@ final readonly class GetMaterialFormDataQueryHandler
     }
 
     /**
-     * @param GetMaterialFormDataQuery $query
-     * @return array{id: int|null, wood: int, type: string, enabled: bool}
+     * @return array{id: int|null, wood: int|null, type: 'area'|'piece'|'volume', enabled: bool}
      */
     public function __invoke(GetMaterialFormDataQuery $query): array
     {

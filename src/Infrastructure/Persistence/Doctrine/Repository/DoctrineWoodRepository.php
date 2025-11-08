@@ -6,11 +6,10 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<\App\Domain\Wood\Entity\Wood>
+ * @phpstan-extends BaseRepository<Wood>
  */
 class DoctrineWoodRepository extends BaseRepository implements WoodRepositoryInterface
 {

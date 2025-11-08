@@ -159,7 +159,7 @@ class Product implements TranslatableInterface
 
     public function getDescription(?string $locale = null): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale ?? 'en');
+        return $this->getTranslationValue('description', $locale ?? 'en');
     }
 
     public function setDescription(?string $value, string $locale = 'en'): void

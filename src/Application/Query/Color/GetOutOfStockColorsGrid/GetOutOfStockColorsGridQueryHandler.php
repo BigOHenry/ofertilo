@@ -19,8 +19,7 @@ final readonly class GetOutOfStockColorsGridQueryHandler
     }
 
     /**
-     * @param GetOutOfStockColorsGridQuery $query
-     * @return array{data: array{id: int, code: int, description: string, inStock: bool, enabled: bool}, last_page: int, total: int}
+     * @return array{data: list<array{id: int|null, code: int, description: string|null}>, total: int<0, max>}
      */
     public function __invoke(GetOutOfStockColorsGridQuery $query): array
     {
@@ -28,7 +27,6 @@ final readonly class GetOutOfStockColorsGridQueryHandler
         $localeService = $this->localeService;
         $data = array_map(
             static function (Color $color) use ($localeService) {
-
                 return [
                     'id' => $color->getId(),
                     'code' => $color->getCode(),

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Color\Validator;
 
-use App\Domain\User\ValueObject\UserRole;
-
 class ColorValidator
 {
     /**

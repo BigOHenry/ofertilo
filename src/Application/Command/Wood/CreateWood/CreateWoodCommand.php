@@ -11,10 +11,6 @@ use Symfony\Component\Form\FormInterface;
 final readonly class CreateWoodCommand
 {
     /**
-     * @param string                             $name
-     * @param string|null                        $latinName
-     * @param int|null                           $dryDensity
-     * @param int|null                           $hardness
      * @param Collection<int, TranslationEntity> $translations
      */
     public function __construct(

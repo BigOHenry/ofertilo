@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20251104133035 extends AbstractMigration
 {
     public function getDescription(): string
@@ -19,7 +16,6 @@ final class Version20251104133035 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE wood (id SERIAL NOT NULL, name VARCHAR(50) NOT NULL, latin_name VARCHAR(300) DEFAULT NULL, dry_density INT DEFAULT NULL, hardness INT DEFAULT NULL, enabled BOOLEAN DEFAULT true NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_3C9D190D5E237E06 ON wood (name)');
         $this->addSql('ALTER TABLE material ADD wood_id INT DEFAULT NULL');
@@ -33,7 +29,6 @@ final class Version20251104133035 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
         $this->addSql('ALTER TABLE material DROP CONSTRAINT FK_7CBE75957B2710BE');
         $this->addSql('DROP TABLE wood');

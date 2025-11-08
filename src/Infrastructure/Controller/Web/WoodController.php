@@ -137,6 +137,7 @@ final class WoodController extends AbstractController
     {
         try {
             $envelope = $this->bus->dispatch(GetWoodsForPaginatedGridQuery::createFormRequest($request));
+
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
@@ -157,7 +158,7 @@ final class WoodController extends AbstractController
     public function deletePrice(Wood $wood): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteWoodCommand::create($wood->getId()));
+            $this->bus->dispatch(DeleteWoodCommand::create((int) $wood->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (WoodException $e) {

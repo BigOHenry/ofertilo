@@ -16,6 +16,15 @@ final readonly class TranslationFormHelper
     ) {
     }
 
+    /**
+     * @template T of TranslatableInterface
+     *
+     * @param class-string<T> $entityClass
+     *
+     * @throws \Exception
+     *
+     * @return array{translations: ArrayCollection<int, TranslationEntity>}
+     */
     public function prepareFormData(string $entityClass): array
     {
         return [
@@ -23,6 +32,9 @@ final readonly class TranslationFormHelper
         ];
     }
 
+    /**
+     * @return ArrayCollection<int, TranslationEntity>
+     */
     public function prepareTranslationsFromEntity(TranslatableInterface $entity): ArrayCollection
     {
         $entityClass = $entity::class;
@@ -57,12 +69,17 @@ final readonly class TranslationFormHelper
     }
 
     /**
-     * @param class-string<TranslatableInterface> $entityClass
+     * @template T of TranslatableInterface
+     *
+     * @param class-string<T> $entityClass
      *
      * @throws \Exception
+     *
+     * @return ArrayCollection<int, TranslationEntity>
      */
     private function prepareTranslations(string $entityClass): ArrayCollection
     {
+        /* @phpstan-ignore-next-line */
         if (is_subclass_of($entityClass, TranslatableInterface::class) === false) {
             throw new \Exception(\sprintf('Entity class %s must implement %s', $entityClass, TranslatableInterface::class));
         }

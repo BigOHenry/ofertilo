@@ -10,6 +10,9 @@ use App\Domain\Material\ValueObject\Type;
 use App\Domain\Wood\Entity\Wood;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @phpstan-extends BaseRepository<Material>
+ */
 class DoctrineMaterialRepository extends BaseRepository implements MaterialRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)

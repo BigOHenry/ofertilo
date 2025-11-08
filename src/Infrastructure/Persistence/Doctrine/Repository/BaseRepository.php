@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\Interface\TranslatableInterface;
-use App\Infrastructure\Persistence\Doctrine\Extension\TranslationQueryExtension;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use App\Domain\Translation\Entity\TranslationEntity;
 
+/**
+ * @template T of object
+ *
+ * @extends() ServiceEntityRepository<T>
+ */
 abstract class BaseRepository extends ServiceEntityRepository
 {
-    /**
-     * Automaticky přidá překlady pro TranslatableInterface entity
-     */
-    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
+    public function createQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
     {
         $qb = parent::createQueryBuilder($alias, $indexBy);
 
@@ -27,9 +28,6 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    /**
-     * Přidá LEFT JOIN pro překlady
-     */
     protected function addTranslationsJoin(QueryBuilder $qb, string $alias): void
     {
         // Kontrola, zda už není přidán
@@ -50,6 +48,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             'WITH',
             't.object_class = :_translation_class AND t.object_id = ' . $alias . '.id'
         )
-           ->setParameter('_translation_class', $entityClass);
+           ->setParameter('_translation_class', $entityClass)
+        ;
     }
 }

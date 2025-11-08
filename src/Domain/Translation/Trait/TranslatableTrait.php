@@ -17,13 +17,6 @@ trait TranslatableTrait
     private ?string $defaultLocale = null;
     private bool $translationsLoaded = false;
 
-    private function initializeTranslations(): void
-    {
-        if (!isset($this->translations)) {
-            $this->translations = new ArrayCollection();
-        }
-    }
-
     public function setDefaultLocale(string $locale): void
     {
         $this->defaultLocale = $locale;
@@ -40,9 +33,13 @@ trait TranslatableTrait
     public function getTranslations(): Collection
     {
         $this->initializeTranslations();
+
         return $this->translations;
     }
 
+    /**
+     * @param Collection<int, TranslationEntity> $translations
+     */
     public function setTranslationsCollection(Collection $translations): void
     {
         $this->translations = $translations;
@@ -83,34 +80,6 @@ trait TranslatableTrait
         return null;
     }
 
-    private function lazyLoadTranslations(): void
-    {
-        dump('lazyLoadTranslations');
-        // Pokud už jsou načtené, nedelej nic
-        if ($this->translationsLoaded) {
-            return;
-        }
-
-        // Získáme EntityManager pomocí globální služby (fallback)
-        // V produkci by měl být preferován event listener
-        global $entityManager;
-
-        if (isset($entityManager)) {
-            $translations = $entityManager
-                ->getRepository(TranslationEntity::class)
-                ->findBy([
-                    'object_class' => static::class,
-                    'object_id' => $this->getId(),
-                ]);
-
-            foreach ($translations as $translation) {
-                $this->translations->add($translation);
-            }
-        }
-
-        $this->translationsLoaded = true;
-    }
-
     public function addTranslation(string $field, ?string $value, string $locale): void
     {
         $t = new TranslationEntity();
@@ -133,6 +102,7 @@ trait TranslatableTrait
         foreach ($this->translations as $key => $translation) {
             if ($translation->getField() === $field && $translation->getLocale() === $locale) {
                 $this->translations->remove($key);
+
                 return;
             }
         }
@@ -145,4 +115,40 @@ trait TranslatableTrait
     }
 
     abstract public function getId(): ?int;
+
+    private function initializeTranslations(): void
+    {
+        if (!isset($this->translations)) {
+            $this->translations = new ArrayCollection();
+        }
+    }
+
+    private function lazyLoadTranslations(): void
+    {
+        dump('lazyLoadTranslations');
+        // Pokud už jsou načtené, nedelej nic
+        if ($this->translationsLoaded) {
+            return;
+        }
+
+        // Získáme EntityManager pomocí globální služby (fallback)
+        // V produkci by měl být preferován event listener
+        global $entityManager;
+
+        if (isset($entityManager)) {
+            $translations = $entityManager
+                ->getRepository(TranslationEntity::class)
+                ->findBy([
+                    'object_class' => static::class,
+                    'object_id' => $this->getId(),
+                ])
+            ;
+
+            foreach ($translations as $translation) {
+                $this->translations->add($translation);
+            }
+        }
+
+        $this->translationsLoaded = true;
+    }
 }

@@ -1,21 +1,24 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Application\Query;
 
 use Symfony\Component\HttpFoundation\Request;
 
-abstract readonly class PaginatedGridQuery
+readonly class PaginatedGridQuery
 {
-    protected function __construct(private ?int $page, private ?int $size, private ?string $sortField, private ?string $sortDirection) {
+    protected function __construct(private int $page, private int $size, private ?string $sortField, private ?string $sortDirection)
+    {
     }
 
-    public static function createFormRequest(Request $request): static
+    public static function createFormRequest(Request $request): self
     {
         $sortData = $request->query->all('sort');
         $sortField = $sortData['field'] ?? null;
         $sortDir = $sortData['dir'] ?? 'asc';
 
-        return new static($request->query->get('page') ?? 1, $request->query->get('size') ?? 10, $sortField, $sortDir);
+        return new self((int) ($request->query->get('page') ?? 1), (int) ($request->query->get('size') ?? 10), $sortField, $sortDir);
     }
 
     public function getPage(): int

@@ -11,9 +11,6 @@ use Symfony\Component\Form\FormInterface;
 final readonly class CreateColorCommand
 {
     /**
-     * @param int        $code
-     * @param bool       $inStock
-     * @param bool       $enabled
      * @param Collection<int, TranslationEntity> $translations
      */
     public function __construct(

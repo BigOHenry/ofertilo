@@ -30,4 +30,9 @@ interface TranslatableInterface
     public function setDefaultLocale(string $locale): void;
 
     public function getDefaultLocale(): ?string;
+
+    /**
+     * @param Collection<int, TranslationEntity> $translations
+     */
+    public function setTranslationsCollection(Collection $translations): void;
 }

@@ -22,17 +22,17 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
     }
 
     /**
-     * @param GetMaterialsForPaginatedGridQuery $query
-     * @return array{data: array{id: int, name: string, description: string, type: string, enabled: bool}, last_page: int, total: int}
+     * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null, type: string, enabled: string}>, last_page: float, total: int<0, max>}
      */
     public function __invoke(GetMaterialsForPaginatedGridQuery $query): array
     {
         $qb = $this->materialRepository->createQueryBuilder('c')
                                        ->setFirstResult($query->getOffset())
-                                       ->setMaxResults($query->getSize());
+                                       ->setMaxResults($query->getSize())
+        ;
 
         $sortField = $query->getSortField();
-        $sortDir = $query->getSortDirection();
+        $sortDir = $query->getSortDirection() ?? 'asc';
 
         $allowedFields = ['name', 'type'];
         $allowedDirections = ['asc', 'desc'];

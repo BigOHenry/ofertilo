@@ -21,7 +21,6 @@ final readonly class GetColorFormDataQueryHandler
     }
 
     /**
-     * @param GetColorFormDataQuery $query
      * @return array{id: int|null, code: int, inStock: bool, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
      */
     public function __invoke(GetColorFormDataQuery $query): array
