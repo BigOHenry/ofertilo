@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Query\Color\GetColorFormData;
 
-use App\Application\Color\ColorApplicationService;
+use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Infrastructure\Form\Helper\TranslationFormHelper;

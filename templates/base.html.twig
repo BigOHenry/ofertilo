@@ -38,13 +38,16 @@
                             <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home_index' %}active{% endif %}" aria-current="page" href="{{ path('app_home_index') }}">{{ 'title.home'|trans }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if app.request.attributes.get('_route') starts with 'product' %}active{% endif %}" href="{{ path('product_index') }}" data-turbo="true">{{ 'title.products'|trans }}</a>
+                            <a class="nav-link {% if app.request.attributes.get('_route') starts with 'wood' %}active{% endif %}" href="{{ path('wood_index') }}" data-turbo="true">{{ 'title.woods'|trans }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') starts with 'material' %}active{% endif %}" href="{{ path('material_index') }}" data-turbo="true">{{ 'title.materials'|trans }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.attributes.get('_route') starts with 'color' %}active{% endif %}" href="{{ path('color_index') }}" data-turbo="true">{{ 'title.colors'|trans }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if app.request.attributes.get('_route') starts with 'product' %}active{% endif %}" href="{{ path('product_index') }}" data-turbo="true">{{ 'title.products'|trans }}</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav mb-2 mb-lg-0">

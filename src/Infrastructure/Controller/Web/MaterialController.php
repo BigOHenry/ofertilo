@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller\Web;
 
-use App\Application\Material\Command\CreateMaterialCommand;
+use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
+use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
+use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
 use App\Application\Material\Command\CreateMaterialPriceCommand;
-use App\Application\Material\Command\EditMaterialCommand;
 use App\Application\Material\Command\EditMaterialPriceCommand;
-use App\Application\Material\Factory\MaterialCommandFactory;
-use App\Application\Material\MaterialApplicationService;
+use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
+use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
+use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\DuplicatePriceThicknessException;
@@ -22,6 +24,8 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
@@ -31,7 +35,7 @@ final class MaterialController extends AbstractController
 {
     public function __construct(
         private readonly MaterialApplicationService $materialService,
-        private readonly MaterialCommandFactory $materialCommandFactory,
+        private readonly MessageBusInterface $bus,
     ) {
     }
 
@@ -46,8 +50,7 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $command = $this->materialCommandFactory->createCreateCommand();
-        $form = $this->createForm(MaterialType::class, $command, [
+        $form = $this->createForm(MaterialType::class, data: [], options: [
             'action' => $this->generateUrl('material_new'),
             'method' => 'POST',
         ]);
@@ -56,7 +59,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $material = $this->materialService->createFromCommand($command);
+                $this->bus->dispatch(CreateMaterialCommand::createFromForm($form));
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -85,8 +88,10 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function materialEdit(Request $request, Material $material): Response
     {
-        $command = $this->materialCommandFactory->createEditCommand($material);
-        $form = $this->createForm(MaterialType::class, $command, [
+        $envelope = $this->bus->dispatch(new GetMaterialFormDataQuery((int) $material->getId()));
+        $formData = $envelope->last(HandledStamp::class)?->getResult();
+
+        $form = $this->createForm(MaterialType::class, data: $formData, options: [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -94,7 +99,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->updateFromCommand($material, $command);
+                $this->bus->dispatch(EditMaterialCommand::createFromForm($form));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -140,7 +145,7 @@ final class MaterialController extends AbstractController
     public function deleteMaterial(Material $material): JsonResponse
     {
         try {
-            $this->materialService->delete($material);
+            $this->bus->dispatch(DeleteMaterialCommand::create($material->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (MaterialException $e) {
@@ -153,7 +158,8 @@ final class MaterialController extends AbstractController
     public function materialsApi(Request $request): JsonResponse
     {
         try {
-            return $this->json($this->materialService->getPaginatedMaterials($request));
+            $envelope = $this->bus->dispatch(GetMaterialsForPaginatedGridQuery::createFormRequest($request));
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller\Web;
 
 use App\Application\Command\User\CreateFirstSuperAdminUser\CreateFirstSuperAdminUserCommand;
-use App\Application\User\UserApplicationService;
+use App\Application\Service\UserApplicationService;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Exception\UserException;
 use App\Infrastructure\Form\FirstRunSetupType;

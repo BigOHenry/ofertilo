@@ -1,12 +1,6 @@
 <div id="material-detail">
     <div class="row pb-2">
-        <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ material.name }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ material.description(app.request.locale) }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.latin_name'|trans }}:</label> <span>{{ material.latinName }}</span></div>
-    </div>
-    <div class="row pb-2">
+        <div class="col"><label class="fw-semibold">{{ 'field.wood'|trans }}:</label> <span>{{ material.wood.description}}</span></div>
         <div class="col"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('material.type.' ~ material.type.value)|trans({}, 'enum') }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.dry_density'|trans }}:</label> <span>{{ material.dryDensity }}</span></div>
-        <div class="col"><label class="fw-semibold">{{ 'field.hardness'|trans }}:</label> <span>{{ material.hardness }}</span></div>
     </div>
 </div>

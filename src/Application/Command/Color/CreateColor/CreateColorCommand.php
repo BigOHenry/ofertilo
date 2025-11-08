@@ -24,7 +24,7 @@ final readonly class CreateColorCommand
     ) {
     }
 
-    public static function createFromForm(FormInterface $form): CreateColorCommand
+    public static function createFromForm(FormInterface $form): self
     {
         $data = $form->getData();
 

@@ -82,9 +82,9 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
     public function findOutOfStock(): array
     {
         return $this->createQueryBuilder('c')
-                    ->where('c.enabled = :enabled AND c.in_stock = :in_stock')
+                    ->where('c.enabled = :enabled AND c.inStock = :inStock')
                     ->setParameter('enabled', true)
-                    ->setParameter('in_stock', false)
+                    ->setParameter('inStock', false)
                     ->orderBy('c.code', 'ASC')
                     ->getQuery()
                     ->getResult()
@@ -95,9 +95,9 @@ class DoctrineColorRepository extends ServiceEntityRepository implements ColorRe
     {
         return (int) $this->createQueryBuilder('c')
                           ->select('COUNT(c.id)')
-                          ->where('c.enabled = :enabled AND c.in_stock = :in_stock')
+                          ->where('c.enabled = :enabled AND c.inStock = :inStock')
                           ->setParameter('enabled', true)
-                          ->setParameter('in_stock', false)
+                          ->setParameter('inStock', false)
                           ->getQuery()
                           ->getSingleScalarResult()
         ;

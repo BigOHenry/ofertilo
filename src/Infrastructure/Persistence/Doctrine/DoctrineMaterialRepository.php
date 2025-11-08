@@ -7,6 +7,7 @@ namespace App\Infrastructure\Persistence\Doctrine;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\Material\ValueObject\Type;
+use App\Domain\Wood\Entity\Wood;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
@@ -47,9 +48,14 @@ class DoctrineMaterialRepository extends ServiceEntityRepository implements Mate
         $this->getEntityManager()->flush();
     }
 
-    public function findByTypeAndName(Type $type, string $name): ?Material
+    public function findByWoodAndType(Wood $wood, Type $type): ?Material
     {
-        return $this->findOneBy(['type' => $type, 'name' => $name]);
+        return $this->findOneBy(['wood' => $wood, 'type' => $type]);
+    }
+
+    public function findById(int $id): ?Material
+    {
+        return $this->findOneBy(['id' => $id]);
     }
 
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?Material

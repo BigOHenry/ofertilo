@@ -50,6 +50,8 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
     App\Domain\Shared\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+    App\Domain\Wood\Repository\WoodRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\DoctrineWoodRepository
 
     App\Infrastructure\Form\Helper\TranslationFormHelper:
 
@@ -63,6 +65,4 @@ services:
             $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
     App\Domain\Product\Factory\ProductFactory:
-        autowire: true
-    App\Domain\Material\Factory\MaterialFactory:
         autowire: true

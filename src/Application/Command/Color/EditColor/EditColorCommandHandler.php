@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Color\EditColor;
 
-use App\Application\Color\ColorApplicationService;
+use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;

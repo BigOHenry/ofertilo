@@ -1,0 +1,12 @@
+<div id="wood-detail">
+    <div class="row pb-2">
+        <div class="col"><label class="fw-semibold">{{ 'field.name'|trans }}:</label> <span>{{ wood.name }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ wood.description(app.request.locale) }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.latinName'|trans }}:</label> <span>{{ wood.latinName }}</span></div>
+    </div>
+    <div class="row pb-2">
+        <div class="col"><label class="fw-semibold">{{ 'field.dryDensity'|trans }}:</label> <span>{{ wood.dryDensity }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.hardness'|trans }}:</label> <span>{{ wood.hardness }}</span></div>
+        <div class="col"><label class="fw-semibold">{{ 'field.placeOfOrigin'|trans }}:</label> <span>{{ wood.placeOfOrigin(app.request.locale) }}</span></div>
+    </div>
+</div>

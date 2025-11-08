@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller\Web;
 
-use App\Application\Color\ColorApplicationService;
 use App\Application\Command\Color\CreateColor\CreateColorCommand;
+use App\Application\Command\Color\DeleteColor\DeleteColorCommand;
 use App\Application\Command\Color\EditColor\EditColorCommand;
 use App\Application\Query\Color\GetColorFormData\GetColorFormDataQuery;
+use App\Application\Query\Color\GetColorsForPaginatedGrid\GetColorsForPaginatedGridQuery;
+use App\Application\Query\Color\GetOutOfStockColorsGrid\GetOutOfStockColorsGridQuery;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;
@@ -28,7 +30,6 @@ use Symfony\UX\Turbo\TurboBundle;
 final class ColorController extends AbstractController
 {
     public function __construct(
-        private readonly ColorApplicationService $colorService,
         private readonly MessageBusInterface $bus,
         private readonly TranslationFormHelper $formHelper,
     ) {
@@ -136,7 +137,8 @@ final class ColorController extends AbstractController
     public function colorsApi(Request $request): JsonResponse
     {
         try {
-            return $this->json($this->colorService->getPaginatedColors($request));
+            $envelope = $this->bus->dispatch(GetColorsForPaginatedGridQuery::createFormRequest($request));
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -156,7 +158,7 @@ final class ColorController extends AbstractController
     public function deletePrice(Color $color): JsonResponse
     {
         try {
-            $this->colorService->delete($color);
+            $this->bus->dispatch(DeleteColorCommand::create($color->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ColorException $e) {
@@ -165,10 +167,11 @@ final class ColorController extends AbstractController
     }
 
     #[Route('/api/colors/out-of-stock', name: 'api_colors_out_of_stock', methods: ['GET'])]
-    public function getOutOfStockColors(Request $request): JsonResponse
+    public function getOutOfStockColors(): JsonResponse
     {
         try {
-            return $this->json($this->colorService->getOutOfStockColors($request));
+            $envelope = $this->bus->dispatch(GetOutOfStockColorsGridQuery::create());
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

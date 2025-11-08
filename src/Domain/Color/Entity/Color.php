@@ -17,6 +17,12 @@ class Color implements TranslatableInterface
 {
     use TranslatableTrait;
 
+    public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
+
+    private const array TRANSLATION_FIELDS = [
+        self::TRANSLATION_FIELD_DESCRIPTION,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -58,7 +64,7 @@ class Color implements TranslatableInterface
      */
     public static function getTranslatableFields(): array
     {
-        return ['description'];
+        return self::TRANSLATION_FIELDS;
     }
 
     public function getId(): ?int
@@ -85,7 +91,7 @@ class Color implements TranslatableInterface
 
     public function getDescription(string $locale = 'en'): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale);
+        return $this->getTranslationFromMemory(self::TRANSLATION_FIELD_DESCRIPTION, $locale);
     }
 
     public function setDescription(?string $value, string $locale = 'en'): self
@@ -93,7 +99,7 @@ class Color implements TranslatableInterface
         if ($value !== null) {
             self::validateDescription($value);
         }
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $value, $locale);
 
         return $this;
     }

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Color\CreateColor;
 
-use App\Application\Color\ColorApplicationService;
+use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
-use App\Domain\Color\Exception\InvalidColorException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
