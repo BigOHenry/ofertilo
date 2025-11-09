@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
-use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\InvalidMaterialException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
@@ -248,7 +248,7 @@ class MaterialTest extends TestCase
         $material = Material::create(Type::VOLUME, 'oak');
         $material->addPrice(10, '50.0');
 
-        $this->expectException(DuplicatePriceThicknessException::class);
+        $this->expectException(MaterialPriceAlreadyExistsException::class);
         $this->expectExceptionMessage('Price for thickness 10mm already exists');
 
         $material->addPrice(10, '60.0');

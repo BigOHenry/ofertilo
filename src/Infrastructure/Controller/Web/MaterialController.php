@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller\Web;
 
 use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
+use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommand;
 use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
 use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
+use App\Application\Query\Material\GetMaterialPricesForPaginatedGrid\GetMaterialPricesForPaginatedGridQuery;
 use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
-use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialException;
 use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Form\MaterialPriceType;
@@ -168,8 +170,7 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function newPrice(Request $request, Material $material): Response
     {
-        $command = $this->materialCommandFactory->createCreatePriceCommand($material);
-        $form = $this->createForm(MaterialPriceType::class, $command, [
+        $form = $this->createForm(MaterialPriceType::class, [], [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -178,7 +179,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->createPriceFromCommand($command);
+                $this->bus->dispatch(CreateMaterialPriceCommand::createFromForm($form, $material));
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -187,7 +188,7 @@ final class MaterialController extends AbstractController
                 }
 
                 return $this->redirectToRoute('material_detail', ['id' => $material->getId()], Response::HTTP_SEE_OTHER);
-            } catch (DuplicatePriceThicknessException $e) {
+            } catch (MaterialPriceAlreadyExistsException $e) {
                 $form->addError(new FormError($e->getMessage()));
             }
         }
@@ -246,7 +247,9 @@ final class MaterialController extends AbstractController
     public function materialPricesApi(Material $material): JsonResponse
     {
         try {
-            return $this->json($this->materialService->getMaterialPricesData($material));
+            $envelope = $this->bus->dispatch(GetMaterialPricesForPaginatedGridQuery::create($material));
+
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }

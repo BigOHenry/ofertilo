@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
-use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
 use PHPUnit\Framework\TestCase;
@@ -92,7 +92,7 @@ class MaterialRelationshipTest extends TestCase
         $material = Material::create(Type::VOLUME, 'cherry');
         $material->addPrice(15, '80.0');
 
-        $this->expectException(DuplicatePriceThicknessException::class);
+        $this->expectException(MaterialPriceAlreadyExistsException::class);
         $this->expectExceptionMessage('Price for thickness 15mm already exists');
 
         $material->addPrice(15, '90.0');

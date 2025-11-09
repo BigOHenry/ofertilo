@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Material\Entity;
 
-use App\Domain\Material\Exception\DuplicatePriceThicknessException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
 use App\Domain\Wood\Entity\Wood;
@@ -94,6 +94,16 @@ class Material
         $this->enabled = $enabled;
     }
 
+    public function getDescription(?string $locale = null): string
+    {
+        return \sprintf('%s - %s', $this->wood->getDescription($locale), $this->type->value);
+    }
+
+    public function getName(): string
+    {
+        return \sprintf('%s_%s', $this->wood->getName(), $this->type->name);
+    }
+
     /**
      * @return Collection<int, MaterialPrice>
      */
@@ -106,7 +116,7 @@ class Material
     {
         foreach ($this->prices as $existingPrice) {
             if ($existingPrice->getThickness() === $thickness) {
-                throw DuplicatePriceThicknessException::forThickness($thickness);
+                throw MaterialPriceAlreadyExistsException::withThickness($thickness);
             }
         }
         $materialPrice = MaterialPrice::create($this, $thickness, $price);

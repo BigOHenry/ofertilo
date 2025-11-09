@@ -7,6 +7,7 @@ namespace App\Application\Service;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\InvalidMaterialPriceException;
+use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\Material\ValueObject\Type;
 use App\Domain\Wood\Entity\Wood;
@@ -15,6 +16,7 @@ final readonly class MaterialApplicationService
 {
     public function __construct(
         private MaterialRepositoryInterface $materialRepository,
+        private MaterialPriceRepositoryInterface $materialPriceRepository,
     ) {
     }
 
@@ -28,21 +30,14 @@ final readonly class MaterialApplicationService
         return $this->materialRepository->findById($id);
     }
 
-    public function createPriceFromCommand(CreateMaterialPriceCommand $command): void
+    public function findMaterialPriceByMaterialAndThickness(Material $material, int $thickness): ?MaterialPrice
     {
-        $thickness = $command->getThickness();
-        $price = $command->getPrice();
+        return $this->materialPriceRepository->findByMaterialAndThickness($material, $thickness);
+    }
 
-        if ($thickness === null) {
-            throw InvalidMaterialPriceException::emptyThickness();
-        }
-
-        if ($price === null || mb_trim($price) === '') {
-            throw InvalidMaterialPriceException::emptyPrice();
-        }
-
-        $command->getMaterial()->addPrice($thickness, $price);
-        $this->materialRepository->save($command->getMaterial());
+    public function findMaterialPriceById(int $id): ?MaterialPrice
+    {
+        return $this->materialPriceRepository->findById($id);
     }
 
     public function updatePriceFromCommand(MaterialPrice $materialPrice, EditMaterialPriceCommand $command): void
@@ -104,7 +99,7 @@ final readonly class MaterialApplicationService
         return [
             'data' => $data,
             'material_id' => $material->getId(),
-            'material_name' => $material->getWood()->getName() . '_', $material->getType()->value,
+            'material_name' => $material->getDescription(),
             'total_prices' => \count($data),
         ];
     }

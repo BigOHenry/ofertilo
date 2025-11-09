@@ -49,35 +49,16 @@ class MaterialPrice
     #[Assert\NotNull(message: 'not_null')]
     private Material $material;
 
-    protected function __construct(Material $material, ?int $id = null)
+    protected function __construct(Material $material, int $thickness, string $price)
     {
-        $this->id = $id;
+        $this->thickness = $thickness;
+        $this->price = $price;
         $this->material = $material;
     }
 
     public static function create(Material $material, int $thickness, string $price): self
     {
-        self::validateThickness($thickness);
-        self::validatePrice($price);
-
-        $product = new self($material);
-        $product->thickness = $thickness;
-        $product->price = $price;
-
-        return $product;
-    }
-
-    public static function createFromDatabase(
-        int $id,
-        Material $material,
-        int $thickness,
-        string $price,
-    ): self {
-        $materialPrice = new self($material, $id);
-        $materialPrice->thickness = $thickness;
-        $materialPrice->price = $price;
-
-        return $materialPrice;
+        return new self($material, $thickness, $price);
     }
 
     public function getId(): ?int
