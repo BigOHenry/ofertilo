@@ -21,7 +21,7 @@ return new PhpCsFixer\Config()
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'doctrine_annotation_array_assignment' => ['operator' => '='],
-        'doctrine_annotation_braces' => ['syntax' => 'with_braces'],
+        'doctrine_annotation_braces' => ['syntax' => 'without_braces'],
         'align_multiline_comment' => true,
         'array_indentation' => true,
         'array_syntax' => ['syntax' => 'short'],

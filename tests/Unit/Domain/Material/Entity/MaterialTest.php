@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Domain\Material\Entity;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
-use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\InvalidMaterialException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\Type;
 use PHPUnit\Framework\TestCase;

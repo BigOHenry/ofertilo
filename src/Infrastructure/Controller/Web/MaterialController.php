@@ -16,8 +16,8 @@ use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForP
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
-use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialException;
+use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Form\MaterialPriceType;
 use App\Infrastructure\Form\MaterialType;

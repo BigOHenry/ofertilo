@@ -81,7 +81,7 @@ class Wood implements TranslatableInterface
         ?string $latin_name = null,
         ?int $dryDensity = null,
         ?int $hardness = null,
-        bool $enabled = true
+        bool $enabled = true,
     ): self {
         $product = new self();
         $product->name = $name;

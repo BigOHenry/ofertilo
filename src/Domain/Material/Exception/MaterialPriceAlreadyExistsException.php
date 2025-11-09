@@ -8,6 +8,6 @@ class MaterialPriceAlreadyExistsException extends MaterialException
 {
     public static function withThickness(int $thickness): self
     {
-        return new self(\sprintf("Price for thickness %s mm already exists", $thickness));
+        return new self(\sprintf('Price for thickness %s mm already exists', $thickness));
     }
 }
