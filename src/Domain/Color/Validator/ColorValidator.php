@@ -37,21 +37,6 @@ class ColorValidator
     /**
      * @return array<string, string>
      */
-    public static function validateRole(string $role): array
-    {
-        $errors = [];
-
-        $validRoles = array_column(UserRole::cases(), 'value');
-        if (!\in_array($role, $validRoles, true)) {
-            $errors['role'] = 'Invalid role value. Must be one of: ' . implode(', ', $validRoles);
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @return array<string, string>
-     */
     public static function validatePassword(string $password): array
     {
         $errors = [];
@@ -78,7 +63,6 @@ class ColorValidator
         return array_merge(
             self::validateEmail(email: $email),
             self::validateName(name: $name),
-            self::validateRole(role: $role),
             self::validatePassword(password: $password)
         );
     }
@@ -91,7 +75,6 @@ class ColorValidator
         return array_merge(
             self::validateEmail(email: $email),
             self::validateName(name: $name),
-            self::validateRole(role: $role)
         );
     }
 }

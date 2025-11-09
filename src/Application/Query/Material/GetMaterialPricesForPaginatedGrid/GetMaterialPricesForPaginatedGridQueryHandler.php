@@ -16,8 +16,9 @@ final readonly class GetMaterialPricesForPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null,
-     *      type: string, enabled: string}>, last_page: float, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, thickness: int, price: string, formatted_price: non-falsy-string,
+     *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string,
+     *      total_prices: int<0, max>}
      */
     public function __invoke(GetMaterialPricesForPaginatedGridQuery $query): array
     {

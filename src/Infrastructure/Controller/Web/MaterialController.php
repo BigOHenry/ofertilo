@@ -8,7 +8,9 @@ use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
 use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommand;
 use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
 use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
+use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
+use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
 use App\Application\Query\Material\GetMaterialPricesForPaginatedGrid\GetMaterialPricesForPaginatedGridQuery;
 use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
 use App\Application\Service\MaterialApplicationService;
@@ -145,7 +147,7 @@ final class MaterialController extends AbstractController
     public function deleteMaterial(Material $material): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteMaterialCommand::create($material->getId()));
+            $this->bus->dispatch(DeleteMaterialCommand::create((int) $material->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (MaterialException $e) {
@@ -208,8 +210,10 @@ final class MaterialController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function editPrice(Request $request, MaterialPrice $materialPrice): Response
     {
-        $command = $this->materialCommandFactory->createEditPriceCommand($materialPrice);
-        $form = $this->createForm(MaterialPriceType::class, $command, [
+        $envelope = $this->bus->dispatch(new GetMaterialPriceFormDataQuery((int) $materialPrice->getId()));
+        $formData = $envelope->last(HandledStamp::class)?->getResult();
+
+        $form = $this->createForm(MaterialPriceType::class, $formData, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
             'method' => 'POST',
         ]);
@@ -217,7 +221,7 @@ final class MaterialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->materialService->updatePriceFromCommand($materialPrice, $command);
+                $this->bus->dispatch(EditMaterialPriceCommand::createFromForm($form));
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);

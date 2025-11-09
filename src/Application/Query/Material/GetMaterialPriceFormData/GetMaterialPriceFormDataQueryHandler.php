@@ -17,7 +17,7 @@ final readonly class GetMaterialPriceFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, wood: int|null, type: 'area'|'piece'|'volume', enabled: bool}
+     * @return array{id: int|null, wood: int|null, thickness: int, price: string}
      */
     public function __invoke(GetMaterialPriceFormDataQuery $query): array
     {

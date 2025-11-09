@@ -6,6 +6,7 @@ namespace App\Application\Query;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/** @phpstan-consistent-constructor */
 readonly class PaginatedGridQuery
 {
     protected function __construct(private int $page, private int $size, private ?string $sortField, private ?string $sortDirection)
