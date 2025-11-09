@@ -69,5 +69,3 @@ services:
         arguments:
             $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
-    App\Domain\Product\Factory\ProductFactory:
-        autowire: true

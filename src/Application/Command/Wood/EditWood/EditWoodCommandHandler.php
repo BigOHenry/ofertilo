@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Command\Wood\EditWood;
 
 use App\Application\Service\WoodApplicationService;
-use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodAlreadyExistsException;
 use App\Domain\Wood\Exception\WoodNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -42,20 +41,7 @@ final readonly class EditWoodCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-
-            if ($translation->getField() === Wood::TRANSLATION_FIELD_DESCRIPTION) {
-                if (!empty($value)) {
-                    $wood->setDescription($value, $translation->getLocale());
-                } else {
-                    $wood->setDescription(null, $translation->getLocale());
-                }
-            } elseif ($translation->getField() === Wood::TRANSLATION_FIELD_PLACE_OF_ORIGIN) {
-                if (!empty($value)) {
-                    $wood->setPlaceOfOrigin($value, $translation->getLocale());
-                } else {
-                    $wood->setPlaceOfOrigin(null, $translation->getLocale());
-                }
-            }
+            $wood->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
         }
 
         $this->woodApplicationService->save($wood);

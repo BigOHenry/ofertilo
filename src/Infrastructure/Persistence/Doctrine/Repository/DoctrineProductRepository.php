@@ -37,4 +37,9 @@ class DoctrineProductRepository extends BaseRepository implements ProductReposit
     {
         return $this->findOneBy(['type' => $type, 'country' => $country]);
     }
+
+    public function findById(int $id): ?Product
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
 }

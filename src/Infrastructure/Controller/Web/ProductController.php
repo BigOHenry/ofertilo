@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Controller\Web;
 
-use App\Application\Product\Command\CreateProductColorCommand;
-use App\Application\Product\Command\EditProductColorCommand;
-use App\Application\Product\Command\EditProductCommand;
-use App\Application\Product\Factory\ProductCommandFactory;
-use App\Application\Product\ProductApplicationService;
+use App\Application\Command\Product\CreateProduct\CreateProductCommand;
+use App\Application\Command\Product\DeleteProduct\DeleteProductCommand;
+use App\Application\Command\Product\EditProduct\EditProductCommand;
+use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
+use App\Application\Query\Product\GetProductsForPaginatedGrid\GetProductsForPaginatedGridQuery;
+use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
+use App\Infrastructure\Form\Helper\TranslationFormHelper;
 use App\Infrastructure\Form\ProductColorType;
 use App\Infrastructure\Form\ProductType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +22,8 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
@@ -29,7 +33,8 @@ final class ProductController extends AbstractController
 {
     public function __construct(
         private readonly ProductApplicationService $productService,
-        private readonly ProductCommandFactory $commandFactory,
+        private readonly TranslationFormHelper $formHelper,
+        private readonly MessageBusInterface $bus,
     ) {
     }
 
@@ -44,8 +49,7 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $command = $this->commandFactory->createCreateCommand();
-        $form = $this->createForm(ProductType::class, $command, [
+        $form = $this->createForm(ProductType::class, data: $this->formHelper->prepareFormData(Product::class), options: [
             'action' => $this->generateUrl('product_new'),
             'method' => 'POST',
         ]);
@@ -54,7 +58,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $product = $this->productService->createFromCommand($command);
+                $this->bus->dispatch(CreateProductCommand::createFromForm($form));
 
                 if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -69,7 +73,7 @@ final class ProductController extends AbstractController
         }
 
         return $this->render('components/form_frame.html.twig', [
-            'data_class' => EditProductCommand::class,
+            'data_class' => CreateProductCommand::class,
             'frame_id' => 'productModal_frame',
             'form_template' => 'components/product_form.html.twig',
             'form_context' => [
@@ -85,7 +89,9 @@ final class ProductController extends AbstractController
     public function productsApi(Request $request): JsonResponse
     {
         try {
-            return $this->json($this->productService->getPaginatedProducts($request));
+            $envelope = $this->bus->dispatch(GetProductsForPaginatedGridQuery::createFormRequest($request));
+
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
@@ -95,8 +101,10 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function productEdit(Request $request, Product $product): Response
     {
-        $command = $this->commandFactory->createEditCommand($product);
-        $form = $this->createForm(ProductType::class, $command, [
+        $envelope = $this->bus->dispatch(new GetProductFormDataQuery((int) $product->getId()));
+        $formData = $envelope->last(HandledStamp::class)?->getResult();
+
+        $form = $this->createForm(ProductType::class, $formData, [
             'action' => $this->generateUrl('product_edit', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
@@ -104,7 +112,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->productService->updateFromCommand($product, $command);
+                $this->bus->dispatch(EditProductCommand::createFromForm($form));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -151,7 +159,7 @@ final class ProductController extends AbstractController
     public function deleteProduct(Product $product): JsonResponse
     {
         try {
-            $this->productService->delete($product);
+            $this->bus->dispatch(DeleteProductCommand::create((int) $product->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {

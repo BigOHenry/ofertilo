@@ -33,14 +33,12 @@ class ProductType extends AbstractType
                 'mapped' => true,
                 'by_reference' => false,
                 'label' => false,
-                'property_path' => 'translations',
                 'entry_options' => [
                     'label' => false,
                 ],
             ])
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
-                'property_path' => 'type',
                 'choices' => array_combine(
                     array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
                     Type::cases()
@@ -50,7 +48,6 @@ class ProductType extends AbstractType
                 'label' => 'field.country',
                 'class' => Country::class,
                 'choice_label' => 'name',
-                'property_path' => 'country',
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                               ->where('c.enabled = :enabled')
@@ -65,7 +62,6 @@ class ProductType extends AbstractType
                 'label' => 'field.image',
                 'mapped' => true,
                 'required' => false,
-                'property_path' => 'imageFile',
                 'constraints' => [
                     new File([
                         'maxSize' => '2M',
@@ -84,7 +80,6 @@ class ProductType extends AbstractType
             ->add('enabled', CheckboxType::class, [
                 'label' => 'field.enabled',
                 'required' => false,
-                'property_path' => 'enabled',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

@@ -28,10 +28,17 @@ class Product implements TranslatableInterface
 {
     use TranslatableTrait;
 
+    public const string ENTITY_FILES_FOLDER_NAME = 'products';
+    public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
+
+    private const array TRANSLATION_FIELDS = [
+        self::TRANSLATION_FIELD_DESCRIPTION,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', enumType: Type::class)]
     #[Assert\NotNull(message: 'not_null')]
@@ -79,37 +86,18 @@ class Product implements TranslatableInterface
     #[Assert\Valid]
     private Collection $productColors;
 
-    protected function __construct(?int $id = null)
+    protected function __construct(Type $type, Country $country)
     {
-        $this->id = $id;
+        $this->type = $type;
+        $this->country = $country;
         $this->productColors = new ArrayCollection();
         $this->initializeTranslations();
     }
 
     public static function create(Type $type, Country $country): self
     {
-        $product = new self();
-        $product->type = $type;
-        $product->country = $country;
+        $product = new self($type, $country);
         $product->enabled = true;
-
-        return $product;
-    }
-
-    public static function createFromDatabase(
-        int $id,
-        Type $type,
-        Country $country,
-        ?string $imageFilename = null,
-        ?string $imageOriginalName = null,
-        bool $enabled = true,
-    ): self {
-        $product = new self($id);
-        $product->type = $type;
-        $product->country = $country;
-        $product->imageFilename = $imageFilename;
-        $product->imageOriginalName = $imageOriginalName;
-        $product->enabled = $enabled;
 
         return $product;
     }
@@ -154,17 +142,17 @@ class Product implements TranslatableInterface
      */
     public static function getTranslatableFields(): array
     {
-        return ['description'];
+        return self::TRANSLATION_FIELDS;
     }
 
     public function getDescription(?string $locale = null): ?string
     {
-        return $this->getTranslationValue('description', $locale ?? 'en');
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale ?? 'en');
     }
 
     public function setDescription(?string $value, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $value, $locale);
     }
 
     public function addColor(Color $color, ?string $description = null): self
@@ -286,14 +274,14 @@ class Product implements TranslatableInterface
 
         if ($imageFile) {
             $this->setImageOriginalName($imageFile->getClientOriginalName());
-        }
+        } 
 
         return $this;
     }
 
     public function getEntityFolder(): string
     {
-        return 'products';
+        return self::ENTITY_FILES_FOLDER_NAME;
     }
 
     protected function setId(?int $id): void
