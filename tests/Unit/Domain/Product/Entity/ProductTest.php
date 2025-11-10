@@ -192,7 +192,7 @@ class ProductTest extends TestCase
         $color = Color::create(3025);
         $product->addColor($color, 'Original description');
 
-        $result = $product->updateColorDescription($color, 'Updated description');
+        $result = $product->updateColor($color, 'Updated description');
 
         $this->assertSame($product, $result);
         $this->assertSame('Updated description', $product->getColorDescription($color));
@@ -206,7 +206,7 @@ class ProductTest extends TestCase
         $this->expectException(ProductColorNotFoundException::class);
         $this->expectExceptionMessage("Color '3025' is not assigned to product");
 
-        $product->updateColorDescription($color, 'New description');
+        $product->updateColor($color, 'New description');
     }
 
     public function testHasColor(): void
@@ -399,7 +399,7 @@ class ProductTest extends TestCase
         $this->assertTrue($product->hasColor($color3));
 
         // Update color description
-        $product->updateColorDescription($color1, 'Bright Red');
+        $product->updateColor($color1, 'Bright Red');
         $this->assertSame('Bright Red', $product->getColorDescription($color1));
     }
 

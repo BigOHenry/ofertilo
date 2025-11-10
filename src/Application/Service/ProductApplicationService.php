@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
-use App\Application\Product\Command\CreateProductColorCommand;
-use App\Application\Product\Command\EditProductColorCommand;
 use App\Domain\Color\Entity\Color;
-use App\Domain\Color\Repository\ColorRepositoryInterface;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
+use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
@@ -21,28 +19,10 @@ final readonly class ProductApplicationService
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
+        private ProductColorRepositoryInterface $productColorRepository,
         private TranslatorInterface $translator,
         private FileUploader $fileUploader,
-        private ColorRepositoryInterface $colorRepository,
     ) {
-    }
-
-    public function createColorFromCommand(CreateProductColorCommand $command): void
-    {
-        $color = $command->getColor();
-        if ($color === null) {
-            throw new \InvalidArgumentException('Color is required');
-        }
-
-        $command->getProduct()->addColor($color, $command->getDescription());
-        $this->productRepository->save($command->getProduct());
-    }
-
-    public function updateColorFromCommand(ProductColor $productColor, EditProductColorCommand $command): void
-    {
-        $productColor->setColor($command->getColor());
-        $productColor->setDescription($command->getDescription());
-        $this->productRepository->save($productColor->getProduct());
     }
 
     public function findById(int $id): ?Product
@@ -53,6 +33,16 @@ final readonly class ProductApplicationService
     public function findByTypeAndCountry(Type $type, Country $country): ?Product
     {
         return $this->productRepository->findByTypeAndCountry($type, $country);
+    }
+
+    public function findProductColorById(int $id): ?ProductColor
+    {
+        return $this->productColorRepository->findById($id);
+    }
+
+    public function findProductColorByProductAndColor(Product $product, Color $color): ?ProductColor
+    {
+        return $this->productColorRepository->findByProductAndColor($product, $color);
     }
 
     public function save(Product $product): void
@@ -94,23 +84,6 @@ final readonly class ProductApplicationService
             'product_id' => $product->getId(),
             'total_colors' => \count($data),
         ];
-    }
-
-    /**
-     * @return Color[]
-     */
-    public function getAvailableColorsForProduct(Product $product, ?Color $currentColor = null): array
-    {
-        $assignedColorIds = [];
-        foreach ($product->getProductColors() as $productColor) {
-            $colorId = $productColor->getColor()->getId();
-
-            if ($colorId !== null && ($currentColor === null || $colorId !== $currentColor->getId())) {
-                $assignedColorIds[] = $colorId;
-            }
-        }
-
-        return $this->colorRepository->findAvailableColors($assignedColorIds);
     }
 
     public function handleImageUpload(Product $product, UploadedFile $imageFile): void

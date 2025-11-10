@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\EditProductColor;
 
+use App\Domain\Color\Entity\Color;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditProductColorCommand
 {
-    public function __construct(private int $id, private int $thickness, private string $price)
+    public function __construct(private int $id, private Color $color, private string $description)
     {
     }
 
@@ -16,7 +17,7 @@ final readonly class EditProductColorCommand
     {
         $data = $form->getData();
 
-        return new self((int) $data['id'], $data['thickness'], $data['price']);
+        return new self((int) $data['id'], $data['color'], $data['description']);
     }
 
     public function getId(): int
@@ -24,13 +25,13 @@ final readonly class EditProductColorCommand
         return $this->id;
     }
 
-    public function getThickness(): int
+    public function getColor(): Color
     {
-        return $this->thickness;
+        return $this->color;
     }
 
-    public function getPrice(): string
+    public function getDescription(): string
     {
-        return $this->price;
+        return $this->description;
     }
 }

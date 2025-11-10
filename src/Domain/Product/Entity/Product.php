@@ -158,7 +158,7 @@ class Product implements TranslatableInterface
     public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw DuplicateProductColorException::forProduct($color->getCode());
+            throw DuplicateProductColorException::withCode($color->getCode());
         }
 
         $productColor = ProductColor::create($this, $color, $description);
@@ -171,7 +171,7 @@ class Product implements TranslatableInterface
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($color->getCode());
+            throw ProductColorNotFoundException::withProduct($color->getCode());
         }
 
         $this->productColors->removeElement($productColor);
@@ -179,14 +179,16 @@ class Product implements TranslatableInterface
         return $this;
     }
 
-    public function updateColorDescription(Color $color, ?string $description = null): self
+    public function updateColor(ProductColor $productColor, Color $color, ?string $description = null): self
     {
-        $productColor = $this->findProductColorByColor($color);
-        if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($color->getCode());
+        $foundProductColor = $this->findProductColorByColor($color);
+
+        if ($productColor !== $foundProductColor) {
+            throw DuplicateProductColorException::withCode($color->getCode());
         }
 
         $productColor->setDescription($description);
+        $productColor->setColor($color);
 
         return $this;
     }

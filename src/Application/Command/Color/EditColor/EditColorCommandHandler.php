@@ -39,11 +39,7 @@ final readonly class EditColorCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            if (!empty($value)) {
-                $color->setDescription($value, $translation->getLocale());
-            } else {
-                $color->setDescription(null, $translation->getLocale());
-            }
+            $color->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
         }
 
         $this->colorApplicationService->save($color);

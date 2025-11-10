@@ -4,34 +4,35 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\CreateProductColor;
 
-use App\Domain\Material\Entity\Material;
+use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Entity\Product;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateProductColorCommand
 {
-    public function __construct(private Material $material, private int $thickness, private string $price)
+    public function __construct(private Product $product, private Color $color, private ?string $description)
     {
     }
 
-    public static function createFromForm(FormInterface $form, Material $material): self
+    public static function createFromForm(FormInterface $form, Product $product): self
     {
         $data = $form->getData();
 
-        return new self($material, $data['thickness'], $data['price']);
+        return new self($product, $data['color'], $data['description']);
     }
 
-    public function getMaterial(): Material
+    public function getProduct(): Product
     {
-        return $this->material;
+        return $this->product;
     }
 
-    public function getThickness(): int
+    public function getColor(): Color
     {
-        return $this->thickness;
+        return $this->color;
     }
 
-    public function getPrice(): string
+    public function getDescription(): ?string
     {
-        return $this->price;
+        return $this->description;
     }
 }

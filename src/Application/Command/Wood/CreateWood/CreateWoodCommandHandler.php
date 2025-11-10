@@ -29,19 +29,7 @@ final readonly class CreateWoodCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            if ($translation->getField() === Wood::TRANSLATION_FIELD_DESCRIPTION) {
-                if (!empty($value)) {
-                    $wood->setDescription($value, $translation->getLocale());
-                } else {
-                    $wood->setDescription(null, $translation->getLocale());
-                }
-            } elseif ($translation->getField() === Wood::TRANSLATION_FIELD_PLACE_OF_ORIGIN) {
-                if (!empty($value)) {
-                    $wood->setPlaceOfOrigin($value, $translation->getLocale());
-                } else {
-                    $wood->setPlaceOfOrigin(null, $translation->getLocale());
-                }
-            }
+            $wood->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
         }
 
         $this->woodApplicationService->save($wood);

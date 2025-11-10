@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller\Web;
 
 use App\Application\Command\Product\CreateProduct\CreateProductCommand;
+use App\Application\Command\Product\CreateProductColor\CreateProductColorCommand;
 use App\Application\Command\Product\DeleteProduct\DeleteProductCommand;
+use App\Application\Command\Product\DeleteProductColor\DeleteProductColorCommand;
 use App\Application\Command\Product\EditProduct\EditProductCommand;
+use App\Application\Command\Product\EditProductColor\EditProductColorCommand;
+use App\Application\Query\Product\GetProductColorFormData\GetProductColorFormDataQuery;
+use App\Application\Query\Product\GetProductColorsForGrid\GetProductColorsForGridQuery;
 use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
 use App\Application\Query\Product\GetProductsForPaginatedGrid\GetProductsForPaginatedGridQuery;
 use App\Application\Service\ProductApplicationService;
@@ -171,19 +176,15 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function newColor(Request $request, Product $product): Response
     {
-        $command = $this->commandFactory->createCreateColorCommand($product);
-        $availableColors = $this->productService->getAvailableColorsForProduct($product);
-
-        $form = $this->createForm(ProductColorType::class, $command, [
+        $form = $this->createForm(ProductColorType::class, ['product' => $product], [
             'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
-            'available_colors' => $availableColors,
             'method' => 'POST',
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->productService->createColorFromCommand($command);
+            $this->bus->dispatch(CreateProductColorCommand::createFromForm($form, $product));
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
@@ -208,19 +209,17 @@ final class ProductController extends AbstractController
     #[IsGranted(Role::WRITER->value)]
     public function editColor(Request $request, ProductColor $productColor): Response
     {
-        $command = $this->commandFactory->createEditColorCommand($productColor);
+        $envelope = $this->bus->dispatch(new GetProductColorFormDataQuery((int) $productColor->getId()));
+        $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $availableColors = $this->productService->getAvailableColorsForProduct($productColor->getProduct(), $productColor->getColor());
-
-        $form = $this->createForm(ProductColorType::class, $command, [
+        $form = $this->createForm(ProductColorType::class, $formData, [
             'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
-            'available_colors' => $availableColors,
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->productService->updateColorFromCommand($productColor, $command);
+            $this->bus->dispatch(EditProductColorCommand::createFromForm($form));
 
             if ($request->getPreferredFormat() === TurboBundle::STREAM_FORMAT) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -247,7 +246,9 @@ final class ProductController extends AbstractController
     public function productColorsApi(Product $product): JsonResponse
     {
         try {
-            return $this->json($this->productService->getProductColorsData($product));
+            $envelope = $this->bus->dispatch(GetProductColorsForGridQuery::create($product->getId()));
+
+            return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => 'Invalid parameters'], 400);
         }
@@ -258,7 +259,7 @@ final class ProductController extends AbstractController
     public function delete(ProductColor $productColor): JsonResponse
     {
         try {
-            $this->productService->removeColorFromProduct($productColor->getProduct(), $productColor->getColor());
+            $this->bus->dispatch(DeleteProductColorCommand::create($productColor->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {

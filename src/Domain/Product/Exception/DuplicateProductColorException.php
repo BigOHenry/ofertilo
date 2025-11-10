@@ -6,8 +6,8 @@ namespace App\Domain\Product\Exception;
 
 class DuplicateProductColorException extends ProductException
 {
-    public static function forProduct(int $colorCode): self
+    public static function withCode(int $colorCode): self
     {
-        return new self("Color '{$colorCode}' is already assigned to product");
+        return new self(\sprintf("Color '%s' is already assigned to product", $colorCode));
     }
 }

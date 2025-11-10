@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Repository\ProductColorRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<\App\Domain\Product\Entity\ProductColor>
+ * @phpstan-extends BaseRepository<ProductColor>
  */
-class DoctrineProductColorRepository extends ServiceEntityRepository implements ProductColorRepositoryInterface
+class DoctrineProductColorRepository extends BaseRepository implements ProductColorRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -29,5 +30,15 @@ class DoctrineProductColorRepository extends ServiceEntityRepository implements 
     {
         $this->getEntityManager()->remove($productColor);
         $this->getEntityManager()->flush();
+    }
+
+    public function findByProductAndColor(Product $product, Color $color): ?ProductColor
+    {
+        return $this->findOneBy(['product' => $product, 'color' => $color]);
+    }
+
+    public function findById(int $id): ?ProductColor
+    {
+        return $this->findOneBy(['id' => $id]);
     }
 }

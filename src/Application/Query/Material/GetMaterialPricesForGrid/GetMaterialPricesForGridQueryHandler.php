@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Material\GetMaterialPricesForPaginatedGrid;
+namespace App\Application\Query\Material\GetMaterialPricesForGrid;
 
+use App\Application\Service\MaterialApplicationService;
+use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final readonly class GetMaterialPricesForPaginatedGridQueryHandler
+final readonly class GetMaterialPricesForGridQueryHandler
 {
     public function __construct(
         private LocaleService $localeService,
+        private MaterialApplicationService $materialApplicationService
     ) {
     }
 
@@ -20,9 +23,14 @@ final readonly class GetMaterialPricesForPaginatedGridQueryHandler
      *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string,
      *      total_prices: int<0, max>}
      */
-    public function __invoke(GetMaterialPricesForPaginatedGridQuery $query): array
+    public function __invoke(GetMaterialPricesForGridQuery $query): array
     {
-        $material = $query->getMaterial();
+        $material = $this->materialApplicationService->findById($query->getMaterialId());
+
+        if ($material === null) {
+            throw MaterialNotFoundException::withId($query->getMaterialId());
+        }
+
         $data = [];
         foreach ($material->getPrices() as $price) {
             $data[] = [

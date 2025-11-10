@@ -11,7 +11,7 @@ use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
 use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
 use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
-use App\Application\Query\Material\GetMaterialPricesForPaginatedGrid\GetMaterialPricesForPaginatedGridQuery;
+use App\Application\Query\Material\GetMaterialPricesForGrid\GetMaterialPricesForGridQuery;
 use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\Material;
@@ -251,7 +251,7 @@ final class MaterialController extends AbstractController
     public function materialPricesApi(Material $material): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetMaterialPricesForPaginatedGridQuery::create($material));
+            $envelope = $this->bus->dispatch(GetMaterialPricesForGridQuery::create($material));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
