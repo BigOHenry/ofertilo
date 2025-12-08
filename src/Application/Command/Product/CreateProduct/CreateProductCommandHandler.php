@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\CreateProduct;
 
+use App\Application\Service\CountryService;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
@@ -14,13 +15,14 @@ final readonly class CreateProductCommandHandler
 {
     public function __construct(
         private ProductApplicationService $productApplicationService,
+        private CountryService $countryService,
     ) {
     }
 
     public function __invoke(CreateProductCommand $command): void
     {
         $type = $command->getType();
-        $country = $command->getCountry();
+        $country = $this->countryService->getEnabledCountryById($command->getCountryId());
 
         if ($this->productApplicationService->findByTypeAndCountry($type, $country)) {
             throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);

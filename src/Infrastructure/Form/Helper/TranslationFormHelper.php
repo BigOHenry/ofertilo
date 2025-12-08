@@ -90,6 +90,7 @@ final readonly class TranslationFormHelper
         foreach ($supportedLocales as $locale) {
             foreach ($translatableFields as $field) {
                 $translation = new TranslationEntity();
+                $translation->setObjectClass($entityClass);
                 $translation->setLocale($locale);
                 $translation->setField($field);
                 $translation->setValue('');

@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace App\Application\Command\Wood\CreateWood;
 
 use App\Domain\Translation\Entity\TranslationEntity;
-use Doctrine\Common\Collections\Collection;
+use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateWoodCommand
 {
     /**
-     * @param Collection<int, TranslationEntity> $translations
+     * @param array<int, TranslationDto> $translations
      */
     public function __construct(
         private string $name,
         private ?string $latinName,
         private ?int $dryDensity,
         private ?int $hardness,
-        private Collection $translations,
+        private array $translations,
     ) {
     }
 
@@ -26,7 +26,13 @@ final readonly class CreateWoodCommand
     {
         $data = $form->getData();
 
-        return new self($data['name'], $data['latinName'], $data['dryDensity'], $data['hardness'], $data['translations']);
+        $translations = [];
+        /** @var TranslationEntity $translation */
+        foreach ($data['translations'] as $translation) {
+            $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
+        }
+
+        return new self($data['name'], $data['latinName'], $data['dryDensity'], $data['hardness'], $translations);
     }
 
     public function getName(): string
@@ -50,9 +56,9 @@ final readonly class CreateWoodCommand
     }
 
     /**
-     * @return Collection<int, TranslationEntity>
+     * @return array<int, TranslationDto>
      */
-    public function getTranslations(): Collection
+    public function getTranslations(): array
     {
         return $this->translations;
     }

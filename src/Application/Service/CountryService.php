@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Shared\Service;
+namespace App\Application\Service;
 
 use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Exception\CountryNotFoundException;
 use App\Domain\Shared\Repository\CountryRepositoryInterface;
 
 readonly class CountryService
@@ -14,16 +15,31 @@ readonly class CountryService
     ) {
     }
 
+    public function getEnabledCountryById(int $id): Country
+    {
+        $country = $this->countryRepository->findById($id);
+
+        if (!$country) {
+            throw CountryNotFoundException::withId($id);
+        }
+
+        if (!$country->isEnabled()) {
+            throw CountryNotFoundException::withIdNotActive($id);
+        }
+
+        return $country;
+    }
+
     public function getEnabledCountryByAlpha2(string $alpha2): Country
     {
         $country = $this->countryRepository->findByAlpha2($alpha2);
 
         if (!$country) {
-            throw new \InvalidArgumentException("Country with code '{$alpha2}' not found");
+            throw CountryNotFoundException::withAlpha2($alpha2);
         }
 
         if (!$country->isEnabled()) {
-            throw new \InvalidArgumentException("Country '{$alpha2}' is not enabled");
+            throw CountryNotFoundException::withAlpha2NotActive($alpha2);
         }
 
         return $country;
@@ -34,11 +50,11 @@ readonly class CountryService
         $country = $this->countryRepository->findByAlpha3($alpha3);
 
         if (!$country) {
-            throw new \InvalidArgumentException("Country with code '{$alpha3}' not found");
+            throw CountryNotFoundException::withAlpha3($alpha3);
         }
 
         if (!$country->isEnabled()) {
-            throw new \InvalidArgumentException("Country '{$alpha3}' is not enabled");
+            throw CountryNotFoundException::withAlpha3NotActive($alpha3);
         }
 
         return $country;

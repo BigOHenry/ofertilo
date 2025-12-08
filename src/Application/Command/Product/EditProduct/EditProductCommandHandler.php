@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\EditProduct;
 
+use App\Application\Service\CountryService;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
 use App\Domain\Product\Exception\ProductNotFoundException;
@@ -14,6 +15,7 @@ final readonly class EditProductCommandHandler
 {
     public function __construct(
         private ProductApplicationService $productApplicationService,
+        private CountryService $countryService,
     ) {
     }
 
@@ -25,7 +27,7 @@ final readonly class EditProductCommandHandler
             throw ProductNotFoundException::withId($command->getId());
         }
 
-        $country = $command->getCountry();
+        $country = $this->countryService->getEnabledCountryById($command->getCountryId());
         $type = $command->getType();
 
         if ($product->getType() !== $type || $product->getCountry() !== $country) {
@@ -36,7 +38,7 @@ final readonly class EditProductCommandHandler
         }
 
         $product->setType($command->getType());
-        $product->setCountry($command->getCountry());
+        $product->setCountry($country);
         $product->setEnabled($command->isEnabled());
 
         if ($command->getImageFile()) {
@@ -49,7 +51,7 @@ final readonly class EditProductCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            $product->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
+            $product->addOrUpdateTranslation($translation->getField(), $value, $translation->getLocale());
         }
 
         $this->productApplicationService->save($product);

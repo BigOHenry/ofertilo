@@ -1,4 +1,4 @@
-FROM php:8.4-apache-bookworm
+FROM php:8.5-apache-bookworm
 
 # update debian & get required packages
 RUN apt-get update && apt-get install -y \
@@ -45,7 +45,6 @@ RUN docker-php-ext-enable pdo_pgsql
 # -----------------------
 # OPCACHE
 # -----------------------
-RUN docker-php-ext-install opcache
 RUN echo "opcache.enable=1" >> "${PHP_INI_DIR}/php.ini" && \
     echo "opcache.enable_cli=0" >> "${PHP_INI_DIR}/php.ini" && \
     echo "opcache.memory_consumption=128" >> "${PHP_INI_DIR}/php.ini" && \
@@ -62,7 +61,7 @@ RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-d
 # -----------------------
 # Node.js & npm
 # -----------------------
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_25.x | bash - && \
     apt-get update && \
     apt-get install -y nodejs
 

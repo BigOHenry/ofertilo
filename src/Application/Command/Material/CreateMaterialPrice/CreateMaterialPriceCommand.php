@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateMaterialPriceCommand
 {
-    public function __construct(private Material $material, private int $thickness, private string $price)
+    public function __construct(private int $materialId, private int $thickness, private string $price)
     {
     }
 
@@ -17,12 +17,12 @@ final readonly class CreateMaterialPriceCommand
     {
         $data = $form->getData();
 
-        return new self($material, $data['thickness'], $data['price']);
+        return new self($material->getId(), $data['thickness'], $data['price']);
     }
 
-    public function getMaterial(): Material
+    public function getMaterialId(): int
     {
-        return $this->material;
+        return $this->materialId;
     }
 
     public function getThickness(): int

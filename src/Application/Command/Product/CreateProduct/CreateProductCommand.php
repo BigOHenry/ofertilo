@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace App\Application\Command\Product\CreateProduct;
 
 use App\Domain\Product\ValueObject\Type;
-use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
-use Doctrine\Common\Collections\Collection;
+use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final readonly class CreateProductCommand
 {
     /**
-     * @param Collection<int, TranslationEntity> $translations
+     * @param array<int, TranslationDto> $translations
      */
     public function __construct(
         private Type $type,
-        private Country $country,
-        private ?UploadedFile $imageFile,
-        private Collection $translations,
+        private int $countryId,
+        private ?UploadedFile $imageFile, // TODO replace this object
+        private array $translations,
     ) {
     }
 
@@ -28,13 +27,19 @@ final readonly class CreateProductCommand
     {
         $data = $form->getData();
 
-        return new self($data['type'], $data['country'], $data['imageFile'], $data['translations']);
+        $translations = [];
+        /** @var TranslationEntity $translation */
+        foreach ($data['translations'] as $translation) {
+            $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
+        }
+
+        return new self($data['type'], $data['country']->getId(), $data['imageFile'], $translations);
     }
 
     /**
-     * @return Collection<int, TranslationEntity>
+     * @return array<int, TranslationDto>
      */
-    public function getTranslations(): Collection
+    public function getTranslations(): array
     {
         return $this->translations;
     }
@@ -44,9 +49,9 @@ final readonly class CreateProductCommand
         return $this->imageFile;
     }
 
-    public function getCountry(): Country
+    public function getCountryId(): int
     {
-        return $this->country;
+        return $this->countryId;
     }
 
     public function getType(): Type

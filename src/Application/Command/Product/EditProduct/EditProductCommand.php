@@ -7,6 +7,7 @@ namespace App\Application\Command\Product\EditProduct;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
+use App\Domain\Translation\TranslationDto\TranslationDto;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -14,15 +15,15 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 final readonly class EditProductCommand
 {
     /**
-     * @param Collection<int, TranslationEntity> $translations
+     * @param array<int, TranslationDto> $translations
      */
     public function __construct(
         private int $id,
         private Type $type,
-        private Country $country,
+        private int $countryId,
         private ?UploadedFile $imageFile,
         private bool $enabled,
-        private Collection $translations
+        private array $translations
     ) {
     }
 
@@ -30,7 +31,13 @@ final readonly class EditProductCommand
     {
         $data = $form->getData();
 
-        return new self((int) $data['id'], $data['type'], $data['country'], $data['imageFile'], $data['enabled'], $data['translations']);
+        $translations = [];
+        /** @var TranslationEntity $translation */
+        foreach ($data['translations'] as $translation) {
+            $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
+        }
+
+        return new self((int) $data['id'], $data['type'], $data['country']->getId(), $data['imageFile'], $data['enabled'], $translations);
     }
 
     public function getId(): int
@@ -43,9 +50,9 @@ final readonly class EditProductCommand
         return $this->type;
     }
 
-    public function getCountry(): Country
+    public function getCountryId(): int
     {
-        return $this->country;
+        return $this->countryId;
     }
 
     public function getImageFile(): ?UploadedFile
@@ -59,9 +66,9 @@ final readonly class EditProductCommand
     }
 
     /**
-     * @return Collection<int, TranslationEntity> $translations
+     * @return array<int, TranslationDto> $translations
      */
-    public function getTranslations(): Collection
+    public function getTranslations(): array
     {
         return $this->translations;
     }

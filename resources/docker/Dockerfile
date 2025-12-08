@@ -1,4 +1,4 @@
-FROM php:8.4-apache-bookworm
+FROM php:8.5-apache-bookworm
 
 # update debian & get required packages
 RUN apt-get update && apt-get install -y \
@@ -62,7 +62,7 @@ RUN php -r "readfile('https://getcomposer.org/installer');" | php -- --install-d
 # -----------------------
 # Node.js & npm
 # -----------------------
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_25.x | bash - && \
     apt-get update && \
     apt-get install -y nodejs
 

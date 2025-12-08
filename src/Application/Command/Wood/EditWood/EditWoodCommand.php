@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Application\Command\Wood\EditWood;
 
 use App\Domain\Translation\Entity\TranslationEntity;
-use Doctrine\Common\Collections\Collection;
+use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditWoodCommand
 {
     /**
-     * @param Collection<int, TranslationEntity> $translations
+     * @param array<int, TranslationDto> $translations
      */
     public function __construct(
         private int $id,
@@ -20,13 +20,19 @@ final readonly class EditWoodCommand
         private ?int $dryDensity,
         private ?int $hardness,
         private bool $enabled,
-        private Collection $translations,
+        private array $translations,
     ) {
     }
 
     public static function createFromForm(FormInterface $form): self
     {
         $data = $form->getData();
+
+        $translations = [];
+        /** @var TranslationEntity $translation */
+        foreach ($data['translations'] as $translation) {
+            $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
+        }
 
         return new self(
             (int) $data['id'],
@@ -35,7 +41,7 @@ final readonly class EditWoodCommand
             $data['dryDensity'],
             $data['hardness'],
             $data['enabled'],
-            $data['translations']
+            $translations
         );
     }
 
@@ -70,9 +76,9 @@ final readonly class EditWoodCommand
     }
 
     /**
-     * @return Collection<int, TranslationEntity>
+     * @return array<int, TranslationDto>
      */
-    public function getTranslations(): Collection
+    public function getTranslations(): array
     {
         return $this->translations;
     }

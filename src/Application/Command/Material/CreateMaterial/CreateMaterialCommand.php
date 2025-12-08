@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Command\Material\CreateMaterial;
 
 use App\Domain\Material\ValueObject\Type;
-use App\Domain\Wood\Entity\Wood;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateMaterialCommand
 {
-    public function __construct(private Wood $wood, private Type $type)
+    public function __construct(private int $woodId, private Type $type)
     {
     }
 
@@ -18,12 +17,12 @@ final readonly class CreateMaterialCommand
     {
         $data = $form->getData();
 
-        return new self($data['wood'], $data['type']);
+        return new self($data['wood']->getId(), $data['type']);
     }
 
-    public function getWood(): Wood
+    public function getWoodId(): int
     {
-        return $this->wood;
+        return $this->woodId;
     }
 
     public function getType(): Type

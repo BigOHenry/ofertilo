@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Command\Material\CreateMaterialPrice;
 
 use App\Application\Service\MaterialApplicationService;
+use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -12,21 +13,26 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final readonly class CreateMaterialPriceCommandHandler
 {
     public function __construct(
-        private MaterialApplicationService $materialApplicationService,
+        private MaterialApplicationService $materialService,
     ) {
     }
 
     public function __invoke(CreateMaterialPriceCommand $command): void
     {
-        $material = $command->getMaterial();
+        $material = $this->materialService->findById($command->getMaterialId());
+
+        if ($material === null) {
+            throw MaterialNotFoundException::withId($command->getMaterialId());
+        }
+
         $thickness = $command->getThickness();
 
-        if ($this->materialApplicationService->findMaterialPriceByMaterialAndThickness($material, $thickness)) {
+        if ($this->materialService->findMaterialPriceByMaterialAndThickness($material, $thickness)) {
             throw MaterialPriceAlreadyExistsException::withThickness($thickness);
         }
 
         $material->addPrice($command->getThickness(), $command->getPrice());
 
-        $this->materialApplicationService->save($material);
+        $this->materialService->save($material);
     }
 }

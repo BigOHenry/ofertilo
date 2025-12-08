@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Application\Command\Color\CreateColor;
 
 use App\Domain\Translation\Entity\TranslationEntity;
-use Doctrine\Common\Collections\Collection;
+use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateColorCommand
 {
     /**
-     * @param Collection<int, TranslationEntity> $translations
+     * @param array<int, TranslationDto> $translations
      */
     public function __construct(
         private int $code,
         private bool $inStock,
         private bool $enabled,
-        private Collection $translations,
+        private array $translations,
     ) {
     }
 
@@ -25,7 +25,13 @@ final readonly class CreateColorCommand
     {
         $data = $form->getData();
 
-        return new self($data['code'], $data['inStock'], $data['enabled'] ?? true, $data['translations']);
+        $translations = [];
+        /** @var TranslationEntity $translation */
+        foreach ($data['translations'] as $translation) {
+            $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
+        }
+
+        return new self($data['code'], $data['inStock'], $data['enabled'] ?? true, $translations);
     }
 
     public function isEnabled(): bool
@@ -44,9 +50,9 @@ final readonly class CreateColorCommand
     }
 
     /**
-     * @return Collection<int, TranslationEntity>
+     * @return array<int, TranslationDto>
      */
-    public function getTranslations(): Collection
+    public function getTranslations(): array
     {
         return $this->translations;
     }
