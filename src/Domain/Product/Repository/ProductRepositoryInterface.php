@@ -14,6 +14,7 @@ interface ProductRepositoryInterface
     public function createQueryBuilder(string $alias): QueryBuilder;
 
     public function findByTypeAndCountry(Type $type, Country $country): ?Product;
+
     public function findById(int $id): ?Product;
 
     public function save(Product $product): void;

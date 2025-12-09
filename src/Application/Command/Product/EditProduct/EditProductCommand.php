@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Command\Product\EditProduct;
 
 use App\Domain\Product\ValueObject\Type;
-use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\TranslationDto\TranslationDto;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -23,7 +21,7 @@ final readonly class EditProductCommand
         private int $countryId,
         private ?UploadedFile $imageFile,
         private bool $enabled,
-        private array $translations
+        private array $translations,
     ) {
     }
 

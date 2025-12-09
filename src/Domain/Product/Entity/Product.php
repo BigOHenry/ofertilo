@@ -276,7 +276,7 @@ class Product implements TranslatableInterface
 
         if ($imageFile) {
             $this->setImageOriginalName($imageFile->getClientOriginalName());
-        } 
+        }
 
         return $this;
     }

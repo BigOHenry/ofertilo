@@ -14,7 +14,7 @@ final readonly class GetMaterialPricesForGridQueryHandler
 {
     public function __construct(
         private LocaleService $localeService,
-        private MaterialApplicationService $materialApplicationService
+        private MaterialApplicationService $materialApplicationService,
     ) {
     }
 

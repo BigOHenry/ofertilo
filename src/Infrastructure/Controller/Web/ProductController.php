@@ -14,7 +14,6 @@ use App\Application\Query\Product\GetProductColorFormData\GetProductColorFormDat
 use App\Application\Query\Product\GetProductColorsForGrid\GetProductColorsForGridQuery;
 use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
 use App\Application\Query\Product\GetProductsForPaginatedGrid\GetProductsForPaginatedGridQuery;
-use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;
@@ -37,7 +36,6 @@ use Symfony\UX\Turbo\TurboBundle;
 final class ProductController extends AbstractController
 {
     public function __construct(
-        private readonly ProductApplicationService $productService,
         private readonly TranslationFormHelper $formHelper,
         private readonly MessageBusInterface $bus,
     ) {
@@ -246,6 +244,7 @@ final class ProductController extends AbstractController
     public function productColorsApi(Product $product): JsonResponse
     {
         try {
+            \assert($product->getId() !== null, 'Product must have an ID when loaded from database');
             $envelope = $this->bus->dispatch(GetProductColorsForGridQuery::create($product->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
@@ -259,6 +258,7 @@ final class ProductController extends AbstractController
     public function delete(ProductColor $productColor): JsonResponse
     {
         try {
+            \assert($productColor->getId() !== null, 'ProductColor must have an ID when loaded from database');
             $this->bus->dispatch(DeleteProductColorCommand::create($productColor->getId()));
 
             return new JsonResponse(['success' => true]);

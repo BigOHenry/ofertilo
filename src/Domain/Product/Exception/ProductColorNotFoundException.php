@@ -10,6 +10,7 @@ class ProductColorNotFoundException extends ProductException
     {
         return new self(\sprintf("Color '%s' is not assigned to product", $colorCode));
     }
+
     public static function withId(int $id): self
     {
         return new self(\sprintf("ProductColor '%s' not found", $id));

@@ -14,14 +14,13 @@ final readonly class GetProductColorsForGridQueryHandler
 {
     public function __construct(
         private TranslatorInterface $translator,
-        private ProductApplicationService $productApplicationService
+        private ProductApplicationService $productApplicationService,
     ) {
     }
 
     /**
-     * @return array{data: list<array{id: int|null, thickness: int, price: string, formatted_price: non-falsy-string,
-     *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string,
-     *      total_prices: int<0, max>}
+     * @return array{data: list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: string}>,
+     *      productId: int|null, total_colors: int<0, max>}
      */
     public function __invoke(GetProductColorsForGridQuery $query): array
     {

@@ -17,7 +17,7 @@ final readonly class EditMaterialCommandHandler
 {
     public function __construct(
         private MaterialApplicationService $materialApplicationService,
-        private WoodApplicationService $woodService
+        private WoodApplicationService $woodService,
     ) {
     }
 

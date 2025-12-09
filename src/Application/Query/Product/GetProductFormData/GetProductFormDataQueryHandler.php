@@ -6,6 +6,8 @@ namespace App\Application\Query\Product\GetProductFormData;
 
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Exception\ProductNotFoundException;
+use App\Domain\Product\ValueObject\Type;
+use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Infrastructure\Form\Helper\TranslationFormHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +23,7 @@ final readonly class GetProductFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, code: int, inStock: bool, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
+     * @return array{id: int|null, type: Type, country: Country, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
      */
     public function __invoke(GetProductFormDataQuery $query): array
     {

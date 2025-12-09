@@ -29,7 +29,7 @@ final readonly class CreateWoodCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            $wood->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
+            $wood->addOrUpdateTranslation($translation->getField(), $value, $translation->getLocale());
         }
 
         $this->woodApplicationService->save($wood);

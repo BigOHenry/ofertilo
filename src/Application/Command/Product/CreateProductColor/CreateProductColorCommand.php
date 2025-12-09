@@ -16,6 +16,7 @@ final readonly class CreateProductColorCommand
     public static function createFromForm(FormInterface $form, Product $product): self
     {
         $data = $form->getData();
+        \assert($product->getId() !== null, 'Product must have an ID when loaded from database');
 
         return new self($product->getId(), $data['color']->getId(), $data['description']);
     }

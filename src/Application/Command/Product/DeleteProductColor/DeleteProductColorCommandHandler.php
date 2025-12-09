@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\DeleteProductColor;
 
-use App\Application\Service\MaterialApplicationService;
 use App\Application\Service\ProductApplicationService;
-use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

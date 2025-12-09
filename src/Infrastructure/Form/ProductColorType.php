@@ -6,12 +6,10 @@ namespace App\Infrastructure\Form;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
-use App\Domain\Product\Entity\Product;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,19 +35,20 @@ class ProductColorType extends AbstractType
 
                     if ($product && $product->getId()) {
                         $assignedColorIds = $product->getProductColors()->map(
-                            fn($pc) => $pc->getColor()->getId()
+                            fn ($pc) => $pc->getColor()->getId()
                         )->toArray();
 
                         if ($color !== null) {
                             $assignedColorIds = array_filter(
                                 $assignedColorIds,
-                                static fn($colorId) => $colorId !== $color->getId()
+                                static fn ($colorId) => $colorId !== $color->getId()
                             );
                         }
 
                         if (!empty($assignedColorIds)) {
                             $qb->where($qb->expr()->notIn('c.id', ':assignedIds'))
-                               ->setParameter('assignedIds', $assignedColorIds);
+                               ->setParameter('assignedIds', $assignedColorIds)
+                            ;
                         }
                     }
 

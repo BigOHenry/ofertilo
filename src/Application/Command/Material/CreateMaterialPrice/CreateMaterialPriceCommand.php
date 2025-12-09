@@ -16,6 +16,7 @@ final readonly class CreateMaterialPriceCommand
     public static function createFromForm(FormInterface $form, Material $material): self
     {
         $data = $form->getData();
+        \assert($material->getId() !== null, 'Product must have an ID when loaded from database');
 
         return new self($material->getId(), $data['thickness'], $data['price']);
     }

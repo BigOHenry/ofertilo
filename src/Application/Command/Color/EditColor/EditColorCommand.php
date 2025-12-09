@@ -56,7 +56,7 @@ final readonly class EditColorCommand
     }
 
     /**
-     * @return array<int, TranslationEntity>
+     * @return array<int, TranslationDto>
      */
     public function getTranslations(): array
     {

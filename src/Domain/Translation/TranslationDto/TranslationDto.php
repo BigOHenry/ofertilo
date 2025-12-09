@@ -4,19 +4,46 @@ declare(strict_types=1);
 
 namespace App\Domain\Translation\TranslationDto;
 
-
 use App\Domain\Translation\Entity\TranslationEntity;
 
 class TranslationDto implements \Serializable
 {
     protected function __construct(
-        private ?int $id = null,
-        private ?int $objectId = null,
+        private ?int $id,
+        private ?int $objectId,
         private string $objectClass,
         private string $locale,
         private string $field,
-        private ?string $value = null
+        private ?string $value = null,
     ) {
+    }
+
+    /**
+     * @return array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null}
+     */
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'objectId' => $this->objectId,
+            'objectClass' => $this->objectClass,
+            'locale' => $this->locale,
+            'field' => $this->field,
+            'value' => $this->value,
+        ];
+    }
+
+    /**
+     * @param array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null} $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'] ?? null;
+        $this->objectId = $data['objectId'];
+        $this->objectClass = $data['objectClass'];
+        $this->locale = $data['locale'];
+        $this->field = $data['field'];
+        $this->value = $data['value'] ?? null;
     }
 
     public static function createTranslationDtoFromEntity(TranslationEntity $translation): self
@@ -41,7 +68,7 @@ class TranslationDto implements \Serializable
         return $this->objectClass;
     }
 
-    public function getObjectId(): int
+    public function getObjectId(): ?int
     {
         return $this->objectId;
     }
@@ -66,32 +93,10 @@ class TranslationDto implements \Serializable
         return serialize($this->__serialize());
     }
 
-    public function unserialize($data): void
+    public function unserialize(string $data): void
     {
-        /** @var array $array */
+        /** @var array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null} $array */
         $array = unserialize($data, ['allowed_classes' => false]);
         $this->__unserialize($array);
-    }
-
-    public function __serialize(): array
-    {
-        return [
-            'id'          => $this->id,
-            'objectId'    => $this->objectId,
-            'objectClass' => $this->objectClass,
-            'locale'      => $this->locale,
-            'field'       => $this->field,
-            'value'       => $this->value,
-        ];
-    }
-
-    public function __unserialize(array $data): void
-    {
-        $this->id = $data['id'] ?? null;
-        $this->objectId = $data['objectId'];
-        $this->objectClass = $data['objectClass'];
-        $this->locale = $data['locale'];
-        $this->field = $data['field'];
-        $this->value = $data['value'] ?? null;
     }
 }

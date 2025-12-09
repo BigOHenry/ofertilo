@@ -29,7 +29,7 @@ final readonly class CreateColorCommandHandler
 
         foreach ($command->getTranslations() as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            $color->addOrUpdateTranslation($translation->getField(), $value,$translation->getLocale());
+            $color->addOrUpdateTranslation($translation->getField(), $value, $translation->getLocale());
         }
 
         $this->colorApplicationService->save($color);

@@ -14,6 +14,7 @@ interface ProductColorRepositoryInterface
     public function createQueryBuilder(string $alias): QueryBuilder;
 
     public function findByProductAndColor(Product $product, Color $color): ?ProductColor;
+
     public function findById(int $id): ?ProductColor;
 
     public function save(ProductColor $productColor): void;

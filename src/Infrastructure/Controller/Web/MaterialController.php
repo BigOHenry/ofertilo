@@ -251,7 +251,8 @@ final class MaterialController extends AbstractController
     public function materialPricesApi(Material $material): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetMaterialPricesForGridQuery::create($material));
+            \assert($material->getId() !== null, 'Material must have an ID when loaded from database');
+            $envelope = $this->bus->dispatch(GetMaterialPricesForGridQuery::create($material->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

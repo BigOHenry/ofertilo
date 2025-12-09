@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Query\Product\GetProductColorFormData;
 
 use App\Application\Service\ProductApplicationService;
+use App\Domain\Color\Entity\Color;
+use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -17,7 +19,7 @@ final readonly class GetProductColorFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, wood: int|null, thickness: int, price: string}
+     * @return array{id: int|null, product: Product, color: Color, description: string|null}
      */
     public function __invoke(GetProductColorFormDataQuery $query): array
     {
