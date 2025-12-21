@@ -9,9 +9,9 @@ class ValidationErrorDomainException extends DomainException
     /**
      * @param array<string, array{key: string, params?: array<string>}|string> $errors
      */
-    final private function __construct(private array $errors = [], int $code = 400, ?\Throwable $previous = null)
+    final public function __construct(string $message, private array $errors = [], int $code = 400, ?\Throwable $previous = null)
     {
-        parent::__construct(message: 'Invalid data', code: $code, previous: $previous);
+        parent::__construct(message: $message, code: $code, previous: $previous);
     }
 
     /**
@@ -37,6 +37,6 @@ class ValidationErrorDomainException extends DomainException
      */
     public static function withErrors(array $errors): static
     {
-        return new static($errors);
+        return new static('Invalid data', $errors);
     }
 }

@@ -31,6 +31,7 @@ abstract class BaseController extends AbstractController
 
         if ($originalException instanceof ValidationErrorDomainException) {
             $errors = $originalException->getErrors();
+
             /**
              * @var string                                            $field
              * @var array{key: string, params?: array<string>}|string $error

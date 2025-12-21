@@ -117,7 +117,6 @@ class Wood implements TranslatableInterface
 
     public function setName(string $name): self
     {
-        self::validateName($name);
         $this->name = $name;
 
         return $this;
@@ -130,9 +129,6 @@ class Wood implements TranslatableInterface
 
     public function setDescription(?string $description, string $locale = 'en'): void
     {
-        if ($description !== null) {
-            self::validateDescription($description);
-        }
         $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $description, $locale);
     }
 
@@ -143,9 +139,6 @@ class Wood implements TranslatableInterface
 
     public function setPlaceOfOrigin(?string $placeOfOrigin, string $locale = 'en'): void
     {
-        if ($placeOfOrigin !== null) {
-            self::validatePlaceOfOrigin($placeOfOrigin);
-        }
         $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_PLACE_OF_ORIGIN, $placeOfOrigin, $locale);
     }
 
@@ -168,9 +161,6 @@ class Wood implements TranslatableInterface
 
     public function setLatinName(?string $latinName): self
     {
-        if ($latinName !== null) {
-            self::validateLatinName($latinName);
-        }
         $this->latinName = $latinName;
 
         return $this;
@@ -183,9 +173,6 @@ class Wood implements TranslatableInterface
 
     public function setDryDensity(?int $dryDensity): self
     {
-        if ($dryDensity !== null) {
-            self::validateDryDensity($dryDensity);
-        }
         $this->dryDensity = $dryDensity;
 
         return $this;
@@ -198,9 +185,6 @@ class Wood implements TranslatableInterface
 
     public function setHardness(?int $hardness): self
     {
-        if ($hardness !== null) {
-            self::validateHardness($hardness);
-        }
         $this->hardness = $hardness;
 
         return $this;
@@ -209,79 +193,5 @@ class Wood implements TranslatableInterface
     protected function setId(?int $id): void
     {
         $this->id = $id;
-    }
-
-    private static function validateName(string $name): void
-    {
-        $trimmed = mb_trim($name);
-        if (empty($trimmed)) {
-            throw InvalidMaterialException::emptyName();
-        }
-
-        if (mb_strlen($trimmed) < 2) {
-            throw InvalidMaterialException::nameTooShort(2);
-        }
-
-        if (mb_strlen($trimmed) > 100) {
-            throw InvalidMaterialException::nameTooLong(100);
-        }
-
-        if (!preg_match('/^[a-z\s\-_]+$/', $trimmed)) {
-            throw InvalidMaterialException::nameInvalidCharacters();
-        }
-    }
-
-    private static function validateLatinName(string $latinName): void
-    {
-        $trimmed = mb_trim($latinName);
-        if (mb_strlen($trimmed) > 300) {
-            throw InvalidMaterialException::latinNameTooLong(300);
-        }
-
-        if (!preg_match('/^[a-zA-Z\s]+$/u', $trimmed)) {
-            throw InvalidMaterialException::latinNameInvalidCharacters();
-        }
-    }
-
-    private static function validateDryDensity(int $density): void
-    {
-        if ($density < 10) {
-            throw InvalidMaterialException::dryDensityTooLow(10);
-        }
-
-        if ($density > 2000) {
-            throw InvalidMaterialException::dryDensityTooHigh(2000);
-        }
-    }
-
-    private static function validateHardness(int $hardness): void
-    {
-        if ($hardness < 1) {
-            throw InvalidMaterialException::hardnessTooLow(1);
-        }
-
-        if ($hardness > 9999) {
-            throw InvalidMaterialException::hardnessTooHigh(9999);
-        }
-    }
-
-    private static function validateDescription(string $description): void
-    {
-        $trimmed = mb_trim($description);
-        if (mb_strlen($trimmed) > 100) {
-            throw InvalidMaterialException::descriptionTooLong(100);
-        }
-    }
-
-    private static function validatePlaceOfOrigin(string $placeOfOrigin): void
-    {
-        $trimmed = mb_trim($placeOfOrigin);
-        if (mb_strlen($trimmed) > 200) {
-            throw InvalidMaterialException::placeOfOriginTooLong(200);
-        }
-
-        if (!preg_match('/^[\p{L}\s\-,]+$/u', $trimmed)) {
-            throw InvalidMaterialException::placeOfOriginInvalidCharacters();
-        }
     }
 }
