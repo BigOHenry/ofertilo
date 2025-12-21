@@ -8,7 +8,7 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         types:
-            jsonb: App\Doctrine\Type\JsonbType
+            jsonb: App\Infrastructure\Persistence\Doctrine\Type\JsonbType
     orm:
       default_entity_manager: default
       entity_managers:

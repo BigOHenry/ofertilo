@@ -7,7 +7,7 @@ namespace App\Application\Query\Color\GetColorFormData;
 use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Infrastructure\Form\Helper\TranslationFormHelper;
+use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

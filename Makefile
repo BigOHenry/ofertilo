@@ -42,9 +42,17 @@ phpstan:
 tester:
 	$(exec-app) php bin/phpunit
 
+.PHONY: composer
+composer:
+	$(exec-app) composer install
+
 .PHONY: composer-update
 composer-update:
 	$(exec-app) composer update
+
+.PHONY: npm
+npm:
+	$(exec-app) npm install
 
 .PHONY: npm-update
 npm-update:

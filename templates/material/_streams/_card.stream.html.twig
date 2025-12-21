@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="material-title">
+    <template>
+        {% include 'material/components/_header.html.twig' with { material: material } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="material-detail">
+    <template>
+        {% include 'material/components/_detail.html.twig' with { material: material } %}
+    </template>
+</turbo-stream>
+
+{% include 'components/stream_modal_cleanup.html.twig' %}

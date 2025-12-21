@@ -5,16 +5,20 @@
 {% block body %}
     <div id="wood_card" class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between">
-            {% include 'wood/components/_wood_header.html.twig' with { wood: wood } %}
-            <a class="btn btn-sm btn-primary" data-modal-id="woodDetailModal" data-modal-src="{{ path('wood_edit', {'id': wood.id}) }}" data-modal-title="{{ wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+            <div id="wood-title">
+                {% include 'wood/components/_header.html.twig' with { wood: wood } %}
+            </div>
+            <a class="btn btn-sm btn-primary" data-modal-id="woodModal" data-modal-src="{{ path('wood_edit', {'id': wood.id}) }}" data-modal-title="{{ wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
         </div>
         <div class="card-body">
-            {% include 'wood/components/_wood_detail.html.twig' with { wood: wood } %}
+            <div id="wood-detail">
+                {% include 'wood/components/_detail.html.twig' with { wood: wood } %}
+            </div>
         </div>
     </div>
 
     {% include 'components/form_modal_frame.html.twig' with {
-        modal_id: 'woodDetailModal',
+        modal_id: 'woodModal',
         title: 'title.wood'|trans
     } %}
 {% endblock %}

@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="color-title">
+    <template>
+        {% include 'color/components/_header.html.twig' with { color: color } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="color-detail">
+    <template>
+        {% include 'color/components/_detail.html.twig' with { color: color } %}
+    </template>
+</turbo-stream>
+
+{% include 'components/stream_modal_cleanup.html.twig' %}

@@ -1,0 +1,31 @@
+general:
+  duplicate_value: "Duplicitní hodnota"
+  duplicate_value_field: "Duplicitní hodnota v poli '%field%'"
+  email:
+    invalid: 'Neplatný formát emailu'
+  string:
+    tooShort: "Hodnota musí mít alespoň %min% znaků"
+    tooLong: "Hodnota musí mít maximálně %max% znaků"
+  phone:
+    invalid: 'Neplatný formát telefoního čísla'
+
+user:
+  password:
+    requirements: 'Heslo musí mít alespoň %min% znaků, obsahovat velké i malé písmeno, číslo a speciální znak'
+  roles:
+    invalid: 'Neplatná role. Musí být jedna z: %roles%'
+    empty: 'Je nutné definovat alespoň jednu roli'
+
+
+password_mismatch: "Hesla se musí shodovat."
+unique: "Vybraná hodnota je duplicitní."
+not_null: 'Pole je povinná'
+positive: 'Hodnota musí být kladná'
+range: 'Hodnota musí být mezi {{ min }} a {{ max }}'
+min: 'Hodnota musí být alespoň {{ limit }}'
+max: 'Hodnota nesmí překročit {{ limit }}'
+length_min: 'Hodnota musí mít alespoň {{ limit }} znaků'
+length_max: 'Hodnota nesmí překročit {{ limit }} znaků'
+invalid_characters: 'Hodnota obsahuje nepovolené znaky'
+image:
+  invalid_format: 'Povolené formáty obrázků jsou: JPEG, PNG, GIF, WebP, SVG'

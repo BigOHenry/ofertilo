@@ -41,3 +41,54 @@ $h6-font-size: $font-size-base !default;
 body {
   font-family: 'Montserrat', sans-serif;
 }
+
+
+// --------------------- tabulator custom
+.tabulator-footer {
+  .tabulator-paginator {
+    font-size: 0.8rem;
+
+    button {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      border-radius: 0 !important;
+    }
+  }
+
+  .tabulator-page {
+    border-radius: 0 !important;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .tabulator-pages {
+    button {
+      border-radius: 0 !important;
+    }
+  }
+}
+// tabulator custom ---------------------
+
+// --------------------- flash messages
+#flash-messages {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  z-index: 1050;
+  max-width: 270px;
+  width: 100%;
+}
+
+#flash-messages .alert {
+  margin-bottom: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  #flash-messages {
+    left: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+  }
+}
+// flash messages ---------------------

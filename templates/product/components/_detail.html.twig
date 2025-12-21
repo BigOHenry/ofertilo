@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col-12"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }}</span></div>
+    <div class="col-12"><label class="fw-semibold">{{ 'field.country'|trans }}:</label> <span>{{ product.country.name }}</span></div>
+    <div class="col-12"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ product.description(app.request.locale) }}</span></div>
+    {% if product.hasImage %}
+        <div class="col-12">
+            <img src="{{ path('secure_image', {
+                    'entityFolder': product.entityFolder,
+                    'filename': product.encodedFilename
+                }) }}" alt="{{ product.imageOriginalName }}" class="img-thumbnail" style="max-width: 400px;">
+{#                    <p>{{ product.imageOriginalName }}</p>#}
+        </div>
+    {% endif %}
+</div>

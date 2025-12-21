@@ -9,7 +9,7 @@ use App\Domain\Product\Exception\ProductNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Infrastructure\Form\Helper\TranslationFormHelper;
+use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

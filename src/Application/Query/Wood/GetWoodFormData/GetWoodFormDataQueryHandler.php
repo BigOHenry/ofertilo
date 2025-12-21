@@ -7,7 +7,7 @@ namespace App\Application\Query\Wood\GetWoodFormData;
 use App\Application\Service\WoodApplicationService;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Wood\Exception\WoodNotFoundException;
-use App\Infrastructure\Form\Helper\TranslationFormHelper;
+use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

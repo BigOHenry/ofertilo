@@ -5,11 +5,16 @@
 {% block body %}
     <div id="material_card" class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between">
-            {% include 'material/components/_material_header.html.twig' with { material: material } %}
-            <a class="btn btn-sm btn-primary" data-modal-id="materialDetailModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+            <div id="material-title">
+                {% include 'material/components/_header.html.twig' with { material: material } %}
+            </div>
+            <a class="btn btn-sm btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
         </div>
         <div class="card-body">
-            {% include 'material/components/_material_detail.html.twig' with { material: material } %}
+            <div id="material-detail">
+                {% include 'material/components/_detail.html.twig' with { material: material } %}
+            </div>
+
 
             <div class="row">
                 <div class="d-flex flex-row justify-content-end pb-2">
@@ -28,7 +33,7 @@
     } %}
 
     {% include 'components/form_modal_frame.html.twig' with {
-        modal_id: 'materialDetailModal',
+        modal_id: 'materialModal',
         title: 'title.material'|trans
     } %}
 {% endblock %}

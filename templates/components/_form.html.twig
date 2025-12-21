@@ -4,6 +4,15 @@
     class: form_class|default('needs-validation')
   }
 }) }}
-  {{ form_errors(form) }}
+    {% if form.vars.errors|length > 0 %}
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          {% for error in form.vars.errors %}
+            <li>{{ error.message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
   {{ form_widget(form) }}
 {{ form_end(form) }}

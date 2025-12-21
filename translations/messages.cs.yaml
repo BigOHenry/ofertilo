@@ -1,3 +1,6 @@
+label:
+  loading: "Načítání"
+
 title:
   first_run: "První spuštění"
   create_super_admin: "Nejprve je potřeba založit účet SuperAdmin, zadejte e-mail a heslo:"
@@ -49,6 +52,7 @@ field:
 button:
   save: "Uložit"
   login: 'Přihlásit'
+  logout: 'Odhlásit'
   add: 'Přidat'
   close: 'Zavřít'
   2fa_activate: 'Aktivovat 2FA'
@@ -56,6 +60,12 @@ button:
 
 message:
   2fa_setup_qr_scan: "Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)"
+  first_admin_created: "První SuperAdministrátor úspěšně vytvořen. Můžete se přihlásit."
+  item_created: "Položka úspěšně založena"
+  item_updated: "Položka úspěšně upravena"
+  item_deleted: "Položka úspěšně odstraněna"
+  duplicate_value: "Duplicitní hodnota"
+  duplicate_value_field: "Duplicitní hodnota v poli '%field%'"
 
 boolean:
   yes: "Ano"

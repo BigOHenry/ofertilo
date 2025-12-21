@@ -1,10 +1,10 @@
 app_localized_controllers:
-    resource: '../src/Infrastructure/Controller/Web/'
+    resource: '../src/Infrastructure/Web/Controller/'
     type: attribute
     prefix: /{_locale}
     requirements:
         _locale: cs|en
 
 app_entry_redirect:
-    resource: '../src/Infrastructure/Controller/Web/RedirectToLocaleController.php'
+    resource: '../src/Infrastructure/Web/Controller/RedirectToLocaleController.php'
     type: attribute
