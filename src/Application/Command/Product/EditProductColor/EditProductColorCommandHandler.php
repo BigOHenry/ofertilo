@@ -8,6 +8,8 @@ use App\Application\Service\ColorApplicationService;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
+use App\Domain\Product\Validator\ProductColorValidator;
+use App\Domain\Wood\Exception\WoodValidationException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -31,6 +33,12 @@ final readonly class EditProductColorCommandHandler
 
         if ($productColor === null) {
             throw ProductColorNotFoundException::withId($command->getId());
+        }
+
+        $errors = ProductColorValidator::validate($command->getDescription());
+
+        if (!empty($errors)) {
+            throw WoodValidationException::withErrors($errors);
         }
 
         $productColor->getProduct()->updateColor($productColor, $color, $command->getDescription());

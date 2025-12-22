@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
@@ -158,7 +158,7 @@ class Product implements TranslatableInterface
     public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw DuplicateProductColorException::withCode($color->getCode());
+            throw ProductColorAlreadyExistsException::withCode($color->getCode());
         }
 
         $productColor = ProductColor::create($this, $color, $description);
@@ -184,7 +184,7 @@ class Product implements TranslatableInterface
         $foundProductColor = $this->findProductColorByColor($color);
 
         if ($productColor !== $foundProductColor) {
-            throw DuplicateProductColorException::withCode($color->getCode());
+            throw ProductColorAlreadyExistsException::withCode($color->getCode());
         }
 
         $productColor->setDescription($description);

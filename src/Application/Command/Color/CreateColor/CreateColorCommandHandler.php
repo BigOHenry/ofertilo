@@ -7,6 +7,8 @@ namespace App\Application\Command\Color\CreateColor;
 use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
+use App\Domain\Color\Exception\ColorValidationException;
+use App\Domain\Color\Validator\ColorValidator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -23,6 +25,12 @@ final readonly class CreateColorCommandHandler
 
         if ($this->colorApplicationService->findByCode($code)) {
             throw ColorAlreadyExistsException::withCode($code);
+        }
+
+        $errors = ColorValidator::validate($command->getCode());
+
+        if (!empty($errors)) {
+            throw ColorValidationException::withErrors($errors);
         }
 
         $color = Color::create($code, $command->isInStock(), $command->isEnabled());

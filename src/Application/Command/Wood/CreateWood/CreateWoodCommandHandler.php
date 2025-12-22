@@ -27,7 +27,7 @@ final readonly class CreateWoodCommandHandler
             throw WoodAlreadyExistsException::withName($name);
         }
 
-        $errors = WoodValidator::validateForCreation(
+        $errors = WoodValidator::validate(
             $command->getName(),
             $command->getLatinName(),
             $command->getDryDensity(),

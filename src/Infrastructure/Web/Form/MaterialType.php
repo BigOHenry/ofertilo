@@ -22,7 +22,6 @@ class MaterialType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // TODO fix error when edit: Symfony\Bridge\Doctrine\Form\ChoiceList\IdReader::getIdValue(): Argument #1 ($object) must be of type ?object, int given, called in /var/www/app/vendor/symfony/form/ChoiceList/Loader/AbstractChoiceLoader.php on line 49
         $builder
             ->add('wood', EntityType::class, [
                 'label' => 'field.wood',

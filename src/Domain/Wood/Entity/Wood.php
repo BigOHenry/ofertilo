@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Wood\Entity;
 
-use App\Domain\Material\Exception\InvalidMaterialException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository;

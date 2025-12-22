@@ -7,6 +7,8 @@ namespace App\Application\Command\Color\EditColor;
 use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorNotFoundException;
+use App\Domain\Color\Exception\ColorValidationException;
+use App\Domain\Color\Validator\ColorValidator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -23,6 +25,12 @@ final readonly class EditColorCommandHandler
 
         if ($color === null) {
             throw ColorNotFoundException::withId($command->getId());
+        }
+
+        $errors = ColorValidator::validate($command->getCode());
+
+        if (!empty($errors)) {
+            throw ColorValidationException::withErrors($errors);
         }
 
         if ($color->getCode() !== $command->getCode()) {

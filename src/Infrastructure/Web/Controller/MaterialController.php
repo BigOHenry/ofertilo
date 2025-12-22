@@ -126,7 +126,7 @@ final class MaterialController extends BaseController
         }
 
         $response = $this->render('components/form_frame.html.twig', [
-            'data_class' => EditMaterialCommand::class,
+            'data_class' => null,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialModal_frame',
             'form_template' => 'material/components/_form.html.twig',
             'form_context' => [

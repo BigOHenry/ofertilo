@@ -4,77 +4,28 @@ declare(strict_types=1);
 
 namespace App\Domain\Color\Validator;
 
-class ColorValidator
+use App\Domain\Shared\Validator\Validator;
+
+class ColorValidator extends Validator
 {
-    /**
-     * @return array<string, string>
-     */
-    public static function validateEmail(string $email): array
-    {
-        $errors = [];
-
-        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Invalid email format';
-        }
-
-        return $errors;
-    }
+    public const int CODE_MIN_VALUE = 1000;
+    public const int CODE_MAX_VALUE = 9999;
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    public static function validateName(string $name): array
-    {
-        $errors = [];
-
-        if (mb_strlen(mb_trim($name)) < 2) {
-            $errors['name'] = 'Name must be at least 2 characters long';
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function validatePassword(string $password): array
-    {
-        $errors = [];
-
-        if (
-            mb_strlen($password) < 8
-            || !preg_match('/[A-Z]/', $password)
-            || !preg_match('/[a-z]/', $password)
-            || !preg_match('/[0-9]/', $password)
-            || !preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)
-        ) {
-            $errors['password'] = 'Password must be at least 8 characters long, contains at least one'
-                . ' lowercase and uppercase letter, one number and one special character.';
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public static function validateForCreation(string $email, string $name, string $role, string $password): array
+    public static function validate(int $code): array
     {
         return array_merge(
-            self::validateEmail(email: $email),
-            self::validateName(name: $name),
-            self::validatePassword(password: $password)
+            self::validateCode($code),
         );
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    public static function validateForUpdate(string $email, string $name, string $role): array
+    protected static function validateCode(int $value): array
     {
-        return array_merge(
-            self::validateEmail(email: $email),
-            self::validateName(name: $name),
-        );
+        return self::validateIntegerValue('code', $value, self::CODE_MIN_VALUE, self::CODE_MAX_VALUE);
     }
 }

@@ -7,6 +7,8 @@ namespace App\Application\Command\Material\CreateMaterialPrice;
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
+use App\Domain\Material\Exception\MaterialPriceValidationException;
+use App\Domain\Material\Validator\MaterialPriceValidator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -23,6 +25,12 @@ final readonly class CreateMaterialPriceCommandHandler
 
         if ($material === null) {
             throw MaterialNotFoundException::withId($command->getMaterialId());
+        }
+
+        $errors = MaterialPriceValidator::validate($command->getThickness(), (float) $command->getPrice());
+
+        if (!empty($errors)) {
+            throw MaterialPriceValidationException::withErrors($errors);
         }
 
         $thickness = $command->getThickness();

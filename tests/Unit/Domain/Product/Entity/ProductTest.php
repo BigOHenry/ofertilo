@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\Type;
 use App\Domain\Shared\Entity\Country;
@@ -154,7 +154,7 @@ class ProductTest extends TestCase
         $color = Color::create(3025);
         $product->addColor($color, 'Red variant');
 
-        $this->expectException(DuplicateProductColorException::class);
+        $this->expectException(ProductColorAlreadyExistsException::class);
         $this->expectExceptionMessage("Color '3025' is already assigned to product");
 
         $product->addColor($color, 'Another description');

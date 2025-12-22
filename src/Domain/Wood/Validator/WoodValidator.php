@@ -18,60 +18,47 @@ class WoodValidator extends Validator
     public const int HARDNESS_MAX_VALUE = 9999;
 
     /**
-     * @return array<string, array{key: string, params: string}>
+     * @return array<string, array{key: string, params?: array<string, int|float|null>}>
      */
-    public static function validateName(string $name): array
+    public static function validate(string $name, ?string $latinName, ?int $dryDensity, ?int $hardness): array
+    {
+        return array_merge(
+            self::validateName($name),
+            self::validateLatinName($latinName),
+            self::validateDryDensity($dryDensity),
+            self::validateHardness($hardness),
+        );
+    }
+
+    /**
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
+     */
+    protected static function validateName(string $name): array
     {
         return self::validateStringLength('name', $name, self::NAME_MIN_LENGTH, self::NAME_MAX_LENGTH);
     }
 
     /**
-     * @return array<string, array{key: string, params: string}>
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    public static function validateLatinName(string $latinName): array
+    protected static function validateLatinName(?string $latinName): array
     {
         return self::validateStringLength('latinName', $latinName, self::LATIN_NAME_MIN_LENGTH, self::LATIN_NAME_MAX_LENGTH);
     }
 
     /**
-     * @return array<string, array{key: string, params: string}>
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    public static function validateDryDensity(?int $dryDensity): array
+    protected static function validateDryDensity(?int $dryDensity): array
     {
         return self::validateIntegerValue('dryDensity', $dryDensity, self::DRY_DENSITY_MIN_VALUE, self::DRY_DENSITY_MAX_VALUE);
     }
 
     /**
-     * @return array<string, array{key: string, params: string}>
+     * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    public static function validateHardness(?int $hardness): array
+    protected static function validateHardness(?int $hardness): array
     {
         return self::validateIntegerValue('hardness', $hardness, self::HARDNESS_MIN_VALUE, self::HARDNESS_MAX_VALUE);
-    }
-
-    /**
-     * @return array<string, array{key: string, params?: string}>
-     */
-    public static function validateForCreation(string $name, ?string $latinName, ?int $dryDensity, ?int $hardness): array
-    {
-        return array_merge(
-            self::validateName($name),
-            self::validateLatinName($latinName),
-            self::validateDryDensity($dryDensity),
-            self::validateHardness($hardness),
-        );
-    }
-
-    /**
-     * @return array<string, array{key: string, params?: string}>
-     */
-    public static function validateForUpdate(string $name, ?string $latinName, ?int $dryDensity, ?int $hardness): array
-    {
-        return array_merge(
-            self::validateName($name),
-            self::validateLatinName($latinName),
-            self::validateDryDensity($dryDensity),
-            self::validateHardness($hardness),
-        );
     }
 }

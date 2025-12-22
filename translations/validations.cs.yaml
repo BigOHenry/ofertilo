@@ -6,7 +6,7 @@ general:
   string:
     tooShort: "Hodnota musí mít alespoň %min% znaků"
     tooLong: "Hodnota musí mít maximálně %max% znaků"
-  int:
+  number:
     tooSmall: "Hodnota musí být alespoň %min%"
     tooBig: "Hodnota musí být maximálně %max%"
   phone:

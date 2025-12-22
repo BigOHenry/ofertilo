@@ -7,7 +7,7 @@ namespace App\Domain\Shared\Exception;
 class ValidationErrorDomainException extends DomainException
 {
     /**
-     * @param array<string, array{key: string, params?: array<string>}|string> $errors
+     * @param array<string, array{key: string, params?: array<string, string|int|float|null>}> $errors
      */
     final public function __construct(string $message, private array $errors = [], int $code = 400, ?\Throwable $previous = null)
     {
@@ -15,7 +15,7 @@ class ValidationErrorDomainException extends DomainException
     }
 
     /**
-     * @return array<string, array{key: string, params?: array<string>}|string>
+     * @return array<string, array{key: string, params?: array<string, string|int|float|null>}>
      */
     public function getErrors(): array
     {
@@ -27,13 +27,8 @@ class ValidationErrorDomainException extends DomainException
         return !empty($this->errors);
     }
 
-    public function addError(string $field, string $message): void
-    {
-        $this->errors[$field] = $message;
-    }
-
     /**
-     * @param array<string, array{key: string, params?: array<string>}|string> $errors
+     * @param array<string, array{key: string, params?: array<string, string|int|float|null>}> $errors
      */
     public static function withErrors(array $errors): static
     {

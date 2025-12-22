@@ -34,7 +34,7 @@ final readonly class EditWoodCommandHandler
             }
         }
 
-        $errors = WoodValidator::validateForUpdate(
+        $errors = WoodValidator::validate(
             $command->getName(),
             $command->getLatinName(),
             $command->getDryDensity(),

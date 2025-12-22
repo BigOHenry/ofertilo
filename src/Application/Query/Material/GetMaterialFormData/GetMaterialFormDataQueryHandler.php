@@ -6,6 +6,7 @@ namespace App\Application\Query\Material\GetMaterialFormData;
 
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Exception\MaterialNotFoundException;
+use App\Domain\Wood\Entity\Wood;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -17,7 +18,7 @@ final readonly class GetMaterialFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, wood: int|null, type: 'area'|'piece'|'volume', enabled: bool}
+     * @return array{id: int|null, wood: Wood|null, type: 'area'|'piece'|'volume', enabled: bool}
      */
     public function __invoke(GetMaterialFormDataQuery $query): array
     {
@@ -29,7 +30,7 @@ final readonly class GetMaterialFormDataQueryHandler
 
         return [
             'id' => $material->getId(),
-            'wood' => $material->getWood()->getId(),
+            'wood' => $material->getWood(),
             'type' => $material->getType()->value,
             'enabled' => $material->isEnabled(),
         ];
