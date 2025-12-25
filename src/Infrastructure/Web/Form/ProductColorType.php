@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Web\Form;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Color\Repository\ColorRepositoryInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -30,7 +30,7 @@ class ProductColorType extends AbstractType
                 'label' => 'field.color',
                 'class' => Color::class,
                 'choice_label' => 'code',
-                'query_builder' => function (ColorRepositoryInterface $repository) use ($product, $color): QueryBuilder {
+                'query_builder' => function (EntityRepository $repository) use ($product, $color): QueryBuilder {
                     $qb = $repository->createQueryBuilder('c');
 
                     if ($product && $product->getId()) {

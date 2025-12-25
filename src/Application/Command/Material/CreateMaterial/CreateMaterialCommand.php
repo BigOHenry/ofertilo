@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Material\CreateMaterial;
 
-use App\Domain\Material\ValueObject\Type;
+use App\Domain\Material\ValueObject\MaterialType;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateMaterialCommand
 {
-    public function __construct(private int $woodId, private Type $type)
+    public function __construct(private int $woodId, private MaterialType $type)
     {
     }
 
@@ -25,7 +25,7 @@ final readonly class CreateMaterialCommand
         return $this->woodId;
     }
 
-    public function getType(): Type
+    public function getType(): MaterialType
     {
         return $this->type;
     }

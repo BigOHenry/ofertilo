@@ -6,8 +6,14 @@ namespace App\Application\Command\Material\CreateMaterial;
 
 use App\Application\Service\MaterialApplicationService;
 use App\Application\Service\WoodApplicationService;
+use App\Domain\Material\Entity\EdgeGluedPanelMaterial;
 use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Entity\PieceMaterial;
+use App\Domain\Material\Entity\PlywoodMaterial;
+use App\Domain\Material\Entity\SolidWoodMaterial;
 use App\Domain\Material\Exception\MaterialAlreadyExistsException;
+use App\Domain\Material\ValueObject\MaterialType;
+use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -34,6 +40,16 @@ final readonly class CreateMaterialCommandHandler
             throw MaterialAlreadyExistsException::withWoodAndType($wood, $type);
         }
 
-        $this->materialService->save(Material::create($wood, $type));
+        $this->materialService->save($this->createMaterialByType($type, $wood));
+    }
+
+    private function createMaterialByType(MaterialType $type, Wood $wood): Material
+    {
+        return match ($type) {
+            MaterialType::PIECE => PieceMaterial::create($wood),
+            MaterialType::PLYWOOD => PlywoodMaterial::create($wood),
+            MaterialType::EDGE_GLUED_PANEL => EdgeGluedPanelMaterial::create($wood),
+            MaterialType::SOLID_WOOD => SolidWoodMaterial::create($wood),
+        };
     }
 }

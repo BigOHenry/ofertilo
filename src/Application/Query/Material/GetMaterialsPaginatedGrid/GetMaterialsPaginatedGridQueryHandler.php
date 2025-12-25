@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Material\GetMaterialsForPaginatedGrid;
+namespace App\Application\Query\Material\GetMaterialsPaginatedGrid;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
-final readonly class GetMaterialsForPaginatedGridQueryHandler
+final readonly class GetMaterialsPaginatedGridQueryHandler
 {
     public function __construct(
         private MaterialRepositoryInterface $materialRepository,
@@ -25,7 +25,7 @@ final readonly class GetMaterialsForPaginatedGridQueryHandler
      * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null,
      *      type: string, enabled: string}>, last_page: float, total: int<0, max>}
      */
-    public function __invoke(GetMaterialsForPaginatedGridQuery $query): array
+    public function __invoke(GetMaterialsPaginatedGridQuery $query): array
     {
         $qb = $this->materialRepository->createQueryBuilder('c')
                                        ->setFirstResult($query->getOffset())

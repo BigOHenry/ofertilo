@@ -1,8 +1,9 @@
 material:
   type:
     piece: Kusový
-    area: Plošný
-    volume: Objemový
+    plywood: Překližka
+    edge_glued_panel: Spárovka
+    solid_wood: Masivní dřevo
 
 product:
   type:

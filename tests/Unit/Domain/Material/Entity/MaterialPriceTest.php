@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Domain\Material\Entity;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\InvalidMaterialPriceException;
-use App\Domain\Material\ValueObject\Type;
+use App\Domain\Material\ValueObject\MaterialType;
 use PHPUnit\Framework\TestCase;
 
 class MaterialPriceTest extends TestCase
@@ -16,7 +16,7 @@ class MaterialPriceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->material = Material::create(Type::VOLUME, 'test_material');
+        $this->material = Material::create(MaterialType::VOLUME, 'test_material');
     }
 
     public function testCreateMaterialPriceWithValidData(): void
@@ -80,7 +80,7 @@ class MaterialPriceTest extends TestCase
     public function testSetMaterial(): void
     {
         $price = MaterialPrice::create($this->material, 10, '50.5');
-        $newMaterial = Material::create(Type::VOLUME, 'new_material');
+        $newMaterial = Material::create(MaterialType::VOLUME, 'new_material');
 
         $price->setMaterial($newMaterial);
 
@@ -122,7 +122,7 @@ class MaterialPriceTest extends TestCase
 
         $this->assertSame($this->material, $price->getMaterial());
 
-        $newMaterial = Material::create(Type::VOLUME, 'new_material');
+        $newMaterial = Material::create(MaterialType::VOLUME, 'new_material');
         $price->setMaterial($newMaterial);
 
         $this->assertSame($newMaterial, $price->getMaterial());

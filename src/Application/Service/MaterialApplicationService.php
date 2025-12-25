@@ -8,7 +8,7 @@ use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
-use App\Domain\Material\ValueObject\Type;
+use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
 
 final readonly class MaterialApplicationService
@@ -19,7 +19,7 @@ final readonly class MaterialApplicationService
     ) {
     }
 
-    public function findByWoodAndType(Wood $wood, Type $type): ?Material
+    public function findByWoodAndType(Wood $wood, MaterialType $type): ?Material
     {
         return $this->materialRepository->findByWoodAndType($wood, $type);
     }

@@ -15,7 +15,6 @@
                 {% include 'material/components/_detail.html.twig' with { material: material } %}
             </div>
 
-
             <div class="row">
                 <div class="d-flex flex-row justify-content-end pb-2">
                     <button class="btn btn-primary" data-modal-id="materialPriceModal" data-modal-src="{{ path('material_price_new', {'id': material.id}) }}" data-modal-title="{{ 'title.new_material_price'|trans }}">

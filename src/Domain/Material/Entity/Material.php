@@ -6,29 +6,26 @@ namespace App\Domain\Material\Entity;
 
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
-use App\Domain\Material\ValueObject\Type;
+use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
-use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMaterialRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DoctrineMaterialRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'material')]
-class Material
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string', enumType: MaterialType::class)]
+#[ORM\DiscriminatorMap(MaterialType::DISCRIMINATOR_MAP)]
+abstract class Material
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Wood::class, cascade: ['persist'])]
     private Wood $wood;
-
-    #[ORM\Column(nullable: false, enumType: Type::class)]
-    #[Assert\NotNull(message: 'not_null')]
-    private Type $type;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
@@ -39,20 +36,9 @@ class Material
     #[ORM\OneToMany(targetEntity: MaterialPrice::class, mappedBy: 'material', cascade: ['persist'], orphanRemoval: true)]
     private Collection $prices;
 
-    protected function __construct(?int $id = null)
+    protected function __construct()
     {
-        $this->id = $id;
         $this->prices = new ArrayCollection();
-    }
-
-    public static function create(Wood $wood, Type $type, bool $enabled = true): self
-    {
-        $material = new self();
-        $material->wood = $wood;
-        $material->type = $type;
-        $material->enabled = $enabled;
-
-        return $material;
     }
 
     public function getId(): ?int
@@ -60,14 +46,7 @@ class Material
         return $this->id;
     }
 
-    public function getType(): Type
-    {
-        if (!isset($this->type)) {
-            throw new \LogicException('Material type is not initialized');
-        }
-
-        return $this->type;
-    }
+    abstract public function getType(): MaterialType;
 
     public function getWood(): Wood
     {
@@ -77,11 +56,6 @@ class Material
     public function setWood(Wood $wood): void
     {
         $this->wood = $wood;
-    }
-
-    public function setType(Type $type): void
-    {
-        $this->type = $type;
     }
 
     public function isEnabled(): bool
@@ -96,12 +70,12 @@ class Material
 
     public function getDescription(?string $locale = null): string
     {
-        return \sprintf('%s - %s', $this->wood->getDescription($locale), $this->type->value);
+        return \sprintf('%s - %s', $this->wood->getDescription($locale), $this->getType()->value);
     }
 
     public function getName(): string
     {
-        return \sprintf('%s_%s', $this->wood->getName(), $this->type->name);
+        return \sprintf('%s_%s', $this->wood->getName(), $this->getType()->name);
     }
 
     /**
@@ -130,6 +104,16 @@ class Material
         }
 
         $this->prices->removeElement($price);
+    }
+
+    public static function getMaterialClassByType(MaterialType $type): string
+    {
+        return match ($type) {
+            MaterialType::PIECE => PieceMaterial::class,
+            MaterialType::PLYWOOD => PlywoodMaterial::class,
+            MaterialType::EDGE_GLUED_PANEL => EdgeGluedPanelMaterial::class,
+            MaterialType::SOLID_WOOD => SolidWoodMaterial::class,
+        };
     }
 
     protected function setId(?int $id): void

@@ -7,11 +7,10 @@ namespace App\Domain\Color\Entity;
 use App\Domain\Color\Exception\InvalidColorException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DoctrineColorRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'color')]
 class Color implements TranslatableInterface
 {

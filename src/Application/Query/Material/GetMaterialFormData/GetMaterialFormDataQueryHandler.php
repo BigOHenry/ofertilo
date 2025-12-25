@@ -18,7 +18,7 @@ final readonly class GetMaterialFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, wood: Wood|null, type: 'area'|'piece'|'volume', enabled: bool}
+     * @return array{id: int|null, wood: Wood|null, type: 'edge_glued_panel'|'piece'|'plywood'|'solid_wood', enabled: bool}
      */
     public function __invoke(GetMaterialFormDataQuery $query): array
     {

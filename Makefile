@@ -8,15 +8,15 @@ help:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
 .PHONY: cache-clean
-cache-clean: cache-clean-file #cache-clean-app
+cache-clean: cache-clean-file cache-clean-app
 
-#.PHONY: cache-clean-app
-#cache-clean-app:
-#	$(exec-app) php document_roots/admin/index.php cache:clean --all
+.PHONY: cache-clean-app
+cache-clean-app:
+	$(exec-app) php bin/console doctrine:cache:clear-metadata
 
 .PHONY: cache-clean-file
 cache-clean-file:
-	$(exec-app) rm -rf var/cache
+	$(exec-app) php bin/console cache:clear
 
 .PHONY: db-create
 db-create:

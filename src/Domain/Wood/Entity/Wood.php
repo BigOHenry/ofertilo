@@ -6,11 +6,10 @@ namespace App\Domain\Wood\Entity;
 
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DoctrineWoodRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'wood')]
 class Wood implements TranslatableInterface
 {

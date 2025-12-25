@@ -6,7 +6,6 @@ namespace App\Application\Command\Material\EditMaterial;
 
 use App\Application\Service\MaterialApplicationService;
 use App\Application\Service\WoodApplicationService;
-use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Exception\MaterialAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Wood\Exception\WoodNotFoundException;
@@ -23,28 +22,26 @@ final readonly class EditMaterialCommandHandler
 
     public function __invoke(EditMaterialCommand $command): void
     {
-        $wood = $this->woodService->findById($command->getWoodId());
-
-        if ($wood === null) {
-            throw WoodNotFoundException::withId($command->getWoodId());
-        }
-        $type = $command->getType();
-
-        $foundMaterial = $this->materialApplicationService->findByWoodAndType($wood, $type);
-        if ($foundMaterial !== null && $foundMaterial->getId() !== $command->getId()) {
-            throw MaterialAlreadyExistsException::withWoodAndType($wood, $type);
-        }
-
         $material = $this->materialApplicationService->findById($command->getId());
 
         if ($material === null) {
             throw MaterialNotFoundException::withId($command->getId());
         }
 
+        $wood = $this->woodService->findById($command->getWoodId());
+
+        if ($wood === null) {
+            throw WoodNotFoundException::withId($command->getWoodId());
+        }
+
+        $foundMaterial = $this->materialApplicationService->findByWoodAndType($wood, $material->getType());
+        if ($foundMaterial !== null && $foundMaterial->getId() !== $command->getId()) {
+            throw MaterialAlreadyExistsException::withWoodAndType($wood, $material->getType());
+        }
+
         $material->setWood($wood);
-        $material->setType($type);
         $material->setEnabled($command->isEnabled());
 
-        $this->materialApplicationService->save(Material::create($wood, $type));
+        $this->materialApplicationService->save($material);
     }
 }

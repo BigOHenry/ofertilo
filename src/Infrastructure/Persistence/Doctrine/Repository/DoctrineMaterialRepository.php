@@ -6,7 +6,7 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
-use App\Domain\Material\ValueObject\Type;
+use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,9 +33,16 @@ class DoctrineMaterialRepository extends BaseRepository implements MaterialRepos
         $this->getEntityManager()->flush();
     }
 
-    public function findByWoodAndType(Wood $wood, Type $type): ?Material
+    public function findByWoodAndType(Wood $wood, MaterialType $type): ?Material
     {
-        return $this->findOneBy(['wood' => $wood, 'type' => $type]);
+        return $this->createQueryBuilder('m')
+                    ->where('m INSTANCE OF :entityClass')
+                    ->andWhere('m.wood = :wood')
+                    ->setParameter('entityClass', Material::getMaterialClassByType($type))
+                    ->setParameter('wood', $wood)
+                    ->getQuery()
+                    ->getOneOrNullResult()
+        ;
     }
 
     public function findById(int $id): ?Material

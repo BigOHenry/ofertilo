@@ -9,7 +9,7 @@ use App\Domain\Shared\Validator\Validator;
 class MaterialPriceValidator extends Validator
 {
     public const int THICKNESS_MIN_VALUE = 1;
-    public const int THICKNESS_MAX_VALUE = 20;
+    public const int THICKNESS_MAX_VALUE = 100;
     public const int PRICE_MIN_VALUE = 1;
     public const int PRICE_MAX_VALUE = 999999;
 

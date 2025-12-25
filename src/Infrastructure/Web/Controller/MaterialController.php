@@ -13,13 +13,13 @@ use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
 use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
 use App\Application\Query\Material\GetMaterialPricesForGrid\GetMaterialPricesForGridQuery;
-use App\Application\Query\Material\GetMaterialsForPaginatedGrid\GetMaterialsForPaginatedGridQuery;
+use App\Application\Query\Material\GetMaterialsPaginatedGrid\GetMaterialsPaginatedGridQuery;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\MaterialException;
 use App\Domain\User\ValueObject\Role;
+use App\Infrastructure\Web\Form\MaterialFormType;
 use App\Infrastructure\Web\Form\MaterialPriceType;
-use App\Infrastructure\Web\Form\MaterialType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +43,7 @@ final class MaterialController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(MaterialType::class, data: [], options: [
+        $form = $this->createForm(MaterialFormType::class, data: [], options: [
             'action' => $this->generateUrl('material_new'),
             'method' => 'POST',
         ]);
@@ -72,7 +72,7 @@ final class MaterialController extends BaseController
             [
                 'data_class' => CreateMaterialCommand::class,
                 'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialModal_frame',
-                'form_template' => 'material/components/_form.html.twig',
+                'form_template' => 'components/_form.html.twig',
                 'form_context' => [
                     'form' => $form->createView(),
                     'form_id' => 'material-form',
@@ -94,7 +94,7 @@ final class MaterialController extends BaseController
         $envelope = $this->bus->dispatch(new GetMaterialFormDataQuery((int) $material->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(MaterialType::class, data: $formData, options: [
+        $form = $this->createForm(MaterialFormType::class, data: $formData, options: [
             'action' => $this->generateUrl('material_edit', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -170,7 +170,7 @@ final class MaterialController extends BaseController
     public function materialsApi(Request $request): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetMaterialsForPaginatedGridQuery::createFormRequest($request));
+            $envelope = $this->bus->dispatch(GetMaterialsPaginatedGridQuery::createFormRequest($request));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
@@ -257,7 +257,7 @@ final class MaterialController extends BaseController
 
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => EditMaterialPriceCommand::class,
-            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'materialPriceModal_frame',
+            'frame_id' => 'materialPriceModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
