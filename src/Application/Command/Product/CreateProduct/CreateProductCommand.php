@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\CreateProduct;
 
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
@@ -16,8 +16,8 @@ final readonly class CreateProductCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private Type $type,
-        private int $countryId,
+        private ProductType $type,
+        private ?int $countryId,
         private ?UploadedFile $imageFile, // TODO replace this object
         private array $translations,
     ) {
@@ -33,7 +33,7 @@ final readonly class CreateProductCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self($data['type'], $data['country']->getId(), $data['imageFile'], $translations);
+        return new self($data['type'], $data['country']?->getId(), $data['imageFile'], $translations);
     }
 
     /**
@@ -49,12 +49,12 @@ final readonly class CreateProductCommand
         return $this->imageFile;
     }
 
-    public function getCountryId(): int
+    public function getCountryId(): ?int
     {
         return $this->countryId;
     }
 
-    public function getType(): Type
+    public function getType(): ProductType
     {
         return $this->type;
     }

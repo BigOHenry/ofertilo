@@ -19,7 +19,7 @@ use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\MaterialException;
 use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Web\Form\MaterialFormType;
-use App\Infrastructure\Web\Form\MaterialPriceType;
+use App\Infrastructure\Web\Form\MaterialPriceFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -182,7 +182,7 @@ final class MaterialController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function newPrice(Request $request, Material $material): Response
     {
-        $form = $this->createForm(MaterialPriceType::class, [], [
+        $form = $this->createForm(MaterialPriceFormType::class, [], [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
         ]);
@@ -231,7 +231,7 @@ final class MaterialController extends BaseController
         $envelope = $this->bus->dispatch(new GetMaterialPriceFormDataQuery((int) $materialPrice->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(MaterialPriceType::class, $formData, [
+        $form = $this->createForm(MaterialPriceFormType::class, $formData, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
             'method' => 'POST',
         ]);

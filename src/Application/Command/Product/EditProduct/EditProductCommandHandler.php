@@ -27,17 +27,18 @@ final readonly class EditProductCommandHandler
             throw ProductNotFoundException::withId($command->getId());
         }
 
-        $country = $this->countryService->getEnabledCountryById($command->getCountryId());
-        $type = $command->getType();
+        $country = null;
+        if ($command->getCountryId() !== null) {
+            $country = $this->countryService->getEnabledCountryById($command->getCountryId());
 
-        if ($product->getType() !== $type || $product->getCountry() !== $country) {
-            $foundProduct = $this->productApplicationService->findByTypeAndCountry($type, $country);
-            if ($foundProduct !== null && $foundProduct->getId() !== $command->getId()) {
-                throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
+            if ($product->getCountry() !== $country) {
+                $foundProduct = $this->productApplicationService->findByTypeAndCountry($product->getType(), $country);
+                if ($foundProduct !== null && $foundProduct->getId() !== $command->getId()) {
+                    throw ProductAlreadyExistsException::withTypeAndCountry($product->getType(), $country);
+                }
             }
         }
 
-        $product->setType($command->getType());
         $product->setCountry($country);
         $product->setEnabled($command->isEnabled());
 

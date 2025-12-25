@@ -12,7 +12,7 @@ use App\Application\Query\Wood\GetWoodsForPaginatedGrid\GetWoodsForPaginatedGrid
 use App\Domain\User\ValueObject\Role;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodException;
-use App\Infrastructure\Web\Form\WoodType;
+use App\Infrastructure\Web\Form\WoodFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +36,7 @@ final class WoodController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(WoodType::class, data: $this->formHelper->prepareFormData(Wood::class), options: [
+        $form = $this->createForm(WoodFormType::class, data: $this->formHelper->prepareFormData(Wood::class), options: [
             'action' => $this->generateUrl('wood_new'),
             'method' => 'POST',
         ]);
@@ -84,7 +84,7 @@ final class WoodController extends BaseController
         $envelope = $this->bus->dispatch(new GetWoodFormDataQuery((int) $wood->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(WoodType::class, data: $formData, options: [
+        $form = $this->createForm(WoodFormType::class, data: $formData, options: [
             'action' => $this->generateUrl('wood_edit', ['id' => $wood->getId()]),
             'method' => 'POST',
         ]);

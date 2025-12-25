@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Product\EditProduct;
 
-use App\Domain\Product\ValueObject\Type;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
@@ -17,8 +16,7 @@ final readonly class EditProductCommand
      */
     public function __construct(
         private int $id,
-        private Type $type,
-        private int $countryId,
+        private ?int $countryId,
         private ?UploadedFile $imageFile,
         private bool $enabled,
         private array $translations,
@@ -35,7 +33,7 @@ final readonly class EditProductCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self((int) $data['id'], $data['type'], $data['country']->getId(), $data['imageFile'], $data['enabled'], $translations);
+        return new self((int) $data['id'], $data['country']?->getId(), $data['imageFile'], $data['enabled'], $translations);
     }
 
     public function getId(): int
@@ -43,12 +41,7 @@ final readonly class EditProductCommand
         return $this->id;
     }
 
-    public function getType(): Type
-    {
-        return $this->type;
-    }
-
-    public function getCountryId(): int
+    public function getCountryId(): ?int
     {
         return $this->countryId;
     }

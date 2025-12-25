@@ -9,7 +9,7 @@ use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use App\Infrastructure\Service\FileUploader;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -30,7 +30,7 @@ final readonly class ProductApplicationService
         return $this->productRepository->findById($id);
     }
 
-    public function findByTypeAndCountry(Type $type, Country $country): ?Product
+    public function findByTypeAndCountry(ProductType $type, Country $country): ?Product
     {
         return $this->productRepository->findByTypeAndCountry($type, $country);
     }

@@ -6,7 +6,7 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -33,9 +33,16 @@ class DoctrineProductRepository extends BaseRepository implements ProductReposit
         $this->getEntityManager()->flush();
     }
 
-    public function findByTypeAndCountry(Type $type, Country $country): ?Product
+    public function findByTypeAndCountry(ProductType $type, ?Country $country): ?Product
     {
-        return $this->findOneBy(['type' => $type, 'country' => $country]);
+        return $this->createQueryBuilder('p')
+                    ->where('p INSTANCE OF :entityClass')
+                    ->andWhere('p.country = :country')
+                    ->setParameter('entityClass', Product::getProductClassByType($type))
+                    ->setParameter('country', $country)
+                    ->getQuery()
+                    ->getOneOrNullResult()
+        ;
     }
 
     public function findById(int $id): ?Product

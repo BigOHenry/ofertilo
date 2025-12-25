@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Form;
 
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ProductType extends AbstractType
+class ProductFormType extends AbstractType
 {
     public function __construct(private readonly TranslatorInterface $translator)
     {
@@ -40,8 +40,8 @@ class ProductType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
                 'choices' => array_combine(
-                    array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), Type::cases()),
-                    Type::cases()
+                    array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), ProductType::cases()),
+                    ProductType::cases()
                 ),
             ])
             ->add('country', EntityType::class, [
@@ -55,8 +55,8 @@ class ProductType extends AbstractType
                               ->orderBy('c.name', 'ASC')
                     ;
                 },
-                'placeholder' => 'form.choose_country',
-                'required' => true,
+                'placeholder' => '',
+                'required' => false,
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'field.image',

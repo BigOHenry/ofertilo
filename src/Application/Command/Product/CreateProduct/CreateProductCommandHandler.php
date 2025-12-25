@@ -6,8 +6,13 @@ namespace App\Application\Command\Product\CreateProduct;
 
 use App\Application\Service\CountryService;
 use App\Application\Service\ProductApplicationService;
+use App\Domain\Product\Entity\FlagProduct;
+use App\Domain\Product\Entity\Layered2dProduct;
 use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Entity\Relief3dProduct;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
+use App\Domain\Product\ValueObject\ProductType;
+use App\Domain\Shared\Entity\Country;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -22,13 +27,17 @@ final readonly class CreateProductCommandHandler
     public function __invoke(CreateProductCommand $command): void
     {
         $type = $command->getType();
-        $country = $this->countryService->getEnabledCountryById($command->getCountryId());
+        $country = null;
 
-        if ($this->productApplicationService->findByTypeAndCountry($type, $country)) {
-            throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
+        if ($command->getCountryId() !== null) {
+            $country = $this->countryService->getEnabledCountryById($command->getCountryId());
+
+            if ($this->productApplicationService->findByTypeAndCountry($type, $country)) {
+                throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
+            }
         }
 
-        $product = Product::create($type, $country);
+        $product = $this->createProductByType($type, $country);
 
         if ($command->getImageFile()) {
             $this->productApplicationService->handleImageUpload($product, $command->getImageFile());
@@ -40,5 +49,14 @@ final readonly class CreateProductCommandHandler
         }
 
         $this->productApplicationService->save($product);
+    }
+
+    private function createProductByType(ProductType $type, ?Country $country): Product
+    {
+        return match ($type) {
+            ProductType::FLAG => FlagProduct::create($country),
+            ProductType::RELIEF_3D => Relief3dProduct::create($country),
+            ProductType::LAYERED_2D => Layered2dProduct::create($country),
+        };
     }
 }

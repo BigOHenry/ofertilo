@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Product\Exception;
 
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 
 class ProductNotFoundException extends ProductException
 {
-    public static function withTypeAndCountry(Type $type, Country $country): self
+    public static function withTypeAndCountry(ProductType $type, Country $country): self
     {
         return new self(\sprintf("Product with type '%s' and country '%s' not found!", $type->value, $country->getAlpha3()));
     }

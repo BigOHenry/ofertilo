@@ -13,7 +13,7 @@ use App\Application\Query\Color\GetOutOfStockColorsGrid\GetOutOfStockColorsGridQ
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;
-use App\Infrastructure\Web\Form\ColorType;
+use App\Infrastructure\Web\Form\ColorFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,7 +37,7 @@ final class ColorController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(ColorType::class, data: $this->formHelper->prepareFormData(Color::class), options: [
+        $form = $this->createForm(ColorFormType::class, data: $this->formHelper->prepareFormData(Color::class), options: [
             'action' => $this->generateUrl('color_new'),
             'method' => 'POST',
         ]);
@@ -85,7 +85,7 @@ final class ColorController extends BaseController
         $envelope = $this->bus->dispatch(new GetColorFormDataQuery((int) $color->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(ColorType::class, data: $formData, options: [
+        $form = $this->createForm(ColorFormType::class, data: $formData, options: [
             'action' => $this->generateUrl('color_edit', ['id' => $color->getId()]),
             'method' => 'POST',
         ]);

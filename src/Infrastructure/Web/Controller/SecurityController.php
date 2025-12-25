@@ -8,7 +8,7 @@ use App\Application\Command\User\CreateFirstSuperAdminUser\CreateFirstSuperAdmin
 use App\Application\Service\UserApplicationService;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Exception\UserException;
-use App\Infrastructure\Web\Form\FirstRunSetupType;
+use App\Infrastructure\Web\Form\FirstRunSetupFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,7 +39,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $form = $this->createForm(FirstRunSetupType::class);
+        $form = $this->createForm(FirstRunSetupFormType::class);
         $form->handleRequest($request);
 
         if ($request->isMethod('POST') && $form->isSubmitted() && $form->isValid()) {

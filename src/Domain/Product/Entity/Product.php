@@ -7,7 +7,7 @@ namespace App\Domain\Product\Entity;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
@@ -19,11 +19,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string', enumType: ProductType::class)]
+#[ORM\DiscriminatorMap(ProductType::DISCRIMINATOR_MAP)]
 #[ORM\UniqueConstraint(
     name: 'unique_product_type_country',
     columns: ['type', 'country_id']
 )]
-class Product implements TranslatableInterface
+abstract class Product implements TranslatableInterface
 {
     use TranslatableTrait;
 
@@ -37,40 +40,21 @@ class Product implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column(type: 'string', enumType: Type::class)]
-    #[Assert\NotNull(message: 'not_null')]
-    private Type $type;
+    private ?int $id;
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
-    #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
-    private Country $country;
+    #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: true)]
+    private ?Country $country;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageFilename = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageOriginalName = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
-    #[Assert\File(
-        maxSize: '5M',
-        mimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-            'image/svg+xml',
-            'image/svg',
-        ],
-        mimeTypesMessage: 'image.invalid_format'
-    )]
     private ?UploadedFile $imageFile = null;
 
     /**
@@ -85,43 +69,27 @@ class Product implements TranslatableInterface
     #[Assert\Valid]
     private Collection $productColors;
 
-    protected function __construct(Type $type, Country $country)
+    protected function __construct(?Country $country)
     {
-        $this->type = $type;
+        $this->id = null;
         $this->country = $country;
         $this->productColors = new ArrayCollection();
         $this->initializeTranslations();
     }
 
-    public static function create(Type $type, Country $country): self
-    {
-        $product = new self($type, $country);
-        $product->enabled = true;
-
-        return $product;
-    }
+    abstract public function getType(): ProductType;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): Type
-    {
-        return $this->type;
-    }
-
-    public function setType(Type $type): void
-    {
-        $this->type = $type;
-    }
-
-    public function getCountry(): Country
+    public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    public function setCountry(Country $country): void
+    public function setCountry(?Country $country): void
     {
         $this->country = $country;
     }
@@ -283,6 +251,15 @@ class Product implements TranslatableInterface
     public function getEntityFolder(): string
     {
         return self::ENTITY_FILES_FOLDER_NAME;
+    }
+
+    public static function getProductClassByType(ProductType $type): string
+    {
+        return match ($type) {
+            ProductType::FLAG => FlagProduct::class,
+            ProductType::RELIEF_3D => Relief3dProduct::class,
+            ProductType::LAYERED_2D => Layered2dProduct::class,
+        };
     }
 
     protected function setId(?int $id): void

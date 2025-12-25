@@ -40,6 +40,7 @@ class TranslationListener
         }
 
         $this->loadTranslationsForEntity($entity, $args->getObjectManager());
+        $this->ensureMissingTranslations($entity);
     }
 
     public function preFlush(PreFlushEventArgs $args): void
@@ -115,13 +116,14 @@ class TranslationListener
         if ($entityId === null) {
             return;
         }
+        $entityClassName = $entity::class;
 
         if ($entity instanceof Proxy && !$entity->__isInitialized()) {
             $entity->__load();
         }
 
         $translations = $em->getRepository(TranslationEntity::class)->findBy([
-            'object_class' => $em->getClassMetadata($entity::class)->getName(),
+            'object_class' => $entityClassName,
             'object_id' => $entityId,
         ]);
 
@@ -136,10 +138,12 @@ class TranslationListener
             return;
         }
 
+        $entityClassName = $entity::class;
+
         $translationRepo = $em->getRepository(TranslationEntity::class);
 
         $existingTranslations = $translationRepo->findBy([
-            'object_class' => $entity::class,
+            'object_class' => $entityClassName,
             'object_id' => $entityId,
         ]);
 
@@ -158,7 +162,7 @@ class TranslationListener
                 $translation->setObjectId($entityId);
             }
             if (empty($translation->getObjectClass())) {
-                $translation->setObjectClass($entity::class);
+                $translation->setObjectClass($entityClassName);
             }
 
             $em->persist($translation);
@@ -186,6 +190,38 @@ class TranslationListener
 
         foreach ($translations as $translation) {
             $em->remove($translation);
+        }
+    }
+
+    private function ensureMissingTranslations(TranslatableInterface $entity): void
+    {
+        $entityId = $entity->getId();
+        if ($entityId === null) {
+            return;
+        }
+
+        $activeLocales = $this->localeService->getSupportedLocales();
+
+        $translatableFields = $entity::getTranslatableFields();
+
+        $existingMap = [];
+        foreach ($entity->getTranslations() as $translation) {
+            try {
+                $key = $translation->getField() . '_' . $translation->getLocale();
+                $existingMap[$key] = true;
+            } catch (\Error $e) {
+                continue;
+            }
+        }
+
+        foreach ($translatableFields as $field) {
+            foreach ($activeLocales as $locale) {
+                $key = $field . '_' . $locale;
+
+                if (!isset($existingMap[$key])) {
+                    $entity->addOrUpdateTranslation($field, '', $locale);
+                }
+            }
         }
     }
 }

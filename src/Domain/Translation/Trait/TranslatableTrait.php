@@ -17,6 +17,11 @@ trait TranslatableTrait
     private ?string $defaultLocale = null;
     private bool $translationsLoaded = false;
 
+    /**
+     * @return string[]
+     */
+    abstract public static function getTranslatableFields(): array;
+
     public function setDefaultLocale(string $locale): void
     {
         $this->defaultLocale = $locale;
@@ -86,7 +91,7 @@ trait TranslatableTrait
         $t->setField($field);
         $t->setLocale($locale);
         $t->setValue($value);
-        $t->setObjectClass(self::class);
+        $t->setObjectClass(static::class);
 
         if ($this->getId() !== null) {
             $t->setObjectId($this->getId());

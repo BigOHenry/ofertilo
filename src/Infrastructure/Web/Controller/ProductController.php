@@ -18,8 +18,8 @@ use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
-use App\Infrastructure\Web\Form\ProductColorType;
-use App\Infrastructure\Web\Form\ProductType;
+use App\Infrastructure\Web\Form\ProductColorFormType;
+use App\Infrastructure\Web\Form\ProductFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +43,7 @@ final class ProductController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function new(Request $request): Response
     {
-        $form = $this->createForm(ProductType::class, data: $this->formHelper->prepareFormData(Product::class), options: [
+        $form = $this->createForm(ProductFormType::class, data: $this->formHelper->prepareFormData(Product::class), options: [
             'action' => $this->generateUrl('product_new'),
             'method' => 'POST',
         ]);
@@ -92,7 +92,7 @@ final class ProductController extends BaseController
         $envelope = $this->bus->dispatch(new GetProductFormDataQuery((int) $product->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(ProductType::class, $formData, [
+        $form = $this->createForm(ProductFormType::class, $formData, [
             'action' => $this->generateUrl('product_edit', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
@@ -180,7 +180,7 @@ final class ProductController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function newColor(Request $request, Product $product): Response
     {
-        $form = $this->createForm(ProductColorType::class, ['product' => $product], [
+        $form = $this->createForm(ProductColorFormType::class, ['product' => $product], [
             'action' => $this->generateUrl('product_color_new', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
@@ -229,7 +229,7 @@ final class ProductController extends BaseController
         $envelope = $this->bus->dispatch(new GetProductColorFormDataQuery((int) $productColor->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(ProductColorType::class, $formData, [
+        $form = $this->createForm(ProductColorFormType::class, $formData, [
             'action' => $this->generateUrl('product_color_edit', ['id' => $productColor->getId()]),
             'method' => 'POST',
         ]);

@@ -8,4 +8,5 @@ material:
 product:
   type:
     flag: "Vlajka"
-    coat_of_arms: "Erb"
+    relief_3d: "3D reliéf"
+    layered_2d: "2D vrstvený"

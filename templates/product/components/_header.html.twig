@@ -1,1 +1,1 @@
-<h1 class="mb-0">{{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }} - ({{ product.country.alpha2 }}) {{ product.country.name }} {% if product.description(app.request.locale) %} - {{ product.description(app.request.locale) }} {% endif %}</h1>
+<h1 class="mb-0">{{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }} {% if product.country %} - ({{ product.country.alpha2 }}) {{ product.country.name }} {% endif %} {% if product.description(app.request.locale) %} - {{ product.description(app.request.locale) }} {% endif %}</h1>
