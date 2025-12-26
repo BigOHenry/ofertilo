@@ -45,7 +45,6 @@ RUN docker-php-ext-enable pdo_pgsql
 # -----------------------
 # OPCACHE
 # -----------------------
-RUN docker-php-ext-install opcache
 RUN echo "opcache.enable=1" >> "${PHP_INI_DIR}/php.ini" && \
     echo "opcache.enable_cli=0" >> "${PHP_INI_DIR}/php.ini" && \
     echo "opcache.memory_consumption=128" >> "${PHP_INI_DIR}/php.ini" && \
