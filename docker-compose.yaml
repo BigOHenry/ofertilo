@@ -18,10 +18,12 @@ services:
       - .env.docker
     environment:
         PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - database_data:/var/lib/postgresql/data:rw
     healthcheck:
-        test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-ofertilo}", "-U", "${DATABASE_USER:-app}" ]
+        test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-ofertilo}", "-U", "${DATABASE_USER:-ofertilo}" ]
         timeout: 5s
         retries: 5
         start_period: 60s
