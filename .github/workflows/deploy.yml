@@ -18,6 +18,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd ${{ secrets.PROJECT_PATH }}
+            git fetch origin
             git pull origin master
             docker compose down
             docker compose build
