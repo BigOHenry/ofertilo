@@ -40,21 +40,31 @@ when@test:
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
-    doctrine:
-        orm:
-            auto_generate_proxy_classes: false
-            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
-            query_cache_driver:
-                type: pool
-                pool: doctrine.system_cache_pool
-            result_cache_driver:
-                type: pool
-                pool: doctrine.result_cache_pool
+  doctrine:
+    dbal:
+      options:
+        persistent: true
+    orm:
+      entity_managers:
+        default:
+          metadata_cache_driver:
+            type: pool
+            pool: doctrine.metadata_cache_pool
+          query_cache_driver:
+            type: pool
+            pool: doctrine.query_cache_pool
+          result_cache_driver:
+            type: pool
+            pool: doctrine.result_cache_pool
 
-    framework:
-        cache:
-            pools:
-                doctrine.result_cache_pool:
-                    adapter: cache.app
-                doctrine.system_cache_pool:
-                    adapter: cache.system
+  framework:
+    cache:
+      pools:
+        doctrine.metadata_cache_pool:
+          adapter: cache.app
+        doctrine.query_cache_pool:
+          adapter: cache.app
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system

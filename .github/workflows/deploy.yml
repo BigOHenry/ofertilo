@@ -27,5 +27,6 @@ jobs:
             docker compose exec -T app npm install
             docker compose exec -T app npm run build
             docker compose exec -T app php bin/console doctrine:migrations:migrate --no-interaction
-            docker compose exec -T app php bin/console cache:clear --env=prod --no-interaction
+            sleep 5
+            docker compose exec -T app php bin/console cache:clear --no-interaction
             docker compose exec -T app chown -R www-data:www-data /var/www/app/var
