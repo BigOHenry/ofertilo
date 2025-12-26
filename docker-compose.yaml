@@ -8,23 +8,25 @@ services:
       - .env.docker
     volumes:
       - .:/var/www/app
+    networks:
+      - woodflag_proxy
 
   database:
     image: library/postgres:18.1-alpine
     container_name: postgresql
     env_file:
       - .env.docker
-    ports:
-      - "127.0.0.1:5432:5432"
     environment:
         PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - database_data:/var/lib/postgresql/pgdata:rw
+      - database_data:/var/lib/postgresql/data:rw
     healthcheck:
         test: [ "CMD", "pg_isready", "-d", "${DATABASE_NAME:-ofertilo}", "-U", "${DATABASE_USER:-app}" ]
         timeout: 5s
         retries: 5
         start_period: 60s
+    networks:
+          - woodflag_proxy
 
 networks:
   default:
