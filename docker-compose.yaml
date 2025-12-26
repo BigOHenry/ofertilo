@@ -2,13 +2,12 @@ services:
   app:
     build:
       context: .
-      dockerfile: resources/docker/Dockerfile_dev
-#      dockerfile: resources/docker/Dockerfile
+      dockerfile: resources/docker/Dockerfile
     container_name: ofertilo
     env_file:
       - .env.docker
     ports:
-      - 8080:80
+      - "8080:80"
     volumes:
       - .:/var/www/app
 
