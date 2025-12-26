@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Material\Entity;
 
 use App\Domain\Material\ValueObject\MaterialType;
+use App\Domain\Material\ValueObject\MeasurementType;
 use App\Domain\Wood\Entity\Wood;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,5 +24,10 @@ class PlywoodMaterial extends Material
     public function getType(): MaterialType
     {
         return MaterialType::PLYWOOD;
+    }
+
+    public function getMeasurementType(): MeasurementType
+    {
+        return MeasurementType::AREA;
     }
 }

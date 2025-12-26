@@ -22,7 +22,7 @@ final readonly class GetProductsForPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: string}>,
+     * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: bool}>,
      *      last_page: float, total: int<0, max>}
      */
     public function __invoke(GetProductsForPaginatedGridQuery $query): array
@@ -56,7 +56,7 @@ final readonly class GetProductsForPaginatedGridQueryHandler
                 'description' => $product->getDescription($this->localeService->getCurrentLocale()),
                 'country' => $product->getCountry() ? '(' . $product->getCountry()->getAlpha2() . ') ' . $product->getCountry()->getName() : '',
                 'type' => $this->translator->trans('product.type.' . $product->getType()->value, domain: 'enum'),
-                'enabled' => $this->translator->trans($product->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'enabled' => $product->isEnabled(),
             ];
         }
 

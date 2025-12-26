@@ -9,7 +9,6 @@ use App\Domain\Wood\Repository\WoodRepositoryInterface;
 use App\Infrastructure\Service\LocaleService;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
 final readonly class GetWoodsForPaginatedGridQueryHandler
@@ -17,12 +16,11 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
     public function __construct(
         private WoodRepositoryInterface $woodRepository,
         private LocaleService $localeService,
-        private TranslatorInterface $translator,
     ) {
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: string, description: string|null, enabled: string}>, last_page: float, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, name: string, description: string|null, enabled: bool}>, last_page: float, total: int<0, max>}
      */
     public function __invoke(GetWoodsForPaginatedGridQuery $query): array
     {
@@ -54,7 +52,7 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
                 'id' => $wood->getId(),
                 'name' => $wood->getName(),
                 'description' => $wood->getDescription($this->localeService->getCurrentLocale()),
-                'enabled' => $this->translator->trans($wood->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'enabled' => $wood->isEnabled(),
             ];
         }
 

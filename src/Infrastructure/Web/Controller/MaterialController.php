@@ -12,7 +12,7 @@ use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
 use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
 use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
-use App\Application\Query\Material\GetMaterialPricesForGrid\GetMaterialPricesForGridQuery;
+use App\Application\Query\Material\GetMaterialPricesGrid\GetMaterialPricesGridQuery;
 use App\Application\Query\Material\GetMaterialsPaginatedGrid\GetMaterialsPaginatedGridQuery;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
@@ -278,7 +278,7 @@ final class MaterialController extends BaseController
     {
         try {
             \assert($material->getId() !== null, 'Material must have an ID when loaded from database');
-            $envelope = $this->bus->dispatch(GetMaterialPricesForGridQuery::create($material->getId()));
+            $envelope = $this->bus->dispatch(GetMaterialPricesGridQuery::create($material->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

@@ -7,6 +7,7 @@ namespace App\Domain\Material\Entity;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Material\ValueObject\MaterialType;
+use App\Domain\Material\ValueObject\MeasurementType;
 use App\Domain\Wood\Entity\Wood;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -40,6 +41,8 @@ abstract class Material
     {
         $this->prices = new ArrayCollection();
     }
+
+    abstract public function getMeasurementType(): MeasurementType;
 
     public function getId(): ?int
     {

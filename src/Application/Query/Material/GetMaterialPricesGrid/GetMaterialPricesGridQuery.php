@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Material\GetMaterialPricesForGrid;
+namespace App\Application\Query\Material\GetMaterialPricesGrid;
 
-final readonly class GetMaterialPricesForGridQuery
+final readonly class GetMaterialPricesGridQuery
 {
     protected function __construct(private int $materialId)
     {

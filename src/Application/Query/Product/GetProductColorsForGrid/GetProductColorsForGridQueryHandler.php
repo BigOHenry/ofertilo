@@ -7,19 +7,17 @@ namespace App\Application\Query\Product\GetProductColorsForGrid;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Exception\ProductNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
 final readonly class GetProductColorsForGridQueryHandler
 {
     public function __construct(
-        private TranslatorInterface $translator,
         private ProductApplicationService $productApplicationService,
     ) {
     }
 
     /**
-     * @return array{data: list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: string}>,
+     * @return array{data: list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: bool}>,
      *      productId: int|null, total_colors: int<0, max>}
      */
     public function __invoke(GetProductColorsForGridQuery $query): array
@@ -37,7 +35,7 @@ final readonly class GetProductColorsForGridQueryHandler
                 'color' => $productColor->getColor()->getCode(),
                 'colorDescription' => $productColor->getColor()->getDescription(),
                 'description' => $productColor->getDescription(),
-                'inStock' => $this->translator->trans($productColor->getColor()->isInStock() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'inStock' => $productColor->getColor()->isInStock(),
             ];
         }
 

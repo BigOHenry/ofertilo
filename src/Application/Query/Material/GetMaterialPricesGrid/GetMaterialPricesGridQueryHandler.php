@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Material\GetMaterialPricesForGrid;
+namespace App\Application\Query\Material\GetMaterialPricesGrid;
 
 use App\Application\Service\MaterialApplicationService;
 use App\Domain\Material\Exception\MaterialNotFoundException;
@@ -10,7 +10,7 @@ use App\Infrastructure\Service\LocaleService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final readonly class GetMaterialPricesForGridQueryHandler
+final readonly class GetMaterialPricesGridQueryHandler
 {
     public function __construct(
         private LocaleService $localeService,
@@ -23,7 +23,7 @@ final readonly class GetMaterialPricesForGridQueryHandler
      *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string,
      *      total_prices: int<0, max>}
      */
-    public function __invoke(GetMaterialPricesForGridQuery $query): array
+    public function __invoke(GetMaterialPricesGridQuery $query): array
     {
         $material = $this->materialApplicationService->findById($query->getMaterialId());
 

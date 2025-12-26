@@ -2,8 +2,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: resources/docker/Dockerfile
- #     dockerfile: resources/docker/Dockerfile_dev
+      dockerfile: resources/docker/Dockerfile_dev
+#      dockerfile: resources/docker/Dockerfile
     container_name: ofertilo
     env_file:
       - .env.docker
@@ -13,12 +13,12 @@ services:
       - .:/var/www/app
 
   database:
-    image: library/postgres:17.5-alpine
+    image: library/postgres:18.1-alpine
     container_name: postgresql
     env_file:
       - .env.docker
     ports:
-      - 5432:5432
+      - "127.0.0.1:5432:5432"
     environment:
         PGDATA: /var/lib/postgresql/data/pgdata
     volumes:

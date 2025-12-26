@@ -56,7 +56,7 @@
                     columns: [
                         { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
                         { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        { title: "{{ 'field.enabled'|trans }}", field: "enabled", sorter: "boolean" },
+                        { title: "{{ 'field.enabled'|trans }}", field: "enabled", formatter:"tickCross", sorter:"boolean" },
                         {
                             title: "Akce",
                             formatter: (cell) => {
