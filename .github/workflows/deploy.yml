@@ -22,5 +22,10 @@ jobs:
             docker compose down
             docker compose build
             docker compose up -d
-            docker compose exec -T ofertilo php bin/console cache:clear --env=prod
-            docker compose exec -T ofertilo php bin/console doctrine:migrations:migrate --no-interaction
+            sleep 5
+            docker compose exec -T app composer install --no-dev --optimize-autoloader --no-interaction
+            docker compose exec -T app npm install
+            docker compose exec -T app npm run build
+            docker compose exec -T app php bin/console doctrine:migrations:migrate --no-interaction
+            docker compose exec -T app php bin/console cache:clear --env=prod --no-interaction
+            docker compose exec -T app chown -R www-data:www-data /var/www/app/var
