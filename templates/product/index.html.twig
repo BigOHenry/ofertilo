@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produkty{% endblock %}
+{% block title %}{{ 'title.products'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card shadow-sm">
@@ -57,7 +57,7 @@
                         { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
                         { title: "{{ 'field.country'|trans }}", field: "country", sorter: "string" },
                         { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        { title: "{{ 'field.enabled'|trans }}", field: "enabled", sorter: "string" },
+                        { title: "{{ 'field.enabled'|trans }}", field: "enabled", formatter:"tickCross", sorter:"boolean"},
                         {
                             title: "Akce",
                             formatter: (cell) => {

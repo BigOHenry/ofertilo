@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'translation')]
+#[ORM\Index(name: 'idx_translation_lookup', columns: ['object_class', 'object_id', 'locale'])]
 #[ORM\UniqueConstraint(name: 'uniq_translation_lookup', columns: ['object_class', 'object_id', 'locale', 'field'])]
 class TranslationEntity
 {

@@ -20,7 +20,7 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Domain/'
+            - '../src/Domain/*/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
@@ -35,21 +35,28 @@ services:
     App\EventListener\TwoFactorSetupListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+#    App\Infrastructure\Persistence\Doctrine\EventListener\TranslationListener:
+#        tags:
+#          - { name: doctrine.event_listener, event: postLoad }
 
     App\Domain\User\Repository\UserRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineUserRepository
     App\Domain\Material\Repository\MaterialRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineMaterialRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMaterialRepository
+    App\Domain\Material\Repository\MaterialPriceRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMaterialPriceRepository
     App\Domain\Color\Repository\ColorRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository
     App\Domain\Product\Repository\ProductColorRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineProductColorRepository
-    App\Domain\Translation\Repository\TranslationLoaderInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineTranslationLoader
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductColorRepository
     App\Domain\Shared\Repository\CountryRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\DoctrineCountryRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineCountryRepository
+    App\Domain\Wood\Repository\WoodRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository
+
+    App\Infrastructure\Web\Form\Helper\TranslationFormHelper:
 
     App\Infrastructure\Service\FileUploader:
         autowire: true
@@ -60,9 +67,3 @@ services:
         arguments:
             $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
-    App\Domain\Product\Factory\ProductFactory:
-        autowire: true
-    App\Domain\Material\Factory\MaterialFactory:
-        autowire: true
-    App\Domain\Color\Factory\ColorFactory:
-        autowire: true

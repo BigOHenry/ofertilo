@@ -17,17 +17,10 @@
             </div>
 
             <div class="modal-body">
-                <turbo-frame id="{{ frame_id }}" target="_top" data-modal-target="frame">
+                <turbo-frame id="{{ frame_id }}" data-modal-target="frame">
                     <div class="text-center py-5">
                         <div class="spinner-border" role="status"></div>
                     </div>
-{#                    {% if form_template is defined and form_context is defined %}#}
-{#                    {% include form_template with form_context %}#}
-{#                    {% else %}#}
-{#                        <div class="text-center py-5">#}
-{#                            <div class="spinner-border" role="status"></div>#}
-{#                        </div>#}
-{#                    {% endif %}#}
                 </turbo-frame>
             </div>
         </div>

@@ -5,66 +5,56 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DoctrineProductRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'product')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string', enumType: ProductType::class)]
+#[ORM\DiscriminatorMap(ProductType::DISCRIMINATOR_MAP)]
 #[ORM\UniqueConstraint(
     name: 'unique_product_type_country',
     columns: ['type', 'country_id']
 )]
-class Product implements TranslatableInterface
+abstract class Product implements TranslatableInterface
 {
     use TranslatableTrait;
+
+    public const string ENTITY_FILES_FOLDER_NAME = 'products';
+    public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
+
+    private const array TRANSLATION_FIELDS = [
+        self::TRANSLATION_FIELD_DESCRIPTION,
+    ];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id;
 
-    #[ORM\Column(type: 'string', enumType: Type::class)]
-    #[Assert\NotNull(message: 'not_null')]
-    private Type $type;
-
     #[ORM\ManyToOne(targetEntity: Country::class)]
-    #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
-    private Country $country;
+    #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: true)]
+    private ?Country $country;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageFilename = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Assert\Length(max: 255, maxMessage: 'length_max')]
     private ?string $imageOriginalName = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
-    #[Assert\File(
-        maxSize: '5M',
-        mimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-            'image/svg+xml',
-            'image/svg',
-        ],
-        mimeTypesMessage: 'image.invalid_format'
-    )]
     private ?UploadedFile $imageFile = null;
 
     /**
@@ -79,62 +69,27 @@ class Product implements TranslatableInterface
     #[Assert\Valid]
     private Collection $productColors;
 
-    protected function __construct(?int $id = null)
+    protected function __construct(?Country $country)
     {
-        $this->id = $id;
+        $this->id = null;
+        $this->country = $country;
         $this->productColors = new ArrayCollection();
-        $this->initTranslations();
+        $this->initializeTranslations();
     }
 
-    public static function create(Type $type, Country $country): self
-    {
-        $product = new self();
-        $product->type = $type;
-        $product->country = $country;
-        $product->enabled = true;
-
-        return $product;
-    }
-
-    public static function createFromDatabase(
-        int $id,
-        Type $type,
-        Country $country,
-        ?string $imageFilename = null,
-        ?string $imageOriginalName = null,
-        bool $enabled = true,
-    ): self {
-        $product = new self($id);
-        $product->type = $type;
-        $product->country = $country;
-        $product->imageFilename = $imageFilename;
-        $product->imageOriginalName = $imageOriginalName;
-        $product->enabled = $enabled;
-
-        return $product;
-    }
+    abstract public function getType(): ProductType;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): Type
-    {
-        return $this->type;
-    }
-
-    public function setType(Type $type): void
-    {
-        $this->type = $type;
-    }
-
-    public function getCountry(): Country
+    public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    public function setCountry(Country $country): void
+    public function setCountry(?Country $country): void
     {
         $this->country = $country;
     }
@@ -154,23 +109,23 @@ class Product implements TranslatableInterface
      */
     public static function getTranslatableFields(): array
     {
-        return ['description'];
+        return self::TRANSLATION_FIELDS;
     }
 
     public function getDescription(?string $locale = null): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale ?? 'en');
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale ?? 'en');
     }
 
     public function setDescription(?string $value, string $locale = 'en'): void
     {
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $value, $locale);
     }
 
     public function addColor(Color $color, ?string $description = null): self
     {
         if ($this->hasColor($color)) {
-            throw DuplicateProductColorException::forProduct($color->getCode());
+            throw ProductColorAlreadyExistsException::withCode($color->getCode());
         }
 
         $productColor = ProductColor::create($this, $color, $description);
@@ -183,7 +138,7 @@ class Product implements TranslatableInterface
     {
         $productColor = $this->findProductColorByColor($color);
         if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($color->getCode());
+            throw ProductColorNotFoundException::withProduct($color->getCode());
         }
 
         $this->productColors->removeElement($productColor);
@@ -191,14 +146,16 @@ class Product implements TranslatableInterface
         return $this;
     }
 
-    public function updateColorDescription(Color $color, ?string $description = null): self
+    public function updateColor(ProductColor $productColor, Color $color, ?string $description = null): self
     {
-        $productColor = $this->findProductColorByColor($color);
-        if (!$productColor) {
-            throw ProductColorNotFoundException::forProduct($color->getCode());
+        $foundProductColor = $this->findProductColorByColor($color);
+
+        if ($productColor !== $foundProductColor) {
+            throw ProductColorAlreadyExistsException::withCode($color->getCode());
         }
 
         $productColor->setDescription($description);
+        $productColor->setColor($color);
 
         return $this;
     }
@@ -293,7 +250,16 @@ class Product implements TranslatableInterface
 
     public function getEntityFolder(): string
     {
-        return 'products';
+        return self::ENTITY_FILES_FOLDER_NAME;
+    }
+
+    public static function getProductClassByType(ProductType $type): string
+    {
+        return match ($type) {
+            ProductType::FLAG => FlagProduct::class,
+            ProductType::RELIEF_3D => Relief3dProduct::class,
+            ProductType::LAYERED_2D => Layered2dProduct::class,
+        };
     }
 
     protected function setId(?int $id): void

@@ -55,8 +55,8 @@
                     },
                     columns: [
                         { title: "{{ 'field.code'|trans }}", field: "code", sorter: "integer" },
-                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        { title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string", widthGrow: 2},
+                        { title: "{{ 'field.inStock'|trans }}", field: "inStock", formatter:"tickCross", sorter:"boolean" },
                         {
                             title: "Akce",
                             formatter: (cell) => {

@@ -13,6 +13,8 @@ interface ColorRepositoryInterface
 
     public function findByCode(int $code): ?Color;
 
+    public function findById(int $id): ?Color;
+
     public function save(Color $color): void;
 
     public function remove(Color $color): void;

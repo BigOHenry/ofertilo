@@ -35,13 +35,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private bool $forcePasswordChange = false;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
-    private bool $forceEmailChange = false;
-
-    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $two_fa_enabled = false;
 
     #[ORM\Column(nullable: true)]
     private ?string $two_fa_secret = null;
+
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
+    private bool $active = true;
 
     /**
      * @var string[]|Role[]
@@ -49,42 +49,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
-    protected function __construct(?int $id = null)
-    {
-        $this->id = $id;
-    }
-
-    public static function create(string $email): self
+    public static function create(string $email, string $password, string $name, Role $role = Role::READER): self
     {
         $user = new self();
         $user->setEmail($email);
-
-        return $user;
-    }
-
-    /**
-     * @param string[]|Role[] $roles
-     */
-    public static function createFromDatabase(
-        int $id,
-        string $email,
-        string $password,
-        string $name,
-        bool $forcePasswordChange = false,
-        bool $forceEmailChange = false,
-        bool $is_two_fa_enabled = false,
-        ?string $two_fa_secret = null,
-        array $roles = [],
-    ): self {
-        $user = new self($id);
-        $user->setEmail($email);
-        $user->password = $password;
-        $user->name = $name;
-        $user->forcePasswordChange = $forcePasswordChange;
-        $user->forceEmailChange = $forceEmailChange;
-        $user->two_fa_enabled = $is_two_fa_enabled;
-        $user->two_fa_secret = $two_fa_secret;
-        $user->roles = $roles;
+        $user->setPassword($password);
+        $user->setName($name);
+        $user->setRoles([$role]);
 
         return $user;
     }
@@ -181,18 +152,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->forcePasswordChange = $forcePasswordChange;
     }
 
-    public function isForceEmailChange(): bool
-    {
-        return $this->forceEmailChange;
-    }
-
-    public function setForceEmailChange(bool $forceEmailChange): static
-    {
-        $this->forceEmailChange = $forceEmailChange;
-
-        return $this;
-    }
-
     public function eraseCredentials(): void
     {
         // odstranění citlivých dat, pokud je potřeba
@@ -226,6 +185,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setTwoFactorEnabled(bool $enabled): void
     {
         $this->two_fa_enabled = $enabled;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
     public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface

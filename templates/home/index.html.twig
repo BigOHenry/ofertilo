@@ -36,10 +36,13 @@
                     columns: [
                         { title: "{{ 'field.code'|trans }}", field: "code", sorter: "string" },
                         { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        {#{ title: "{{ 'field.in_stock'|trans }}", field: "in_stock", sorter: "string" },#}
                     ]
                 });
             }
+
+            window.tabulatorTable.on("rowClick", function(e, row) {
+                window.location.href = `/color/${row.getData().id}`;
+            });
         });
 
     </script>

@@ -13,6 +13,8 @@ interface TranslatableInterface
 
     public function addOrUpdateTranslation(string $field, string $value, string $locale): void;
 
+    public function getTranslationValue(string $field, string $locale): ?string;
+
     /**
      * @return string[]
      */
@@ -23,5 +25,14 @@ interface TranslatableInterface
      */
     public function getTranslations(): Collection;
 
-    public function getTranslationFromMemory(string $field, string $locale): ?string;
+    public function removeTranslation(string $field, string $locale): void;
+
+    public function setDefaultLocale(string $locale): void;
+
+    public function getDefaultLocale(): ?string;
+
+    /**
+     * @param Collection<int, TranslationEntity> $translations
+     */
+    public function setTranslationsCollection(Collection $translations): void;
 }

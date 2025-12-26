@@ -14,12 +14,22 @@ trait TranslatableTrait
      * @var Collection<int, TranslationEntity>
      */
     private Collection $translations;
+    private ?string $defaultLocale = null;
+    private bool $translationsLoaded = false;
 
-    public function initTranslations(): void
+    /**
+     * @return string[]
+     */
+    abstract public static function getTranslatableFields(): array;
+
+    public function setDefaultLocale(string $locale): void
     {
-        if (!isset($this->translations)) {
-            $this->translations = new ArrayCollection();
-        }
+        $this->defaultLocale = $locale;
+    }
+
+    public function getDefaultLocale(): ?string
+    {
+        return $this->defaultLocale;
     }
 
     /**
@@ -27,14 +37,23 @@ trait TranslatableTrait
      */
     public function getTranslations(): Collection
     {
-        $this->initTranslations();
+        $this->initializeTranslations();
 
         return $this->translations;
     }
 
+    /**
+     * @param Collection<int, TranslationEntity> $translations
+     */
+    public function setTranslationsCollection(Collection $translations): void
+    {
+        $this->translations = $translations;
+        $this->translationsLoaded = true;
+    }
+
     public function addOrUpdateTranslation(string $field, ?string $value, string $locale): void
     {
-        $this->initTranslations();
+        $this->initializeTranslations();
 
         foreach ($this->translations as $t) {
             if ($t->getField() === $field && $t->getLocale() === $locale) {
@@ -47,66 +66,90 @@ trait TranslatableTrait
         $this->addTranslation($field, $value, $locale);
     }
 
-    public function addTranslation(string $field, ?string $value, string $locale): void
+    public function getTranslationValue(string $field, ?string $locale = null): ?string
     {
-        $t = new TranslationEntity();
-        $t->setField($field);
-        $t->setLocale($locale);
-        $t->setValue($value);
-        $t->setObjectClass(self::class);
+        $this->initializeTranslations();
 
-        if ($this->getId() !== null) {
-            $t->setObjectId($this->getId());
+        $targetLocale = $locale ?? $this->defaultLocale ?? 'en';
+
+        if (!$this->translationsLoaded && $this->getId() !== null) {
+            $this->lazyLoadTranslations();
         }
 
-        $this->translations->add($t);
-    }
-
-    public function getTranslationFromMemory(string $field, string $locale): ?string
-    {
-        $this->initTranslations();
-
-        foreach ($this->translations as $t) {
-            if ($t->getField() === $field && $t->getLocale() === $locale) {
-                return $t->getValue();
+        foreach ($this->translations as $translation) {
+            if ($translation->getField() === $field && $translation->getLocale() === $targetLocale) {
+                return $translation->getValue();
             }
         }
 
         return null;
     }
 
-    /**
-     * @return TranslationEntity[]
-     */
-    public function exportTranslations(): array
+    public function addTranslation(string $field, ?string $value, string $locale): void
     {
-        $result = [];
+        $t = new TranslationEntity();
+        $t->setField($field);
+        $t->setLocale($locale);
+        $t->setValue($value);
+        $t->setObjectClass(static::class);
 
-        foreach ($this->translations as $t) {
-            if ($t->getObjectId() === null && $this->getId() !== null) {
-                $t->setObjectId($this->getId());
-            }
-
-            if (!$t->getObjectClass()) {
-                $t->setObjectClass(self::class);
-            }
-
-            $result[] = $t;
+        if ($this->getId() !== null) {
+            $t->setObjectId($this->getId());
         }
 
-        return $result;
+        $this->translations->add($t);
+        $this->translationsLoaded = true;
     }
 
-    /**
-     * @param TranslationEntity[]|Collection<int, TranslationEntity> $translations
-     */
-    public function setTranslations(array|Collection $translations): void
+    public function removeTranslation(string $field, string $locale): void
     {
-        $this->initTranslations();
-        $this->translations->clear();
+        $this->initializeTranslations();
+        foreach ($this->translations as $key => $translation) {
+            if ($translation->getField() === $field && $translation->getLocale() === $locale) {
+                $this->translations->remove($key);
 
-        foreach ($translations as $t) {
-            $this->translations->add($t);
+                return;
+            }
         }
+    }
+
+    public function clearTranslations(): void
+    {
+        $this->initializeTranslations();
+        $this->translations->clear();
+    }
+
+    abstract public function getId(): ?int;
+
+    private function initializeTranslations(): void
+    {
+        if (!isset($this->translations)) {
+            $this->translations = new ArrayCollection();
+        }
+    }
+
+    private function lazyLoadTranslations(): void
+    {
+        if ($this->translationsLoaded) {
+            return;
+        }
+
+        global $entityManager;
+
+        if (isset($entityManager)) {
+            $translations = $entityManager
+                ->getRepository(TranslationEntity::class)
+                ->findBy([
+                    'object_class' => static::class,
+                    'object_id' => $this->getId(),
+                ])
+            ;
+
+            foreach ($translations as $translation) {
+                $this->translations->add($translation);
+            }
+        }
+
+        $this->translationsLoaded = true;
     }
 }

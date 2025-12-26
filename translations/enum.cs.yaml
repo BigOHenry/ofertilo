@@ -1,10 +1,12 @@
 material:
   type:
     piece: Kusový
-    area: Plošný
-    volume: Objemový
+    plywood: Překližka
+    edge_glued_panel: Spárovka
+    solid_wood: Masivní dřevo
 
 product:
   type:
     flag: "Vlajka"
-    coat_of_arms: "Erb"
+    relief_3d: "3D reliéf"
+    layered_2d: "2D vrstvený"

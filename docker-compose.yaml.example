@@ -32,7 +32,7 @@ services:
 networks:
   default:
     external: true
-    name: ofertilo_net
+    name: woodflag_proxy
 
 volumes:
   database_data:

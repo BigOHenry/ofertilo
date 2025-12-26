@@ -16,7 +16,7 @@ class Country
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(type: 'text', length: 200, unique: true)]
     private string $name;
@@ -38,14 +38,9 @@ class Country
         $this->enabled = $enabled;
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getName(): string
@@ -71,5 +66,10 @@ class Country
     public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
+    }
+
+    protected function setId(int $id): void
+    {
+        $this->id = $id;
     }
 }

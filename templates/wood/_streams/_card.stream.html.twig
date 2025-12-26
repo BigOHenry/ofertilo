@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="wood-title">
+    <template>
+        {% include 'wood/components/_header.html.twig' with { wood: wood } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="wood-detail">
+    <template>
+        {% include 'wood/components/_detail.html.twig' with { wood: wood } %}
+    </template>
+</turbo-stream>
+
+{% include 'components/stream_modal_cleanup.html.twig' %}

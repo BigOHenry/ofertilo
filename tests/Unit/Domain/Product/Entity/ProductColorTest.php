@@ -8,7 +8,7 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\InvalidProductColorException;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ProductColorTest extends TestCase
 
     protected function setUp(): void
     {
-        $type = Type::FLAG;
+        $type = ProductType::FLAG;
         $country = new Country('Czech Republic', 'cz', 'cze');
         $this->product = Product::create($type, $country);
         $this->color = Color::create(3025);

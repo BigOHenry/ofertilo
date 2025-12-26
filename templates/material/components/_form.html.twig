@@ -1,0 +1,25 @@
+{{ form_start(form, {
+  attr: {
+    id: form_id|default(null),
+    class: 'needs-validation',
+  }
+}) }}
+
+    {% if form.vars.errors|length > 0 %}
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          {% for error in form.vars.errors %}
+            <li>{{ error.message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+  {{ form_row(form.wood) }}
+  {{ form_row(form.type) }}
+
+  {{ form_row(form.save) }}
+  <input type="hidden" name="frame_id" value="{{ frame_id }}">
+
+{{ form_end(form) }}
+

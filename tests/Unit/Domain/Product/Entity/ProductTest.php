@@ -6,9 +6,9 @@ namespace App\Tests\Unit\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Exception\DuplicateProductColorException;
+use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
-use App\Domain\Product\ValueObject\Type;
+use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
@@ -17,12 +17,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductTest extends TestCase
 {
-    private Type $type;
+    private ProductType $type;
     private Country $country;
 
     protected function setUp(): void
     {
-        $this->type = Type::FLAG;
+        $this->type = ProductType::FLAG;
         $this->country = new Country('Czech Republic', 'cz', 'cze');
     }
 
@@ -55,12 +55,12 @@ class ProductTest extends TestCase
     public function testSetAndGetType(): void
     {
         $product = Product::create($this->type, $this->country);
-        $product->setType(Type::FLAG);
+        $product->setType(ProductType::FLAG);
 
-        $this->assertSame(Type::FLAG, $product->getType());
+        $this->assertSame(ProductType::FLAG, $product->getType());
 
-        $product->setType(Type::COAT_OF_ARMS);
-        $this->assertSame(Type::COAT_OF_ARMS, $product->getType());
+        $product->setType(ProductType::LAYERED_2D);
+        $this->assertSame(ProductType::LAYERED_2D, $product->getType());
     }
 
     public function testSetAndGetCountry(): void
@@ -154,7 +154,7 @@ class ProductTest extends TestCase
         $color = Color::create(3025);
         $product->addColor($color, 'Red variant');
 
-        $this->expectException(DuplicateProductColorException::class);
+        $this->expectException(ProductColorAlreadyExistsException::class);
         $this->expectExceptionMessage("Color '3025' is already assigned to product");
 
         $product->addColor($color, 'Another description');
@@ -192,7 +192,7 @@ class ProductTest extends TestCase
         $color = Color::create(3025);
         $product->addColor($color, 'Original description');
 
-        $result = $product->updateColorDescription($color, 'Updated description');
+        $result = $product->updateColor($color, 'Updated description');
 
         $this->assertSame($product, $result);
         $this->assertSame('Updated description', $product->getColorDescription($color));
@@ -206,7 +206,7 @@ class ProductTest extends TestCase
         $this->expectException(ProductColorNotFoundException::class);
         $this->expectExceptionMessage("Color '3025' is not assigned to product");
 
-        $product->updateColorDescription($color, 'New description');
+        $product->updateColor($color, 'New description');
     }
 
     public function testHasColor(): void
@@ -399,13 +399,13 @@ class ProductTest extends TestCase
         $this->assertTrue($product->hasColor($color3));
 
         // Update color description
-        $product->updateColorDescription($color1, 'Bright Red');
+        $product->updateColor($color1, 'Bright Red');
         $this->assertSame('Bright Red', $product->getColorDescription($color1));
     }
 
     public function testCompleteProductConfiguration(): void
     {
-        $product = Product::create(Type::COAT_OF_ARMS, $this->country);
+        $product = Product::create(ProductType::LAYERED_2D, $this->country);
         $color = Color::create(3025);
 
         $product->setEnabled(true);
@@ -416,7 +416,7 @@ class ProductTest extends TestCase
 
         // Verification of all properties
         $this->assertNull($product->getId());
-        $this->assertSame(Type::COAT_OF_ARMS, $product->getType());
+        $this->assertSame(ProductType::LAYERED_2D, $product->getType());
         $this->assertSame($this->country, $product->getCountry());
         $this->assertTrue($product->isEnabled());
         $this->assertSame('Test product', $product->getDescription('en'));

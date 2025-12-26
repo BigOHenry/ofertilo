@@ -7,20 +7,25 @@ namespace App\Domain\Color\Entity;
 use App\Domain\Color\Exception\InvalidColorException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
-use App\Infrastructure\Persistence\Doctrine\DoctrineColorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DoctrineColorRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'color')]
 class Color implements TranslatableInterface
 {
     use TranslatableTrait;
 
+    public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
+
+    private const array TRANSLATION_FIELDS = [
+        self::TRANSLATION_FIELD_DESCRIPTION,
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'integer', length: 4, unique: true, nullable: false)]
     #[Assert\NotNull(message: 'not_null')]
@@ -32,40 +37,25 @@ class Color implements TranslatableInterface
     private int $code;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]
-    private bool $in_stock = false;
+    private bool $inStock = false;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
-    protected function __construct(?int $id = null)
+    protected function __construct()
     {
-        $this->id = $id;
-        $this->initTranslations();
+        $this->initializeTranslations();
     }
 
-    public static function create(int $code): self
+    public static function create(int $code, bool $inStock = false, bool $enabled = true): self
     {
         self::validateCode($code);
-        $product = new self();
-        $product->code = $code;
-        $product->in_stock = false;
-        $product->enabled = true;
+        $color = new self();
+        $color->code = $code;
+        $color->inStock = $inStock;
+        $color->enabled = $enabled;
 
-        return $product;
-    }
-
-    public static function createFromDatabase(
-        int $id,
-        int $code,
-        bool $in_stock,
-        bool $enabled = true,
-    ): self {
-        $material = new self($id);
-        $material->code = $code;
-        $material->in_stock = $in_stock;
-        $material->enabled = $enabled;
-
-        return $material;
+        return $color;
     }
 
     /**
@@ -73,7 +63,7 @@ class Color implements TranslatableInterface
      */
     public static function getTranslatableFields(): array
     {
-        return ['description'];
+        return self::TRANSLATION_FIELDS;
     }
 
     public function getId(): ?int
@@ -90,23 +80,27 @@ class Color implements TranslatableInterface
         return $this->code;
     }
 
-    public function setCode(int $code): void
+    public function setCode(int $code): self
     {
         self::validateCode($code);
         $this->code = $code;
+
+        return $this;
     }
 
     public function getDescription(string $locale = 'en'): ?string
     {
-        return $this->getTranslationFromMemory('description', $locale);
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale);
     }
 
-    public function setDescription(?string $value, string $locale = 'en'): void
+    public function setDescription(?string $value, string $locale = 'en'): self
     {
         if ($value !== null) {
             self::validateDescription($value);
         }
-        $this->addOrUpdateTranslation('description', $value, $locale);
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $value, $locale);
+
+        return $this;
     }
 
     public function isEnabled(): bool
@@ -114,22 +108,26 @@ class Color implements TranslatableInterface
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): void
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
     }
 
     public function isInStock(): bool
     {
-        return $this->in_stock;
+        return $this->inStock;
     }
 
-    public function setInStock(bool $inStock): void
+    public function setInStock(bool $inStock): self
     {
-        $this->in_stock = $inStock;
+        $this->inStock = $inStock;
+
+        return $this;
     }
 
-    protected function setId(?int $id): void
+    protected function setId(int $id): void
     {
         $this->id = $id;
     }
