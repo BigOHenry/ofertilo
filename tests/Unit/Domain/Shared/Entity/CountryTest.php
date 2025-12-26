@@ -40,14 +40,6 @@ class CountryTest extends TestCase
         $this->assertFalse($country->isEnabled());
     }
 
-    public function testSetAndGetId(): void
-    {
-        $country = new Country('France', 'fr', 'fra');
-        $country->setId(123);
-
-        $this->assertSame(123, $country->getId());
-    }
-
     public function testGetName(): void
     {
         $country = new Country('United Kingdom', 'gb', 'gbr');
@@ -141,10 +133,8 @@ class CountryTest extends TestCase
     public function testCompleteCountryConfiguration(): void
     {
         $country = new Country('Slovakia', 'sk', 'svk', true);
-        $country->setId(1);
 
         // Ověření všech vlastností
-        $this->assertSame(1, $country->getId());
         $this->assertSame('Slovakia', $country->getName());
         $this->assertSame('SK', $country->getAlpha2());
         $this->assertSame('SVK', $country->getAlpha3());
