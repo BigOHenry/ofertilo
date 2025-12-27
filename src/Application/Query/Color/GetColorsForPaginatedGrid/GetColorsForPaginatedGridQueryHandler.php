@@ -22,27 +22,30 @@ final readonly class GetColorsForPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, code: int, description: string|null}>, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, code: int, description: string|null}>}
      */
     public function __invoke(GetColorsForPaginatedGridQuery $query): array
     {
-        $qb = $this->colorRepository->createQueryBuilder('c')
-                                    ->setFirstResult($query->getOffset())
-                                    ->setMaxResults($query->getSize())
-        ;
+        $qb = $this->colorRepository->createQueryBuilder('c');
 
         $sortField = $query->getSortField();
         $sortDir = $query->getSortDirection() ?? 'asc';
 
-        $allowedFields = ['name', 'type'];
+        $allowedFields = ['code', 'inStock'];
         $allowedDirections = ['asc', 'desc'];
 
         if (
             \in_array($sortField, $allowedFields, true)
             && \in_array(mb_strtolower($sortDir), $allowedDirections, true)
         ) {
-            $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
+            $qb->orderBy("c.$sortField", mb_strtoupper($sortDir));
+        } else {
+            $qb->orderBy('c.code', 'ASC');
         }
+
+        $qb->setFirstResult($query->getOffset())
+           ->setMaxResults($query->getSize())
+        ;
 
         $paginator = new Paginator($qb);
         $total = \count($paginator);
@@ -59,12 +62,9 @@ final readonly class GetColorsForPaginatedGridQueryHandler
             ];
         }
 
-        usort($data, static fn ($a, $b) => $a['code'] <=> $b['code']);
-
         return [
             'data' => $data,
-            'last_page' => ceil($total / $query->getSize()),
-            'total' => $total,
+            'last_page' => (int) ceil($total / $query->getSize()),
         ];
     }
 }

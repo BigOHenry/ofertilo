@@ -20,8 +20,7 @@ final readonly class GetMaterialPricesGridQueryHandler
 
     /**
      * @return array{data: list<array{id: int|null, thickness: int, price: string, formatted_price: non-falsy-string,
-     *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string,
-     *      total_prices: int<0, max>}
+     *      formatted_thickness: non-falsy-string}>, material_id: int|null, material_name: string, material_description: string}
      */
     public function __invoke(GetMaterialPricesGridQuery $query): array
     {
@@ -49,7 +48,6 @@ final readonly class GetMaterialPricesGridQueryHandler
             'material_id' => $material->getId(),
             'material_name' => $material->getName(),
             'material_description' => $material->getDescription($this->localeService->getCurrentLocale()),
-            'total_prices' => \count($data),
         ];
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Seznam materiálů{% endblock %}
+{% block title %}{{ 'title.colors'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card shadow-sm">
@@ -39,22 +39,14 @@
                     ajaxURL: "{{ path('api_colors') }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",
-                    pagination: "remote",
-                    paginationSize: 15,
-                    paginationDataSent: {
-                        page: "page",
-                        size: "size",
-                        sorters: "sort"
-                    },
-                    paginationDataReceived: {
-                        last_page: "last_page",
-                        data: "data"
-                    },
-                    ajaxResponse: function(url, params, response) {
-                        return response.data;
-                    },
+                    pagination: true,
+                    paginationMode: "remote",
+                    paginationSize: 10,
+                    paginationInitialPage: 1,
+                    paginationCounter: "pages",
+                    sortMode: "remote",
                     columns: [
-                        { title: "{{ 'field.code'|trans }}", field: "code", sorter: "integer" },
+                        { title: "{{ 'field.code'|trans }}", field: "code", sorter: "number" },
                         { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string", widthGrow: 2},
                         { title: "{{ 'field.inStock'|trans }}", field: "inStock", formatter:"tickCross", sorter:"boolean" },
                         {
