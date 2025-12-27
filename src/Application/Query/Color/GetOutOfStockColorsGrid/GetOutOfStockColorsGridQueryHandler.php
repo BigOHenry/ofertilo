@@ -19,7 +19,7 @@ final readonly class GetOutOfStockColorsGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, code: int, description: string|null}>, total: int<0, max>}
+     * @return array{data: array<array{id: int|null, code: int, description: string|null}>}
      */
     public function __invoke(GetOutOfStockColorsGridQuery $query): array
     {
@@ -36,11 +36,8 @@ final readonly class GetOutOfStockColorsGridQueryHandler
             $colors
         );
 
-        usort($data, static fn ($a, $b) => $a['code'] <=> $b['code']);
-
         return [
             'data' => $data,
-            'total' => \count($data),
         ];
     }
 }

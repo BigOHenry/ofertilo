@@ -39,24 +39,15 @@
                     ajaxURL: "{{ path('api_materials') }}",
                     layout: "fitColumns",
                     responsiveLayout: "collapse",
-                    pagination: "remote",
-                    paginationSize: 15,
-                    paginationDataSent: {
-                        page: "page",
-                        size: "size",
-                        sorters: "sort"
-                    },
-                    paginationDataReceived: {
-                        last_page: "last_page",
-                        data: "data"
-                    },
-                    ajaxResponse: function(url, params, response) {
-                        return response.data;
-                    },
+                    pagination: true,
+                    paginationMode: "remote",
+                    paginationSize: 10,
+                    paginationInitialPage: 1,
+                    paginationCounter: "pages",
+                    sortMode: "remote",
                     columns: [
-                        { title: "{{ 'field.name'|trans }}", field: "name", sorter: "string" },
-                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
                         { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
+                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
                         {
                             title: "Akce",
                             formatter: (cell) => {

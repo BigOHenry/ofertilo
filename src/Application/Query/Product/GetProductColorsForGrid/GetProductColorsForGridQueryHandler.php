@@ -17,8 +17,7 @@ final readonly class GetProductColorsForGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: bool}>,
-     *      productId: int|null, total_colors: int<0, max>}
+     * @return array{data: list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: bool}>}
      */
     public function __invoke(GetProductColorsForGridQuery $query): array
     {
@@ -43,8 +42,6 @@ final readonly class GetProductColorsForGridQueryHandler
 
         return [
             'data' => $data,
-            'productId' => $product->getId(),
-            'total_colors' => \count($data),
         ];
     }
 }

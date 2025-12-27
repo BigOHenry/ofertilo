@@ -22,28 +22,30 @@ final readonly class GetProductsForPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: bool}>,
-     *      last_page: float, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: bool}>, last_page: int}
      */
     public function __invoke(GetProductsForPaginatedGridQuery $query): array
     {
-        $qb = $this->productRepository->createQueryBuilder('w')
-                                      ->setFirstResult($query->getOffset())
-                                      ->setMaxResults($query->getSize())
-        ;
+        $qb = $this->productRepository->createQueryBuilder('w');
 
         $sortField = $query->getSortField();
         $sortDir = $query->getSortDirection() ?? 'asc';
 
-        $allowedFields = ['name', 'type'];
+        $allowedFields = ['id'];
         $allowedDirections = ['asc', 'desc'];
 
         if (
             \in_array($sortField, $allowedFields, true)
             && \in_array(mb_strtolower($sortDir), $allowedDirections, true)
         ) {
-            $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
+            $qb->orderBy("w.$sortField", mb_strtoupper($sortDir));
+        } else {
+            $qb->orderBy('w.id', 'ASC');
         }
+
+        $qb->setFirstResult($query->getOffset())
+           ->setMaxResults($query->getSize())
+        ;
 
         $paginator = new Paginator($qb);
         $total = \count($paginator);
@@ -62,8 +64,7 @@ final readonly class GetProductsForPaginatedGridQueryHandler
 
         return [
             'data' => $data,
-            'last_page' => ceil($total / $query->getSize()),
-            'total' => $total,
+            'last_page' => (int) ceil($total / $query->getSize()),
         ];
     }
 }

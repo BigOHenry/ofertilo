@@ -22,20 +22,16 @@ final readonly class GetMaterialsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: non-falsy-string, description: string|null,
-     *      type: string, enabled: string}>, last_page: float, total: int<0, max>}
+     * @return array{data: list<array{id: int|null, description: string|null, type: string, enabled: bool}>, last_page: int}
      */
     public function __invoke(GetMaterialsPaginatedGridQuery $query): array
     {
-        $qb = $this->materialRepository->createQueryBuilder('c')
-                                       ->setFirstResult($query->getOffset())
-                                       ->setMaxResults($query->getSize())
-        ;
+        $qb = $this->materialRepository->createQueryBuilder('m');
 
         $sortField = $query->getSortField();
         $sortDir = $query->getSortDirection() ?? 'asc';
 
-        $allowedFields = ['name', 'type'];
+        $allowedFields = ['wood'];
         $allowedDirections = ['asc', 'desc'];
 
         if (
@@ -43,7 +39,13 @@ final readonly class GetMaterialsPaginatedGridQueryHandler
             && \in_array(mb_strtolower($sortDir), $allowedDirections, true)
         ) {
             $qb->orderBy("m.$sortField", mb_strtoupper($sortDir));
+        } else {
+            $qb->orderBy('m.wood', 'ASC');
         }
+
+        $qb->setFirstResult($query->getOffset())
+           ->setMaxResults($query->getSize())
+        ;
 
         $paginator = new Paginator($qb);
         $total = \count($paginator);
@@ -53,22 +55,18 @@ final readonly class GetMaterialsPaginatedGridQueryHandler
         foreach ($paginator as $material) {
             $data[] = [
                 'id' => $material->getId(),
-                'name' => $material->getWood()->getName() . '_' . $material->getType()->value,
                 'description' => $material->getWood()->getDescription($this->localeService->getCurrentLocale()),
                 'type' => $this->translator->trans(
                     'material.type.' . $material->getType()->value,
                     domain: 'enum'
                 ),
-                'enabled' => $this->translator->trans($material->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'enabled' => $material->isEnabled(),
             ];
         }
 
-        usort($data, static fn ($a, $b) => $a['description'] <=> $b['description']);
-
         return [
             'data' => $data,
-            'last_page' => ceil($total / $query->getSize()),
-            'total' => $total,
+            'last_page' => (int) ceil($total / $query->getSize()),
         ];
     }
 }
