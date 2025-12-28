@@ -20,38 +20,27 @@ final readonly class VersionService
         return $this->cache->get('app.version', function (ItemInterface $item): string {
             $item->expiresAfter(null);
 
-            return $this->getGitVersion();
+            return $this->loadVersion();
         });
     }
 
-    private function getGitVersion(): string
+    private function loadVersion(): string
     {
-        $gitDir = $this->projectDir . '/.git';
+        $versionFile = $this->projectDir . '/var/version.txt';
 
-        if (!is_dir($gitDir)) {
-            return 'unknown';
-        }
+        if (file_exists($versionFile)) {
+            $content = file_get_contents($versionFile);
 
-        try {
-            $tagRaw = shell_exec('git describe --tags --abbrev=0 2>/dev/null');
-
-            if ($tagRaw === null || $tagRaw === false) {
-                $tagRaw = shell_exec('git rev-parse --short HEAD 2>/dev/null');
-            }
-
-            if ($tagRaw === null || $tagRaw === false) {
+            if ($content === false) {
                 return 'dev';
             }
+            $version = mb_trim($content);
 
-            $tag = mb_trim($tagRaw);
-
-            if (!empty($tag)) {
-                return $tag;
+            if (!empty($version)) {
+                return $version;
             }
-
-            return 'dev';
-        } catch (\Throwable) {
-            return 'dev';
         }
+
+        return 'dev';
     }
 }
