@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" class="h-100">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +22,7 @@
         {% block javascripts %}{% endblock %}
 
     </head>
-    <body>
+    <body class="d-flex flex-column h-100">
         <nav class="navbar navbar-dark bg-primary mb-4 navbar-expand-lg">
             <div class="container-xxl">
                 <a class="navbar-brand" href="{{ path('app_home_index') }}">
@@ -79,9 +79,17 @@
             {% endfor %}
         </div>
 
-        <main class="container-xxl">
+        <main class="container-xxl flex-grow-1">
             {% block body %}{% endblock %}
         </main>
+
+        <footer class="mt-auto py-3 bg-light">
+            <div class="container-xxl">
+                <div class="text-center text-muted">
+                    <small>Ofertilo - {{ app_version() }}</small>
+                </div>
+            </div>
+        </footer>
 
         {% include 'components/modal_delegate_script.html.twig' %}
         <div id="modal-action-scripts"></div>
