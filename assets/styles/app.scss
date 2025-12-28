@@ -14,14 +14,14 @@ $form-select-border-radius: 0 !default;
 $form-select-border-radius-sm: 0 !default;
 $form-select-border-radius-lg: 0 !default;
 
-$primary:   #7c6b58;
+$primary: #7c6b58;
 $secondary: #5a4633;
-$success:   #5F7C4B;
-$info:      #5B9A9A;
-$warning:   #D17C2F;
-$danger:    #B23B2B;
-$light:     #F5EFE5;
-$dark:      #2B211B;
+$success: #5F7C4B;
+$info: #5B9A9A;
+$warning: #D17C2F;
+$danger: #B23B2B;
+$light: #F5EFE5;
+$dark: #2B211B;
 
 $font-size-base: 0.875rem !default; // Assumes the browser default, typically `16px`
 
@@ -45,28 +45,29 @@ body {
 
 // --------------------- tabulator custom
 .tabulator-footer {
+  font-size: 0.8rem !important;
+
   .tabulator-paginator {
-    font-size: 0.8rem;
-
-    button {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.8rem;
+    .tabulator-page {
+      padding: 0.25rem 0.5rem !important;
+      font-size: 0.8rem !important;
       border-radius: 0 !important;
     }
   }
 
-  .tabulator-page {
-    border-radius: 0 !important;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .tabulator-pages {
-    button {
-      border-radius: 0 !important;
+  .tabulator-footer-contents {
+    .tabulator-page-counter {
+      font-size: 0.8rem !important;
     }
   }
+
+  //.tabulator-page {
+  //  border-radius: 0 !important;
+  //  padding: 0.25rem 0.5rem !important;
+  //  font-size: 0.8rem !important;
+  //}
 }
+
 // tabulator custom ---------------------
 
 // --------------------- flash messages
@@ -91,4 +92,5 @@ body {
     max-width: calc(100% - 20px);
   }
 }
+
 // flash messages ---------------------

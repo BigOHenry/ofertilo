@@ -8,7 +8,10 @@
             <div id="material-title">
                 {% include 'material/components/_header.html.twig' with { material: material } %}
             </div>
-            <a class="btn btn-sm btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+            <div class="d-flex gap-1">
+                <a class="btn btn-sm btn-primary" data-modal-id="materialModal" data-modal-src="{{ path('material_edit', {'id': material.id}) }}" data-modal-title="{{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-fw fa-pen-to-square"></i></a>
+                <a class="btn btn-sm btn-info" data-modal-id="calculationModal" data-modal-src="{{ path('material_price_calculation', {'id': material.id}) }}" data-modal-title="{{ material.type.label|trans({}, 'enum') }} - {{ material.wood.description(app.request.locale) }}"><i class="fa-solid fa-fw fa-calculator"></i></a>
+            </div>
         </div>
         <div class="card-body">
             <div id="material-detail">
@@ -18,7 +21,7 @@
             <div class="row">
                 <div class="d-flex flex-row justify-content-end pb-2">
                     <button class="btn btn-primary" data-modal-id="materialPriceModal" data-modal-src="{{ path('material_price_new', {'id': material.id}) }}" data-modal-title="{{ 'title.new_material_price'|trans }}">
-                        <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+                        <i class="fa fa-fw fa-plus pe-2"></i>{{ 'button.add'|trans }}
                     </button>
                 </div>
 
@@ -47,6 +50,11 @@
 
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'materialModal',
+        title: 'title.material'|trans
+    } %}
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'calculationModal',
         title: 'title.material'|trans
     } %}
 {% endblock %}

@@ -1,0 +1,26 @@
+{{ form_start(form, {
+    attr: {
+        id: form_id|default(null),
+        class: form_class|default('needs-validation')
+    }
+}) }}
+    {% if form.vars.errors|length > 0 %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for error in form.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+  {{ form_widget(form) }}
+<input type="hidden" name="frame_id" value="{{ frame_id }}">
+
+{% if calculatedPrice is not null %}
+    <div class="alert alert-success">
+        {{ calculatedPrice }} {{ 'currency.czk'|trans }}/{{ material.measurementType.unit }}
+    </div>
+{% endif %}
+
+{{ form_end(form) }}

@@ -10,6 +10,7 @@ use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
 use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommand;
 use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
 use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
+use App\Application\Query\Material\CalculateMaterialPricePerUnit\CalculateMaterialPricePerUnitQuery;
 use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
 use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
 use App\Application\Query\Material\GetMaterialPricesGrid\GetMaterialPricesGridQuery;
@@ -19,6 +20,7 @@ use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\MaterialException;
 use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Web\Form\MaterialFormType;
+use App\Infrastructure\Web\Form\MaterialPriceCalculationFormType;
 use App\Infrastructure\Web\Form\MaterialPriceFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -185,6 +187,7 @@ final class MaterialController extends BaseController
         $form = $this->createForm(MaterialPriceFormType::class, [], [
             'action' => $this->generateUrl('material_price_new', ['id' => $material->getId()]),
             'method' => 'POST',
+            'material' => $material,
         ]);
 
         $form->handleRequest($request);
@@ -234,6 +237,7 @@ final class MaterialController extends BaseController
         $form = $this->createForm(MaterialPriceFormType::class, $formData, [
             'action' => $this->generateUrl('material_price_edit', ['id' => $materialPrice->getId()]),
             'method' => 'POST',
+            'material' => $materialPrice->getMaterial(),
         ]);
         $form->handleRequest($request);
 
@@ -298,5 +302,48 @@ final class MaterialController extends BaseController
         } catch (MaterialException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
+    }
+
+    #[Route('/material/{id}/calculation', name: 'material_price_calculation', methods: ['GET', 'POST'])]
+    #[IsGranted(Role::WRITER->value)]
+    public function calculation(Request $request, Material $material): Response
+    {
+        $form = $this->createForm(MaterialPriceCalculationFormType::class, [], [
+            'action' => $this->generateUrl('material_price_calculation', ['id' => $material->getId()]),
+            'method' => 'POST',
+            'material' => $material,
+        ]);
+
+        $form->handleRequest($request);
+        $calculatedPrice = null;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $calculatedPrice = $this->bus->dispatch(CalculateMaterialPricePerUnitQuery::createFromForm($form, $material))
+                                             ->last(HandledStamp::class)
+                                             ?->getResult()
+                ;
+            } catch (HandlerFailedException $e) {
+                $this->handleHandlerException($e, $form);
+            }
+        }
+
+        $response = $this->render('components/form_frame.html.twig', [
+            'data_class' => CalculateMaterialPricePerUnitQuery::class,
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'calculationModal_frame',
+            'form_template' => 'material/components/_form_calculation.html.twig',
+            'material' => $material,
+            'calculatedPrice' => $calculatedPrice,
+            'form_context' => [
+                'form' => $form->createView(),
+                'form_id' => 'calculation-form',
+            ],
+        ]);
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $response->setStatusCode(422);
+        }
+
+        return $response;
     }
 }

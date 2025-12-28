@@ -28,7 +28,9 @@ class MaterialFormType extends AbstractType
             ->add('wood', EntityType::class, [
                 'label' => 'field.wood',
                 'class' => Wood::class,
-                'choice_label' => 'description',
+                'choice_label' => function (Wood $wood) {
+                    return $wood->getDescription($this->translator->getLocale());
+                },
                 'placeholder' => 'form.choose_wood',
                 'required' => true,
             ])
