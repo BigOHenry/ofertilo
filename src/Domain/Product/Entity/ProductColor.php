@@ -8,7 +8,6 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Exception\InvalidProductColorException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_color')]
@@ -29,16 +28,13 @@ class ProductColor
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productColors')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
     private Product $product;
 
     #[ORM\ManyToOne(targetEntity: Color::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
     private Color $color;
 
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
-    #[Assert\Length(max: 500, maxMessage: 'max_length')]
     private ?string $description = null;
 
     protected function __construct(Product $product, ?int $id = null)
