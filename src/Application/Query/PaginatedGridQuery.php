@@ -15,9 +15,9 @@ readonly class PaginatedGridQuery
 
     public static function createFormRequest(Request $request): static
     {
-        $sortData = $request->query->all('sort');
-        $sortField = $sortData[0]['field'] ?? null;
-        $sortDir = $sortData[0]['dir'] ?? 'asc';
+        $data = $request->query->all();
+        $sortField = $data['sortField'] ?? null;
+        $sortDir = $data['sortDir'] ?? 'asc';
 
         return new static((int) ($request->query->get('page') ?? 1), (int) ($request->query->get('size') ?? 10), $sortField, $sortDir);
     }
