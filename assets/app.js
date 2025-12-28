@@ -7,6 +7,7 @@ window.Tabulator = Tabulator;
 window.bootstrap = bootstrap;
 
 import './js/tabulator-locales';
+import './js/grid-helpers';
 
 function autoDismissAlerts() {
     const alerts = document.querySelectorAll('#flash-messages .alert');

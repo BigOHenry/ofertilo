@@ -14,7 +14,21 @@
                         <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
                     </button>
                 </div>
-                <div id="materials-table"></div>
+
+                {{ component('tabulator_grid', {
+                    id: 'materials-table',
+                    windowVariable: 'materials',
+                    apiUrl: path('api_materials'),
+                    showActions: true,
+                    rowClickRoute: 'material_detail',
+                    editRoute: 'material_edit',
+                    deleteRoute: 'material_delete',
+                    editModalId: 'materialModal',
+                    columns: [
+                        { title: 'field.type'|trans, field: "type", sorter: "string" },
+                        { title: 'field.description'|trans, field: "description", sorter: "string" },
+                    ]
+                }) }}
             </div>
         </div>
     </div>
@@ -27,79 +41,4 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-
-        document.addEventListener("turbo:load", () => {
-            const el = document.querySelector("#materials-table");
-
-            if (el) {
-                window.tabulatorTable = new Tabulator(el, {
-                    locale: window.APP_LOCALE,
-                    langs: window.TabulatoLangs,
-                    ajaxURL: "{{ path('api_materials') }}",
-                    layout: "fitColumns",
-                    responsiveLayout: "collapse",
-                    pagination: true,
-                    paginationMode: "remote",
-                    paginationSize: 10,
-                    paginationInitialPage: 1,
-                    paginationCounter: "pages",
-                    sortMode: "remote",
-                    columns: [
-                        { title: "{{ 'field.type'|trans }}", field: "type", sorter: "string" },
-                        { title: "{{ 'field.description'|trans }}", field: "description", sorter: "string" },
-                        {
-                            title: "Akce",
-                            formatter: (cell) => {
-                                const row = cell.getRow().getData();
-                                const id = row.id;
-                                const description = row.description;
-                                return `<button class="btn btn-sm btn-primary me-1 edit-material" data-modal-src="/material/${id}/edit" data-modal-id="materialModal" title="Editovat" data-modal-title="${description}" ><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger delete-material" data-id="${id}"><i class="fa fa-trash"></i></button>`;
-                            },
-                            width: 100,
-                            hozAlign: "center",
-                            cellClick: function (e, cell) {
-                                const target = e.target;
-                                const row = cell.getRow();
-                                const id = row.getData().id;
-
-                                const deleteBtn = target.closest('.delete-material');
-
-                                if (deleteBtn) {
-                                    if (confirm('Opravdu chcete smazat tento materiál?')) {
-                                        fetch(`/material/${id}`, {
-                                            method: 'DELETE',
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                                'Content-Type': 'application/json'
-                                            }
-                                        })
-                                            .then(response => {
-                                                if (response.ok) {
-                                                    // Reload datagrid
-                                                    row.delete();
-                                                } else {
-                                                    console.log(response);
-                                                    alert("Chyba při mazání.");
-                                                }
-                                            });
-                                    }
-                                }
-
-                                return false;
-                            }
-                        }
-                    ]
-                });
-            }
-
-            window.tabulatorTable.on("rowClick", function(e, row) {
-                if (e.target.closest('.edit-material') === null && e.target.closest('.delete-material') === null) {
-                    window.location.href = `/material/${row.getData().id}`;
-                }
-            });
-        });
-
-    </script>
 {% endblock %}
