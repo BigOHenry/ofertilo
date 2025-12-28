@@ -7,7 +7,6 @@ namespace App\Domain\Wood\Entity;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'wood')]
@@ -29,41 +28,15 @@ class Wood implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true, nullable: false)]
-    #[Assert\NotBlank(message: 'not_null')]
-    #[Assert\Length(
-        min: 2,
-        max: 50,
-        minMessage: 'length_min',
-        maxMessage: 'length_max',
-    )]
-    #[Assert\Regex(
-        pattern: '/^[a-z\s\-_]+$/',
-        message: 'invalid_characters'
-    )]
     private string $name;
 
     #[ORM\Column(length: 300, nullable: true)]
-    #[Assert\Length(max: 300, maxMessage: 'length_max')]
-    #[Assert\Regex(
-        pattern: '/^[a-zA-Z\s]+$/',
-        message: 'invalid_characters'
-    )]
     private ?string $latinName = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
-    #[Assert\Range(
-        notInRangeMessage: 'range³',
-        min: 10,
-        max: 2000
-    )]
     private ?int $dryDensity = null;
 
     #[ORM\Column(type: 'integer', length: 8, nullable: true)]
-    #[Assert\Range(
-        notInRangeMessage: 'range',
-        min: 1,
-        max: 9999
-    )]
     private ?int $hardness = null;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]

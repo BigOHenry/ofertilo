@@ -8,7 +8,6 @@ use App\Domain\Color\Exception\InvalidColorException;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'color')]
@@ -28,12 +27,6 @@ class Color implements TranslatableInterface
     private ?int $id = null;
 
     #[ORM\Column(type: 'integer', length: 4, unique: true, nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
-    #[Assert\Range(
-        notInRangeMessage: 'range',
-        min: 1000,
-        max: 9999
-    )]
     private int $code;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => false])]

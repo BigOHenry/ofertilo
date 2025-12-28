@@ -15,7 +15,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product')]
@@ -66,7 +65,6 @@ abstract class Product implements TranslatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
-    #[Assert\Valid]
     private Collection $productColors;
 
     protected function __construct(?Country $country)

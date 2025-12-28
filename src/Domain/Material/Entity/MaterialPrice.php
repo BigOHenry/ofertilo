@@ -7,7 +7,6 @@ namespace App\Domain\Material\Entity;
 use App\Domain\Material\Exception\InvalidMaterialPriceException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'material_price')]
@@ -27,26 +26,13 @@ class MaterialPrice
     private ?int $id = null;
 
     #[ORM\Column(type: 'integer', nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
-    #[Assert\Range(
-        notInRangeMessage: 'range',
-        min: 1,
-        max: 100
-    )]
     private int $thickness;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
-    #[Assert\Range(
-        notInRangeMessage: 'range',
-        min: 1.00,
-        max: 999999.99
-    )]
     private string $price;
 
     #[ORM\ManyToOne(targetEntity: Material::class, inversedBy: 'prices')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'not_null')]
     private Material $material;
 
     protected function __construct(Material $material, int $thickness, string $price)
