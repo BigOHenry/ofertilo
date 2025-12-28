@@ -27,6 +27,9 @@ class ProductFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $productId = $builder->getData()['id'] ?? null;
+        $enabled = $productId === null ? true : ($builder->getData()['enabled'] ?? null);
+
         $builder
             ->add('translations', CollectionType::class, [
                 'entry_type' => TranslationFormType::class,
@@ -63,23 +66,29 @@ class ProductFormType extends AbstractType
                 'mapped' => true,
                 'required' => false,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: [
                             'image/jpeg',
                             'image/png',
                             'image/gif',
                             'image/webp',
                             'image/svg+xml',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF, WebP, SVG)',
-                    ]),
+                        mimeTypesMessage: $this->translator->trans('message.invalid_file_type_with_allowed_formats', [
+                            '%formats%' => 'JPEG, PNG, GIF, WebP, SVG',
+                        ])
+                    ),
                 ],
-                'help' => 'Maximum file size: 2MB. Allowed formats: JPEG, PNG, GIF, WebP, SVG',
+                'help' => $this->translator->trans('message.file_help_message', [
+                    '%size%' => '2MB',
+                    '%formats%' => 'JPEG, PNG, GIF, WebP, SVG',
+                ]),
             ])
             ->add('enabled', CheckboxType::class, [
                 'label' => 'field.enabled',
                 'required' => false,
+                'data' => $enabled,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

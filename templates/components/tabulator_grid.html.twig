@@ -1,0 +1,167 @@
+<div id="{{ id }}"></div>
+
+<script>
+    document.addEventListener('turbo:load', function initGrid_{{ this.getWindowVariable() }}() {
+        // Check if the element exists (important for Turbo)
+        if (!document.getElementById('{{ id }}')) {
+            return;
+        }
+
+        // If the grid already exists, destroy it first
+        if (window.grids?.{{ this.getWindowVariable() }}) {
+            window.grids.{{ this.getWindowVariable() }}.destroy();
+        }
+
+        const baseAjaxParams = {{ ajaxParams|json_encode|raw }};
+
+        {% if showActions %}
+        const actionsFormatter = function(cell, formatterParams, onRendered) {
+            const data = cell.getRow().getData();
+            const id = data.id;
+            const buttons = [];
+
+            {% if editRoute  %}
+            const editUrl = '{{ path(editRoute, {id: '__ID__'})|raw }}'.replace('__ID__', id);
+            buttons.push(`<button class="btn btn-sm btn-primary me-1 edit-{{ this.getWindowVariable() }}"
+                data-modal-src="${editUrl}"
+                data-modal-id="{{ editModalId }}"
+                data-modal-title="${data.description || data.name || data.code || ''}"
+                title="Editovat">
+                <i class="fa fa-edit"></i>
+            </button>`);
+            {% endif %}
+
+            {% if deleteRoute %}
+            const deleteUrl = '{{ path(deleteRoute, {id: '__ID__'})|raw }}'.replace('__ID__', id);
+            buttons.push(`<button class="btn btn-sm btn-danger delete-{{ this.getWindowVariable() }}"
+                data-id="${id}"
+                data-delete-url="${deleteUrl}"
+                title="Smazat">
+                <i class="fa fa-trash"></i>
+            </button>`);
+            {% endif %}
+
+            return buttons.join('');
+        };
+        {% endif %}
+
+        const columns = {{ columns|json_encode|raw }};
+
+        {% if showActions %}
+        columns.push({
+            title: "Akce",
+            field: "actions",
+            formatter: actionsFormatter,
+            headerSort: false,
+            width: 120,
+            hozAlign: "center",
+        });
+        {% endif %}
+
+        const table = new window.Tabulator("#{{ id }}", {
+            locale: "{{ app.request.locale }}",
+            langs: window.TabulatorLangs,
+            {% if pagination %}
+            pagination: true,
+            paginationMode: "remote",
+            paginationSize: {{ paginationSize }},
+            {% endif %}
+
+            {% if sortMode %}
+            sortMode: "remote",
+            {% endif %}
+
+            ajaxURL: "{{ apiUrl }}",
+            height: "{{ this.getHeight() }}",
+            layout: "{{ layout }}",
+
+            columns: columns,
+
+            ajaxURLGenerator: function(url, config, params) {
+                let urlParams = new URLSearchParams();
+
+                Object.entries(baseAjaxParams).forEach(([key, value]) => {
+                    urlParams.append(key, value);
+                });
+
+                {% if pagination %}
+                urlParams.append("page", params.page);
+                urlParams.append("size", params.size);
+                {% endif %}
+
+                {% if sortMode %}
+                if (params.sort && params.sort.length > 0) {
+                    urlParams.append("sortField", params.sort[0].field);
+                    urlParams.append("sortDir", params.sort[0].dir);
+                }
+                {% endif %}
+
+                return url + "?" + urlParams.toString();
+            },
+        });
+
+        {% if rowClickRoute %}
+        table.on("rowClick", function(e, row) {
+            if (e.target.closest('.btn') || e.target.closest('button')) {
+                return;
+            }
+
+            const id = row.getData().id;
+            window.location.href = '{{ path(rowClickRoute, {id: '__ID__'})|raw }}'.replace('__ID__', id);
+        });
+        {% endif %}
+
+        if (!window.grids) {
+            window.grids = {};
+        }
+
+        window.grids.{{ this.getWindowVariable() }} = table;
+
+        document.removeEventListener('turbo:load', initGrid_{{ this.getWindowVariable() }});
+    }, { once: false });
+</script>
+
+{% if deleteRoute %}
+    <script>
+        (function() {
+            const gridName = '{{ this.getWindowVariable() }}';
+
+            document.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.delete-' + gridName);
+                if (!deleteBtn) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const deleteUrl = deleteBtn.dataset.deleteUrl;
+
+                if (!confirm('Opravdu chcete smazat tento záznam?')) {
+                    return;
+                }
+
+                fetch(deleteUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            if (window.grids && window.grids[gridName]) {
+                                window.grids[gridName].replaceData();
+                            }
+                        } else {
+                            alert('Chyba při mazání záznamu.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Delete error:', error);
+                        alert('Chyba při mazání záznamu.');
+                    });
+            });
+        })();
+    </script>
+{% endif %}

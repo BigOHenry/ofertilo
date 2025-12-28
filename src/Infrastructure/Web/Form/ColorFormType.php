@@ -17,6 +17,9 @@ class ColorFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $colorId = $builder->getData()['id'] ?? null;
+        $inStock = $colorId === null ? true : ($builder->getData()['inStock'] ?? null);
+
         $builder
             ->add('id', HiddenType::class)
             ->add('code', NumberType::class, [
@@ -35,6 +38,7 @@ class ColorFormType extends AbstractType
             ->add('inStock', CheckboxType::class, [
                 'label' => 'field.inStock',
                 'required' => false,
+                'data' => $inStock,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

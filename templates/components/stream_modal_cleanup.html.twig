@@ -14,10 +14,7 @@
                 // Odstraň backdropy
                 document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
 
-                // Obnov datagrid (např. Tabulator.js)
-                if (window.tabulatorTable) {
-                    window.tabulatorTable.replaceData();
-                }
+                refreshAllGrids();
             }
         </script>
     </template>

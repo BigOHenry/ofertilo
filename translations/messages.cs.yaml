@@ -66,6 +66,8 @@ message:
   item_deleted: "Položka úspěšně odstraněna"
   duplicate_value: "Duplicitní hodnota"
   duplicate_value_field: "Duplicitní hodnota v poli '%field%'"
+  file_help_message: "Maximální velikost: %size%. Povolené formáty: %formats%"
+  invalid_file_type_with_allowed_formats: "Nahrajte platný soubor s otiskem prstu (%formats%)"
 
 boolean:
   yes: "Ano"

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Product\GetProductColorsForGrid;
+namespace App\Application\Query\Product\GetProductColorsGrid;
 
-final readonly class GetProductColorsForGridQuery
+final readonly class GetProductColorsGridQuery
 {
     protected function __construct(private int $productId)
     {

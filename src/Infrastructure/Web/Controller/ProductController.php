@@ -11,7 +11,7 @@ use App\Application\Command\Product\DeleteProductColor\DeleteProductColorCommand
 use App\Application\Command\Product\EditProduct\EditProductCommand;
 use App\Application\Command\Product\EditProductColor\EditProductColorCommand;
 use App\Application\Query\Product\GetProductColorFormData\GetProductColorFormDataQuery;
-use App\Application\Query\Product\GetProductColorsForGrid\GetProductColorsForGridQuery;
+use App\Application\Query\Product\GetProductColorsGrid\GetProductColorsGridQuery;
 use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
 use App\Application\Query\Product\GetProductsForPaginatedGrid\GetProductsForPaginatedGridQuery;
 use App\Domain\Product\Entity\Product;
@@ -276,7 +276,7 @@ final class ProductController extends BaseController
     {
         try {
             \assert($product->getId() !== null, 'Product must have an ID when loaded from database');
-            $envelope = $this->bus->dispatch(GetProductColorsForGridQuery::create($product->getId()));
+            $envelope = $this->bus->dispatch(GetProductColorsGridQuery::create($product->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

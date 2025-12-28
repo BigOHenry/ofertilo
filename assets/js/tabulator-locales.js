@@ -1,4 +1,4 @@
-window.TabulatoLangs = {
+window.TabulatorLangs = {
     "cs": {
         data: {
             loading: "Načítání...",
