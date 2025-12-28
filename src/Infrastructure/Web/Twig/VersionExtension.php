@@ -12,7 +12,8 @@ final class VersionExtension extends AbstractExtension
 {
     public function __construct(
         private readonly VersionService $versionService,
-    ) {}
+    ) {
+    }
 
     public function getFunctions(): array
     {

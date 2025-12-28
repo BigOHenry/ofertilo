@@ -12,7 +12,8 @@ final readonly class VersionService
     public function __construct(
         private CacheInterface $cache,
         private string $projectDir,
-    ) {}
+    ) {
+    }
 
     public function getVersion(): string
     {
@@ -32,15 +33,23 @@ final readonly class VersionService
         }
 
         try {
-            $tag = trim(shell_exec('git describe --tags --abbrev=0 2>/dev/null') ?? '');
+            $tagRaw = shell_exec('git describe --tags --abbrev=0 2>/dev/null');
+
+            if ($tagRaw === null || $tagRaw === false) {
+                $tagRaw = shell_exec('git rev-parse --short HEAD 2>/dev/null');
+            }
+
+            if ($tagRaw === null || $tagRaw === false) {
+                return 'dev';
+            }
+
+            $tag = mb_trim($tagRaw);
 
             if (!empty($tag)) {
                 return $tag;
             }
 
-            $hash = trim(shell_exec('git rev-parse --short HEAD 2>/dev/null') ?? '');
-
-            return !empty($hash) ? $hash : 'dev';
+            return 'dev';
         } catch (\Throwable) {
             return 'dev';
         }
