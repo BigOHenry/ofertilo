@@ -15,7 +15,7 @@ class WoodValidator extends Validator
     public const int DRY_DENSITY_MIN_VALUE = 1;
     public const int DRY_DENSITY_MAX_VALUE = 5000;
     public const int HARDNESS_MIN_VALUE = 1;
-    public const int HARDNESS_MAX_VALUE = 9999;
+    public const int HARDNESS_MAX_VALUE = 20000;
 
     /**
      * @return array<string, array{key: string, params?: array<string, int|float|null>}>
@@ -33,9 +33,15 @@ class WoodValidator extends Validator
     /**
      * @return array<string, array{key: string, params?: array<string, int|null>}>
      */
-    protected static function validateName(string $name): array
+    protected static function validateName(string $value): array
     {
-        return self::validateStringLength('name', $name, self::NAME_MIN_LENGTH, self::NAME_MAX_LENGTH);
+        $errors = self::validateStringLength('name', $value, self::NAME_MIN_LENGTH, self::NAME_MAX_LENGTH);
+
+        if (!preg_match('/^[a-z_]+$/', $value)) {
+            $errors['name'] = ['key' => 'wood.name.invalid'];
+        }
+
+        return $errors;
     }
 
     /**
