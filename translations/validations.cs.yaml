@@ -18,7 +18,9 @@ user:
   roles:
     invalid: 'Neplatná role. Musí být jedna z: %roles%'
     empty: 'Je nutné definovat alespoň jednu roli'
-
+wood:
+  name:
+    invalid: 'Neplatný formát, povoleny jsou pouze malá písmena a podtržítko'
 
 password_mismatch: "Hesla se musí shodovat."
 unique: "Vybraná hodnota je duplicitní."
