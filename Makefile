@@ -62,3 +62,21 @@ npm-update:
 npm-run-dev:
 	$(exec-app) npm run dev
 
+.PHONY: version
+version:
+	@git describe --tags --abbrev=0 > var/version.txt 2>/dev/null || echo "dev" > var/version.txt
+	@echo "Version: $$(cat var/version.txt)"
+
+.PHONY: deploy
+deploy: version
+	docker compose down
+	docker compose build
+	docker compose up -d
+	sleep 5
+	docker compose exec -T app composer install --no-dev --optimize-autoloader --no-interaction
+	docker compose exec -T app npm install
+	docker compose exec -T app npm run build
+	docker compose exec -T app php bin/console doctrine:migrations:migrate --no-interaction
+	docker compose exec -T app chown -R www-data:www-data /var/www/app/var
+	docker compose exec -T app php bin/console cache:clear --no-interaction
+
