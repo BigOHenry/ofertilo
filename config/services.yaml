@@ -67,3 +67,8 @@ services:
         arguments:
             $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
+
+    App\Infrastructure\Service\VersionService:
+        arguments:
+            $cache: '@cache.app'
+            $projectDir: '%kernel.project_dir%'
