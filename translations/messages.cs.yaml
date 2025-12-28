@@ -40,6 +40,8 @@ field:
   dryDensity: "Hustota suchého dřeva (kg/m³)"
   hardness: "Tvrdost dřeva (Janka)"
   thickness: "Tloušťka (mm)"
+  length: "Délka (mm)"
+  width: "Šířka (mm)"
   price: "Cena"
   2fa_code: "Zadejte ověřovací kód z aplikace"
   code: 'Kód'
@@ -57,6 +59,7 @@ button:
   close: 'Zavřít'
   2fa_activate: 'Aktivovat 2FA'
   verify: 'Ověřit'
+  calculate: 'Spočítej'
 
 message:
   2fa_setup_qr_scan: "Naskenujte QR kód pomocí vaší autentifikační aplikace (Google Authenticator, Authy, atd.)"
@@ -68,6 +71,7 @@ message:
   duplicate_value_field: "Duplicitní hodnota v poli '%field%'"
   file_help_message: "Maximální velikost: %size%. Povolené formáty: %formats%"
   invalid_file_type_with_allowed_formats: "Nahrajte platný soubor s otiskem prstu (%formats%)"
+  price_help: "Kč/%unit%"
 
 boolean:
   yes: "Ano"
@@ -76,3 +80,7 @@ boolean:
 form:
   choose_country: "... vyberte stát ..."
   choose_color: "... vyberte barvu ..."
+  choose_wood: "... vyberte dřevo ..."
+
+currency:
+  czk: 'Kč'

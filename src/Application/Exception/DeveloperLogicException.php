@@ -10,4 +10,9 @@ class DeveloperLogicException extends \LogicException
     {
         return new self(\sprintf('%s must be persisted at this point.', $entityClass));
     }
+
+    public static function invalidArguments(string $message): self
+    {
+        return new self($message);
+    }
 }

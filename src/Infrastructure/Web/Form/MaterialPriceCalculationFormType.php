@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Infrastructure\Web\Form;
 
 use App\Domain\Material\Entity\Material;
+use App\Domain\Material\ValueObject\MeasurementType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
-class MaterialPriceFormType extends AbstractType
+class MaterialPriceCalculationFormType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct()
     {
     }
 
@@ -23,16 +23,27 @@ class MaterialPriceFormType extends AbstractType
     {
         /** @var Material $material */
         $material = $options['material'];
+
+        if ($material->getMeasurementType() === MeasurementType::VOLUME) {
+            $builder
+                ->add('thickness', IntegerType::class, [
+                    'label' => 'field.thickness',
+                ])
+            ;
+        }
+
         $builder
-            ->add('thickness', IntegerType::class, [
-                'label' => 'field.thickness',
+            ->add('length', IntegerType::class, [
+                'label' => 'field.length',
+            ])
+            ->add('width', IntegerType::class, [
+                'label' => 'field.width',
             ])
             ->add('price', TextType::class, [
                 'label' => 'field.price',
-                'help' => $this->translator->trans('message.price_help', ['%unit%' => $material->getMeasurementType()->getUnit()]),
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'button.save',
+            ->add('calculate', SubmitType::class, [
+                'label' => 'button.calculate',
             ])
         ;
     }
