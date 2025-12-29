@@ -13,7 +13,7 @@ use App\Application\Command\Product\EditProductColor\EditProductColorCommand;
 use App\Application\Query\Product\GetProductColorFormData\GetProductColorFormDataQuery;
 use App\Application\Query\Product\GetProductColorsGrid\GetProductColorsGridQuery;
 use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
-use App\Application\Query\Product\GetProductsForPaginatedGrid\GetProductsForPaginatedGridQuery;
+use App\Application\Query\Product\GetProductsPaginatedGrid\GetProductsPaginatedGridQuery;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;
@@ -146,7 +146,7 @@ final class ProductController extends BaseController
     public function productsApi(Request $request): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetProductsForPaginatedGridQuery::createFormRequest($request));
+            $envelope = $this->bus->dispatch(GetProductsPaginatedGridQuery::createFormRequest($request));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

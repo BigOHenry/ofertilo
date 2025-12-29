@@ -45,7 +45,7 @@ document.addEventListener('turbo:load', () => {
 
 // Turbo Stream updates
 document.addEventListener('turbo:before-stream-render', () => {
-    // Malé zpoždění aby se DOM stihl aktualizovat
+    // A short delay to allow the DOM to update
     setTimeout(() => {
         autoDismissAlerts();
     }, 50);

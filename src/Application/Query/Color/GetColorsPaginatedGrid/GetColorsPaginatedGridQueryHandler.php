@@ -2,29 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Color\GetColorsForPaginatedGrid;
+namespace App\Application\Query\Color\GetColorsPaginatedGrid;
 
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 use App\Infrastructure\Service\LocaleService;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
-final readonly class GetColorsForPaginatedGridQueryHandler
+final readonly class GetColorsPaginatedGridQueryHandler
 {
     public function __construct(
         private ColorRepositoryInterface $colorRepository,
         private LocaleService $localeService,
-        private TranslatorInterface $translator,
     ) {
     }
 
     /**
      * @return array{data: list<array{id: int|null, code: int, description: string|null}>}
      */
-    public function __invoke(GetColorsForPaginatedGridQuery $query): array
+    public function __invoke(GetColorsPaginatedGridQuery $query): array
     {
         $qb = $this->colorRepository->createQueryBuilder('c');
 
@@ -58,7 +56,7 @@ final readonly class GetColorsForPaginatedGridQueryHandler
                 'code' => $color->getCode(),
                 'description' => $color->getDescription($this->localeService->getCurrentLocale()),
                 'inStock' => $color->isInStock(),
-                'enabled' => $this->translator->trans($color->isEnabled() ? 'boolean.yes' : 'boolean.no', domain: 'messages'),
+                'enabled' => $color->isEnabled(),
             ];
         }
 

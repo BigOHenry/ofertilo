@@ -8,7 +8,7 @@ use App\Application\Command\Wood\CreateWood\CreateWoodCommand;
 use App\Application\Command\Wood\DeleteWood\DeleteWoodCommand;
 use App\Application\Command\Wood\EditWood\EditWoodCommand;
 use App\Application\Query\Wood\GetWoodFormData\GetWoodFormDataQuery;
-use App\Application\Query\Wood\GetWoodsForPaginatedGrid\GetWoodsForPaginatedGridQuery;
+use App\Application\Query\Wood\GetWoodsPaginatedGrid\GetWoodsPaginatedGridQuery;
 use App\Domain\User\ValueObject\Role;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodException;
@@ -137,7 +137,7 @@ final class WoodController extends BaseController
     public function woodsApi(Request $request): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetWoodsForPaginatedGridQuery::createFormRequest($request));
+            $envelope = $this->bus->dispatch(GetWoodsPaginatedGridQuery::createFormRequest($request));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

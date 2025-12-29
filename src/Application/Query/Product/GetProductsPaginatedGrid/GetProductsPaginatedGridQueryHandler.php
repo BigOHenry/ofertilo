@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Product\GetProductsForPaginatedGrid;
+namespace App\Application\Query\Product\GetProductsPaginatedGrid;
 
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
-final readonly class GetProductsForPaginatedGridQueryHandler
+final readonly class GetProductsPaginatedGridQueryHandler
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
@@ -24,7 +24,7 @@ final readonly class GetProductsForPaginatedGridQueryHandler
     /**
      * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: bool}>, last_page: int}
      */
-    public function __invoke(GetProductsForPaginatedGridQuery $query): array
+    public function __invoke(GetProductsPaginatedGridQuery $query): array
     {
         $qb = $this->productRepository->createQueryBuilder('w');
 

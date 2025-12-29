@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Query\Wood\GetWoodsForPaginatedGrid;
+namespace App\Application\Query\Wood\GetWoodsPaginatedGrid;
 
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final readonly class GetWoodsForPaginatedGridQueryHandler
+final readonly class GetWoodsPaginatedGridQueryHandler
 {
     public function __construct(
         private WoodRepositoryInterface $woodRepository,
@@ -22,7 +22,7 @@ final readonly class GetWoodsForPaginatedGridQueryHandler
     /**
      * @return array{data: list<array{id: int|null, name: string, description: string|null, enabled: bool}>, last_page: float}
      */
-    public function __invoke(GetWoodsForPaginatedGridQuery $query): array
+    public function __invoke(GetWoodsPaginatedGridQuery $query): array
     {
         $qb = $this->woodRepository->createQueryBuilder('w');
 

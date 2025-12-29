@@ -8,7 +8,7 @@ use App\Application\Command\Color\CreateColor\CreateColorCommand;
 use App\Application\Command\Color\DeleteColor\DeleteColorCommand;
 use App\Application\Command\Color\EditColor\EditColorCommand;
 use App\Application\Query\Color\GetColorFormData\GetColorFormDataQuery;
-use App\Application\Query\Color\GetColorsForPaginatedGrid\GetColorsForPaginatedGridQuery;
+use App\Application\Query\Color\GetColorsPaginatedGrid\GetColorsPaginatedGridQuery;
 use App\Application\Query\Color\GetOutOfStockColorsGrid\GetOutOfStockColorsGridQuery;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
@@ -138,7 +138,7 @@ final class ColorController extends BaseController
     public function colorsApi(Request $request): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetColorsForPaginatedGridQuery::createFormRequest($request));
+            $envelope = $this->bus->dispatch(GetColorsPaginatedGridQuery::createFormRequest($request));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {

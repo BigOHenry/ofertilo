@@ -58,6 +58,9 @@
         });
         {% endif %}
 
+        console.log(window.APP_LOCALE);
+        console.log(window.TabulatorLangs);
+
         const table = new window.Tabulator("#{{ id }}", {
             locale: "{{ app.request.locale }}",
             langs: window.TabulatorLangs,
