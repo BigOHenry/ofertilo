@@ -7,7 +7,7 @@ namespace App\Application\Service;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 
-final readonly class ColorApplicationService
+readonly class ColorApplicationService
 {
     public function __construct(
         private ColorRepositoryInterface $colorRepository,

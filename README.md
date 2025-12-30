@@ -18,10 +18,10 @@
 - [ ] Nacenění variant produktů na e-shop včetně možnosti aktualizovat produkty přímo na e-shopu (API)
 
 ## 🛠️ Technologie
-- PHP 8.4.x
+- PHP 8.5.x
 - Bootstrap 5.3
-- PostgreSQL 17.5
-- Symfony 7.2 + Turbo
+- PostgreSQL 18.1
+- Symfony 7.4 + Turbo
 - Doctrine ORM
 - Tabulator.js
 - Webpack

@@ -39,7 +39,7 @@ phpstan:
 	$(exec-app) vendor/bin/phpstan analyse
 
 .PHONY: phpunit
-tester:
+phpunit:
 	$(exec-app) php bin/phpunit
 
 .PHONY: composer

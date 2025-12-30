@@ -7,7 +7,7 @@ namespace App\Application\Service;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
 
-final readonly class WoodApplicationService
+readonly class WoodApplicationService
 {
     public function __construct(
         private WoodRepositoryInterface $woodRepository,

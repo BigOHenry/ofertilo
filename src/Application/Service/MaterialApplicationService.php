@@ -11,7 +11,7 @@ use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
 
-final readonly class MaterialApplicationService
+readonly class MaterialApplicationService
 {
     public function __construct(
         private MaterialRepositoryInterface $materialRepository,
