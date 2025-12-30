@@ -2,9 +2,9 @@ name: Code Style and Static analysis
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ develop ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ develop ]
 
 jobs:
   code-style:

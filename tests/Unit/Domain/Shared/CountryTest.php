@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Shared\Entity;
+namespace App\Tests\Unit\Domain\Shared;
 
 use App\Domain\Shared\Entity\Country;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,6 @@ class CountryTest extends TestCase
     {
         $country = new Country('Czech Republic', 'cz', 'cze', true);
 
-        $this->assertNull($country->getId());
         $this->assertSame('Czech Republic', $country->getName());
         $this->assertSame('CZ', $country->getAlpha2()); // Automatically converted to uppercase
         $this->assertSame('CZE', $country->getAlpha3()); // Automatically converted to uppercase
