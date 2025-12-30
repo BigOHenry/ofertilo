@@ -197,7 +197,8 @@ final class CreateMaterialCommandHandlerTest extends TestCase
             ->expects($this->once())
             ->method('findByWoodAndType')
             ->with($wood, MaterialType::PLYWOOD)
-            ->willReturn($existingMaterial);
+            ->willReturn($existingMaterial)
+        ;
 
         $this->expectException(MaterialAlreadyExistsException::class);
 
