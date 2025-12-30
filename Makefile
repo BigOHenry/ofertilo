@@ -64,8 +64,9 @@ npm-run-dev:
 
 .PHONY: version
 version:
-	@git describe --tags --abbrev=0 > var/version.txt 2>/dev/null || echo "dev" > var/version.txt
-	@echo "Version: $$(cat var/version.txt)"
+	@VERSION=$$(git describe --tags --abbrev=0 2>/dev/null || echo "dev"); \
+	docker compose exec -T app sh -c "echo '$$VERSION' > var/version.txt && chmod 666 var/version.txt"; \
+	echo "Version: $$VERSION"
 
 .PHONY: deploy
 deploy: version
