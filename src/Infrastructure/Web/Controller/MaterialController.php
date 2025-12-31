@@ -231,7 +231,7 @@ final class MaterialController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function editPrice(Request $request, MaterialPrice $materialPrice): Response
     {
-        $envelope = $this->bus->dispatch(new GetMaterialPriceFormDataQuery((int) $materialPrice->getId()));
+        $envelope = $this->bus->dispatch(GetMaterialPriceFormDataQuery::create($materialPrice));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(MaterialPriceFormType::class, $formData, [
@@ -243,7 +243,7 @@ final class MaterialController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(EditMaterialPriceCommand::createFromForm($form));
+                $this->bus->dispatch(EditMaterialPriceCommand::createFromForm($form, $materialPrice->getMaterial()));
                 $this->addFlash('success', $this->translator->trans('message.item_updated'));
 
                 $frameId = $request->request->get('frame_id');
@@ -295,7 +295,7 @@ final class MaterialController extends BaseController
     public function priceDelete(MaterialPrice $materialPrice): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteMaterialPriceCommand::create((int) $materialPrice->getId()));
+            $this->bus->dispatch(DeleteMaterialPriceCommand::create((int) $materialPrice->getMaterial()->getId(), (int) $materialPrice->getId()));
             $this->addFlash('success', $this->translator->trans('message.item_deleted'));
 
             return new JsonResponse(['success' => true]);

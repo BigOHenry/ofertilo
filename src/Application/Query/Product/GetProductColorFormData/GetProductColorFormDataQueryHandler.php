@@ -7,7 +7,6 @@ namespace App\Application\Query\Product\GetProductColorFormData;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Exception\ProductColorNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -23,15 +22,12 @@ final readonly class GetProductColorFormDataQueryHandler
      */
     public function __invoke(GetProductColorFormDataQuery $query): array
     {
-        $productColor = $this->productApplicationService->findProductColorById($query->getId());
-
-        if ($productColor === null) {
-            throw ProductColorNotFoundException::withId($query->getId());
-        }
+        $product = $this->productApplicationService->getById($query->productId);
+        $productColor = $product->getProductColorById($query->productColorId);
 
         return [
             'id' => $productColor->getId(),
-            'product' => $productColor->getProduct(),
+            'product' => $product,
             'color' => $productColor->getColor(),
             'description' => $productColor->getDescription(),
         ];

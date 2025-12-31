@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Query\Material\GetMaterialPriceFormData;
 
 use App\Application\Service\MaterialApplicationService;
-use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,11 +20,8 @@ final readonly class GetMaterialPriceFormDataQueryHandler
      */
     public function __invoke(GetMaterialPriceFormDataQuery $query): array
     {
-        $materialPrice = $this->materialApplicationService->findMaterialPriceById($query->getId());
-
-        if ($materialPrice === null) {
-            throw MaterialPriceNotFoundException::withId($query->getId());
-        }
+        $material = $this->materialApplicationService->getById($query->materialId);
+        $materialPrice = $material->getPriceById($query->priceId);
 
         return [
             'id' => $materialPrice->getId(),

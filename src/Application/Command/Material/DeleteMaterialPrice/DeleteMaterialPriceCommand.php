@@ -7,17 +7,23 @@ namespace App\Application\Command\Material\DeleteMaterialPrice;
 final readonly class DeleteMaterialPriceCommand
 {
     protected function __construct(
-        private int $id,
+        private int $materialId,
+        private int $priceId,
     ) {
     }
 
-    public static function create(int $id): self
+    public static function create(int $materialId, int $priceId): self
     {
-        return new self($id);
+        return new self($materialId, $priceId);
     }
 
-    public function getId(): int
+    public function getMaterialId(): int
     {
-        return $this->id;
+        return $this->materialId;
+    }
+
+    public function getPriceId(): int
+    {
+        return $this->priceId;
     }
 }

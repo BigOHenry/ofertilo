@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Material\Entity;
 
-use App\Domain\Material\Exception\InvalidMaterialPriceException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -59,7 +58,6 @@ class MaterialPrice
 
     public function setThickness(int $thickness): void
     {
-        self::validateThickness($thickness);
         $this->thickness = $thickness;
     }
 
@@ -70,7 +68,6 @@ class MaterialPrice
 
     public function setPrice(string $price): void
     {
-        self::validatePrice($price);
         $this->price = $price;
     }
 
@@ -87,35 +84,5 @@ class MaterialPrice
     protected function setId(?int $id = null): void
     {
         $this->id = $id;
-    }
-
-    private static function validatePrice(string $price): void
-    {
-        if (!is_numeric($price)) {
-            throw InvalidMaterialPriceException::invalidPriceFormat($price);
-        }
-
-        if (!preg_match('/^\d{1,7}(\.\d{1,2})?$/', $price)) {
-            throw InvalidMaterialPriceException::invalidPriceFormat($price);
-        }
-
-        if (bccomp($price, '1.00', 2) < 0) {
-            throw InvalidMaterialPriceException::priceTooLow($price, 1);
-        }
-
-        if (bccomp($price, '999999.99', 2) > 0) {
-            throw InvalidMaterialPriceException::priceTooHigh($price, 999999.99);
-        }
-    }
-
-    private static function validateThickness(int $thickness): void
-    {
-        if ($thickness < 1) {
-            throw InvalidMaterialPriceException::thicknessTooLow($thickness, 1);
-        }
-
-        if ($thickness > 100) {
-            throw InvalidMaterialPriceException::thicknessTooHigh($thickness, 100);
-        }
     }
 }

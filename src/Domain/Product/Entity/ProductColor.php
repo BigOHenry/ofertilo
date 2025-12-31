@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Product\Exception\InvalidProductColorException;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -45,24 +44,7 @@ class ProductColor
 
     public static function create(Product $product, Color $color, ?string $description = null): self
     {
-        if ($description !== null) {
-            self::validateDescription($description);
-        }
-
         $productColor = new self($product);
-        $productColor->color = $color;
-        $productColor->description = $description;
-
-        return $productColor;
-    }
-
-    public static function createFromDatabase(
-        int $id,
-        Product $product,
-        Color $color,
-        ?string $description = null,
-    ): self {
-        $productColor = new self($product, $id);
         $productColor->color = $color;
         $productColor->description = $description;
 
@@ -91,9 +73,6 @@ class ProductColor
 
     public function setDescription(?string $description = null): self
     {
-        if ($description !== null) {
-            self::validateDescription($description);
-        }
         $this->description = $description;
 
         return $this;
@@ -107,13 +86,5 @@ class ProductColor
     protected function setId(?int $id): void
     {
         $this->id = $id;
-    }
-
-    private static function validateDescription(string $description): void
-    {
-        $trimmed = mb_trim($description);
-        if (mb_strlen($trimmed) > 500) {
-            throw InvalidProductColorException::descriptionTooLong(500);
-        }
     }
 }

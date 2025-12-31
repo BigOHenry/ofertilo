@@ -29,8 +29,8 @@ final readonly class EditColorCommandHandler
         }
 
         if ($color->getCode() !== $command->getCode()) {
-            $foundColor = $this->colorApplicationService->findById($command->getId());
-            if ($foundColor !== null && $foundColor->getId() !== $command->getId()) {
+            $foundColor = $this->colorApplicationService->findByCode($command->getCode());
+            if ($foundColor !== null && $foundColor->getId() !== $color->getId()) {
                 throw ColorAlreadyExistsException::withCode($command->getCode());
             }
         }

@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductNotFoundException;
-use App\Domain\Product\Repository\ProductColorRepositoryInterface;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
@@ -18,7 +16,6 @@ final readonly class ProductApplicationService
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
-        private ProductColorRepositoryInterface $productColorRepository,
         private FileUploader $fileUploader,
     ) {
     }
@@ -39,11 +36,6 @@ final readonly class ProductApplicationService
     public function findByTypeAndCountry(ProductType $type, Country $country): ?Product
     {
         return $this->productRepository->findByTypeAndCountry($type, $country);
-    }
-
-    public function findProductColorById(int $id): ?ProductColor
-    {
-        return $this->productColorRepository->findById($id);
     }
 
     public function save(Product $product): void

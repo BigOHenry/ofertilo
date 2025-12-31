@@ -6,8 +6,7 @@ namespace App\Application\Command\Product\EditProductColor;
 
 use App\Application\Service\ColorApplicationService;
 use App\Application\Service\ProductApplicationService;
-use App\Domain\Color\Exception\ColorNotFoundException;
-use App\Domain\Product\Exception\ProductColorNotFoundException;
+use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Validator\ProductColorValidator;
 use App\Domain\Wood\Exception\WoodValidationException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,26 +22,24 @@ final readonly class EditProductColorCommandHandler
 
     public function __invoke(EditProductColorCommand $command): void
     {
-        $color = $this->colorApplicationService->findById($command->getColorId());
+        $product = $this->productApplicationService->getById($command->productId);
+        $productColor = $product->getProductColorById($command->productColorId);
+        $color = $this->colorApplicationService->getById($command->colorId);
 
-        if ($color === null) {
-            throw ColorNotFoundException::withId($command->getColorId());
-        }
-
-        $productColor = $this->productApplicationService->findProductColorById($command->getId());
-
-        if ($productColor === null) {
-            throw ProductColorNotFoundException::withId($command->getId());
-        }
-
-        $errors = ProductColorValidator::validate($command->getDescription());
+        $errors = ProductColorValidator::validate($command->description);
 
         if (!empty($errors)) {
             throw WoodValidationException::withErrors($errors);
         }
 
-        $productColor->getProduct()->updateColor($productColor, $color, $command->getDescription());
+        $foundProductColor = $product->findProductColorByColor($color);
+        if ($foundProductColor !== null && $foundProductColor !== $productColor) {
+            throw ProductColorAlreadyExistsException::withCode($color->getCode());
+        }
 
-        $this->productApplicationService->save($productColor->getProduct());
+        $productColor->setColor($color);
+        $productColor->setDescription($command->description);
+
+        $this->productApplicationService->save($product);
     }
 }
