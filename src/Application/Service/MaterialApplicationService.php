@@ -6,6 +6,7 @@ namespace App\Application\Service;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
+use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Repository\MaterialPriceRepositoryInterface;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\Material\ValueObject\MaterialType;
@@ -27,6 +28,14 @@ readonly class MaterialApplicationService
     public function findById(int $id): ?Material
     {
         return $this->materialRepository->findById($id);
+    }
+
+    /**
+     * @throws MaterialNotFoundException
+     */
+    public function getById(int $id): Material
+    {
+        return $this->materialRepository->getById($id);
     }
 
     public function findMaterialPriceByMaterialAndThickness(Material $material, int $thickness): ?MaterialPrice

@@ -14,7 +14,6 @@ use App\Domain\Material\Entity\SolidWoodMaterial;
 use App\Domain\Material\Exception\MaterialAlreadyExistsException;
 use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
-use App\Domain\Wood\Exception\WoodNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -28,11 +27,7 @@ final readonly class CreateMaterialCommandHandler
 
     public function __invoke(CreateMaterialCommand $command): void
     {
-        $wood = $this->woodService->findById($command->getWoodId());
-
-        if ($wood === null) {
-            throw WoodNotFoundException::withId($command->getWoodId());
-        }
+        $wood = $this->woodService->getById($command->getWoodId());
 
         $type = $command->getType();
 

@@ -23,7 +23,7 @@ final readonly class CreateColorCommandHandler
     {
         $code = $command->getCode();
 
-        if ($this->colorApplicationService->findByCode($code)) {
+        if ($this->colorApplicationService->findByCode($code) !== null) {
             throw ColorAlreadyExistsException::withCode($code);
         }
 

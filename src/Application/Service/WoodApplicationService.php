@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Domain\Wood\Entity\Wood;
+use App\Domain\Wood\Exception\WoodNotFoundException;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
 
 readonly class WoodApplicationService
@@ -22,6 +23,22 @@ readonly class WoodApplicationService
     public function findById(int $id): ?Wood
     {
         return $this->woodRepository->findById($id);
+    }
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getByName(string $name): Wood
+    {
+        return $this->woodRepository->getByName($name);
+    }
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getById(int $id): Wood
+    {
+        return $this->woodRepository->getById($id);
     }
 
     public function save(Wood $wood): void

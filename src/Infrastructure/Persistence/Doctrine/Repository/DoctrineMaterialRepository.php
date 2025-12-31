@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Repository\MaterialRepositoryInterface;
 use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
@@ -48,5 +49,13 @@ class DoctrineMaterialRepository extends BaseRepository implements MaterialRepos
     public function findById(int $id): ?Material
     {
         return $this->findOneBy(['id' => $id]);
+    }
+
+    /**
+     * @throws MaterialNotFoundException
+     */
+    public function getById(int $id): Material
+    {
+        return $this->findById($id) ?? throw MaterialNotFoundException::withId($id);
     }
 }

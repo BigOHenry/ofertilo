@@ -6,7 +6,6 @@ namespace App\Application\Command\User\CreateFirstSuperAdminUser;
 
 use App\Application\Service\UserApplicationService;
 use App\Domain\User\Entity\User;
-use App\Domain\User\Exception\UserAlreadyExistsException;
 use App\Domain\User\ValueObject\Role;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -24,13 +23,7 @@ final readonly class CreateFirstSuperAdminUserCommandHandler
 
     public function __invoke(CreateFirstSuperAdminUserCommand $command): void
     {
-        $email = $command->getEmail();
-
-        if ($this->userApplicationService->findByEmail($email)) {
-            throw UserAlreadyExistsException::withEmail();
-        }
-
-        $user = User::create($email, 'tmp', 'SuperAdmin', Role::SUPER_ADMIN);
+        $user = User::create($command->getEmail(), 'tmp', 'SuperAdmin', Role::SUPER_ADMIN);
 
         if ($command->getPassword()) {
             $hashedPassword = $this->passwordHasher->hashPassword($user, $command->getPassword());

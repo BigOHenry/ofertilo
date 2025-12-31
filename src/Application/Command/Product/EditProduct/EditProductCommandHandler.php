@@ -7,7 +7,6 @@ namespace App\Application\Command\Product\EditProduct;
 use App\Application\Service\CountryService;
 use App\Application\Service\ProductApplicationService;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
-use App\Domain\Product\Exception\ProductNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,11 +20,7 @@ final readonly class EditProductCommandHandler
 
     public function __invoke(EditProductCommand $command): void
     {
-        $product = $this->productApplicationService->findById($command->getId());
-
-        if ($product === null) {
-            throw ProductNotFoundException::withId($command->getId());
-        }
+        $product = $this->productApplicationService->getById($command->getId());
 
         $country = null;
         if ($command->getCountryId() !== null) {
