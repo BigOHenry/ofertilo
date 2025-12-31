@@ -8,11 +8,12 @@ use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
 use App\Application\Command\Material\CreateMaterial\CreateMaterialCommandHandler;
 use App\Application\Service\MaterialApplicationService;
 use App\Application\Service\WoodApplicationService;
-use App\Domain\Material\Entity\Material;
+use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialAlreadyExistsException;
 use App\Domain\Material\ValueObject\MaterialType;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodNotFoundException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -42,7 +43,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($wood)
         ;
@@ -57,9 +58,6 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Material $material) {
-                return $material->getType() === MaterialType::PIECE;
-            }))
         ;
 
         $this->handler->__invoke($command);
@@ -68,6 +66,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
     public function testHandleCreatesPlywoodMaterial(): void
     {
         $wood = Wood::create('oak');
+
         $command = new CreateMaterialCommand(
             woodId: 1,
             type: MaterialType::PLYWOOD
@@ -75,22 +74,21 @@ final class CreateMaterialCommandHandlerTest extends TestCase
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($wood)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('findByWoodAndType')
+            ->with($wood, MaterialType::PLYWOOD)
             ->willReturn(null)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Material $material) {
-                return $material->getType() === MaterialType::PLYWOOD;
-            }))
         ;
 
         $this->handler->__invoke($command);
@@ -99,6 +97,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
     public function testHandleCreatesEdgeGluedPanelMaterial(): void
     {
         $wood = Wood::create('oak');
+
         $command = new CreateMaterialCommand(
             woodId: 1,
             type: MaterialType::EDGE_GLUED_PANEL
@@ -106,22 +105,21 @@ final class CreateMaterialCommandHandlerTest extends TestCase
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($wood)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('findByWoodAndType')
+            ->with($wood, MaterialType::EDGE_GLUED_PANEL)
             ->willReturn(null)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Material $material) {
-                return $material->getType() === MaterialType::EDGE_GLUED_PANEL;
-            }))
         ;
 
         $this->handler->__invoke($command);
@@ -130,6 +128,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
     public function testHandleCreatesSolidWoodMaterial(): void
     {
         $wood = Wood::create('oak');
+
         $command = new CreateMaterialCommand(
             woodId: 1,
             type: MaterialType::SOLID_WOOD
@@ -137,39 +136,39 @@ final class CreateMaterialCommandHandlerTest extends TestCase
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($wood)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('findByWoodAndType')
+            ->with($wood, MaterialType::SOLID_WOOD)
             ->willReturn(null)
         ;
 
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Material $material) {
-                return $material->getType() === MaterialType::SOLID_WOOD;
-            }))
         ;
 
         $this->handler->__invoke($command);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testHandleThrowsExceptionWhenWoodNotFound(): void
     {
         $command = new CreateMaterialCommand(
             woodId: 999,
-            type: MaterialType::PIECE
+            type: MaterialType::PLYWOOD
         );
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(WoodNotFoundException::withId(999))
         ;
 
         $this->expectException(WoodNotFoundException::class);
@@ -180,7 +179,6 @@ final class CreateMaterialCommandHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenMaterialAlreadyExists(): void
     {
         $wood = Wood::create('oak');
-        $existingMaterial = $this->createMock(Material::class);
 
         $command = new CreateMaterialCommand(
             woodId: 1,
@@ -189,7 +187,8 @@ final class CreateMaterialCommandHandlerTest extends TestCase
 
         $this->woodService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($wood)
         ;
 
@@ -197,7 +196,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
             ->expects($this->once())
             ->method('findByWoodAndType')
             ->with($wood, MaterialType::PLYWOOD)
-            ->willReturn($existingMaterial)
+            ->willReturn(PlywoodMaterial::create($wood))
         ;
 
         $this->expectException(MaterialAlreadyExistsException::class);

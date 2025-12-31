@@ -6,7 +6,6 @@ namespace App\Application\Command\Color\EditColor;
 
 use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
-use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Color\Exception\ColorValidationException;
 use App\Domain\Color\Validator\ColorValidator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -21,11 +20,7 @@ final readonly class EditColorCommandHandler
 
     public function __invoke(EditColorCommand $command): void
     {
-        $color = $this->colorApplicationService->findById($command->getId());
-
-        if ($color === null) {
-            throw ColorNotFoundException::withId($command->getId());
-        }
+        $color = $this->colorApplicationService->getById($command->getId());
 
         $errors = ColorValidator::validate($command->getCode());
 
@@ -34,8 +29,8 @@ final readonly class EditColorCommandHandler
         }
 
         if ($color->getCode() !== $command->getCode()) {
-            $foundColor = $this->colorApplicationService->findById($command->getId());
-            if ($foundColor !== null && $foundColor->getId() !== $command->getId()) {
+            $foundColor = $this->colorApplicationService->findByCode($command->getCode());
+            if ($foundColor !== null && $foundColor->getId() !== $color->getId()) {
                 throw ColorAlreadyExistsException::withCode($command->getCode());
             }
         }

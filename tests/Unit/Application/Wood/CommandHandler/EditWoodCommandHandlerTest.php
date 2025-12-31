@@ -40,7 +40,7 @@ final class EditWoodCommandHandlerTest extends TestCase
 
         $this->woodApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($wood)
         ;
@@ -72,9 +72,9 @@ final class EditWoodCommandHandlerTest extends TestCase
 
         $this->woodApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(WoodNotFoundException::withId(999))
         ;
 
         $this->expectException(WoodNotFoundException::class);
@@ -88,9 +88,9 @@ final class EditWoodCommandHandlerTest extends TestCase
 
         $command = new EditWoodCommand(
             id: 1,
-            name: 'oak',
+            name: 'oak',  // Same name - no duplication check
             latinName: null,
-            dryDensity: -100,
+            dryDensity: -100,  // Invalid value
             hardness: null,
             enabled: true,
             translations: []
@@ -98,7 +98,7 @@ final class EditWoodCommandHandlerTest extends TestCase
 
         $this->woodApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->willReturn($wood)
         ;
 

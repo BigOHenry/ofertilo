@@ -8,9 +8,9 @@ use App\Application\Command\Color\EditColor\EditColorCommand;
 use App\Application\Command\Color\EditColor\EditColorCommandHandler;
 use App\Application\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Color\Exception\ColorValidationException;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +27,11 @@ final class EditColorCommandHandlerTest extends TestCase
 
     public function testHandleUpdatesColorSuccessfully(): void
     {
-        $color = Color::create(5000, false, true);
+        $color = Color::create(5000);
 
         $command = new EditColorCommand(
             id: 1,
-            code: 5000,
+            code: 5000, // Same code - no check for duplication
             inStock: true,
             enabled: false,
             translations: []
@@ -39,9 +39,14 @@ final class EditColorCommandHandlerTest extends TestCase
 
         $this->colorApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($color)
+        ;
+
+        $this->colorApplicationService
+            ->expects($this->never())
+            ->method('findByCode')
         ;
 
         $this->colorApplicationService
@@ -52,6 +57,7 @@ final class EditColorCommandHandlerTest extends TestCase
 
         $this->handler->__invoke($command);
 
+        $this->assertSame(5000, $color->getCode());
         $this->assertTrue($color->isInStock());
         $this->assertFalse($color->isEnabled());
     }
@@ -73,20 +79,18 @@ final class EditColorCommandHandlerTest extends TestCase
             translations: []
         );
 
-        // findById se volá dvakrát
         $this->colorApplicationService
-            ->expects($this->exactly(2))
-            ->method('findById')
-            ->willReturnCallback(function ($id) use ($color) {
-                if ($id === 1) {
-                    return $color;
-                }
-            })
+            ->expects($this->once())
+            ->method('getById')
+            ->with(1)
+            ->willReturn($color)
         ;
 
         $this->colorApplicationService
-            ->expects($this->never())
+            ->expects($this->once())
             ->method('findByCode')
+            ->with(6000)
+            ->willReturn(null)
         ;
 
         $this->colorApplicationService
@@ -111,12 +115,54 @@ final class EditColorCommandHandlerTest extends TestCase
 
         $this->colorApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(ColorNotFoundException::withId(999))
         ;
 
         $this->expectException(ColorNotFoundException::class);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testHandleThrowsExceptionWhenCodeAlreadyExists(): void
+    {
+        $color = Color::create(5000);
+        $existingColor = Color::create(6000);
+
+        $reflection = new \ReflectionClass($color);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($color, 1);
+
+        $reflection2 = new \ReflectionClass($existingColor);
+        $idProperty2 = $reflection2->getProperty('id');
+        $idProperty2->setAccessible(true);
+        $idProperty2->setValue($existingColor, 2);
+
+        $command = new EditColorCommand(
+            id: 1,
+            code: 6000,
+            inStock: false,
+            enabled: true,
+            translations: []
+        );
+
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('getById')
+            ->with(1)
+            ->willReturn($color)
+        ;
+
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('findByCode')
+            ->with(6000)
+            ->willReturn($existingColor)
+        ;
+
+        $this->expectException(ColorAlreadyExistsException::class);
 
         $this->handler->__invoke($command);
     }
@@ -135,42 +181,12 @@ final class EditColorCommandHandlerTest extends TestCase
 
         $this->colorApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($color)
         ;
 
         $this->expectException(ColorValidationException::class);
-
-        $this->handler->__invoke($command);
-    }
-
-    public function testHandleWithTranslations(): void
-    {
-        $color = Color::create(5000);
-
-        $descriptionTranslation = $this->createMock(TranslationDto::class);
-        $descriptionTranslation->method('getField')->willReturn('description');
-        $descriptionTranslation->method('getValue')->willReturn('Updated description');
-        $descriptionTranslation->method('getLocale')->willReturn('en');
-
-        $command = new EditColorCommand(
-            id: 1,
-            code: 5000,
-            inStock: true,
-            enabled: true,
-            translations: [$descriptionTranslation]
-        );
-
-        $this->colorApplicationService
-            ->expects($this->once())
-            ->method('findById')
-            ->willReturn($color)
-        ;
-
-        $this->colorApplicationService
-            ->expects($this->once())
-            ->method('save')
-        ;
 
         $this->handler->__invoke($command);
     }

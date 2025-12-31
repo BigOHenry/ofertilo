@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Wood\Entity\Wood;
+use App\Domain\Wood\Exception\WoodNotFoundException;
 use App\Domain\Wood\Repository\WoodRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,5 +40,21 @@ class DoctrineWoodRepository extends BaseRepository implements WoodRepositoryInt
     public function findById(int $id): ?Wood
     {
         return $this->findOneBy(['id' => $id]);
+    }
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getByName(string $name): Wood
+    {
+        return $this->findByName($name) ?? throw WoodNotFoundException::withName($name);
+    }
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getById(int $id): Wood
+    {
+        return $this->findById($id) ?? throw WoodNotFoundException::withId($id);
     }
 }

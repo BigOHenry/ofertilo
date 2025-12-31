@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Exception\ProductNotFoundException;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Entity\Country;
@@ -48,5 +49,13 @@ class DoctrineProductRepository extends BaseRepository implements ProductReposit
     public function findById(int $id): ?Product
     {
         return $this->findOneBy(['id' => $id]);
+    }
+
+    /**
+     * @throws ProductNotFoundException
+     */
+    public function getById(int $id): Product
+    {
+        return $this->findById($id) ?? throw ProductNotFoundException::withId($id);
     }
 }

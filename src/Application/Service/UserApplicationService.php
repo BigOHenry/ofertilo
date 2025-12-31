@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Domain\User\ValueObject\Role;
 
@@ -33,6 +34,22 @@ readonly class UserApplicationService
     public function findByEmail(string $email): ?User
     {
         return $this->userRepository->findByEmail($email);
+    }
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getByEmail(string $email): User
+    {
+        return $this->userRepository->getByEmail($email);
+    }
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getById(int $id): User
+    {
+        return $this->userRepository->getById($id);
     }
 
     /**

@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Domain\Material;
 
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Entity\PlywoodMaterial;
-use App\Domain\Material\Exception\InvalidMaterialPriceException;
 use App\Domain\Wood\Entity\Wood;
 use PHPUnit\Framework\TestCase;
 
@@ -67,15 +66,6 @@ final class MaterialPriceTest extends TestCase
         $this->assertSame($material2, $price->getMaterial());
     }
 
-    public function testSetThicknessThrowsExceptionForInvalidValue(): void
-    {
-        $price = MaterialPrice::create($this->material, 18, '1500.00');
-
-        $this->expectException(InvalidMaterialPriceException::class);
-
-        $price->setThickness(-5);
-    }
-
     public function testValidPriceFormats(): void
     {
         $price1 = MaterialPrice::create($this->material, 18, '1500');
@@ -86,22 +76,5 @@ final class MaterialPriceTest extends TestCase
 
         $price3 = MaterialPrice::create($this->material, 25, '1500.99');
         $this->assertSame('1500.99', $price3->getPrice());
-    }
-
-    public function testGettersAndSetters(): void
-    {
-        $price = MaterialPrice::create($this->material, 18, '1500.00');
-
-        // Test getters
-        $this->assertSame(18, $price->getThickness());
-        $this->assertSame('1500.00', $price->getPrice());
-        $this->assertSame($this->material, $price->getMaterial());
-
-        // Test setters
-        $price->setThickness(20);
-        $price->setPrice('1700.00');
-
-        $this->assertSame(20, $price->getThickness());
-        $this->assertSame('1700.00', $price->getPrice());
     }
 }

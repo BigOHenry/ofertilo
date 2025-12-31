@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Entity;
 
-use App\Domain\User\Exception\InvalidUserException;
 use App\Domain\User\ValueObject\Role;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
@@ -72,7 +71,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function setEmail(string $email): void
     {
-        $this->validateEmail($email);
         $this->email = mb_strtolower(mb_trim($email));
     }
 
@@ -213,18 +211,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     protected function setId(?int $id): void
     {
         $this->id = $id;
-    }
-
-    private function validateEmail(string $email): void
-    {
-        $trimmed = mb_trim($email);
-
-        if ($trimmed === '') {
-            throw InvalidUserException::emptyEmail();
-        }
-
-        if (!filter_var($trimmed, \FILTER_VALIDATE_EMAIL)) {
-            throw InvalidUserException::invalidEmailFormat($trimmed);
-        }
     }
 }

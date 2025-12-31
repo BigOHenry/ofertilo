@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use App\Domain\User\ValueObject\Role;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @phpstan-extends ServiceEntityRepository<\App\Domain\User\Entity\User>
+ * @phpstan-extends ServiceEntityRepository<User>
  */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
@@ -30,10 +31,16 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         return $this->findOneBy(['email' => $email]);
     }
 
-    /**
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \JsonException
-     */
+    public function getById(int $id): User
+    {
+        return $this->findById($id) ?? throw UserNotFoundException::withId($id);
+    }
+
+    public function getByEmail(string $email): User
+    {
+        return $this->findByEmail($email) ?? throw UserNotFoundException::withEmail($email);
+    }
+
     public function hasSuperAdmin(): bool
     {
         $sql = 'SELECT 1 FROM appuser WHERE roles @> :role LIMIT 1';

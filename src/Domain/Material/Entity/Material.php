@@ -89,12 +89,13 @@ abstract class Material
         return $this->prices;
     }
 
+    /**
+     * @throws MaterialPriceAlreadyExistsException
+     */
     public function addPrice(int $thickness, string $price): void
     {
-        foreach ($this->prices as $existingPrice) {
-            if ($existingPrice->getThickness() === $thickness) {
-                throw MaterialPriceAlreadyExistsException::withThickness($thickness);
-            }
+        if ($this->findPriceByThickness($thickness)) {
+            throw MaterialPriceAlreadyExistsException::withThickness($thickness);
         }
         $materialPrice = MaterialPrice::create($this, $thickness, $price);
         $this->prices->add($materialPrice);
@@ -117,6 +118,28 @@ abstract class Material
             MaterialType::EDGE_GLUED_PANEL => EdgeGluedPanelMaterial::class,
             MaterialType::SOLID_WOOD => SolidWoodMaterial::class,
         };
+    }
+
+    public function findPriceById(int $id): ?MaterialPrice
+    {
+        return $this->prices->filter(
+            fn (MaterialPrice $f) => $f->getId() === $id
+        )->first() ?: null;
+    }
+
+    public function findPriceByThickness(int $thickness): ?MaterialPrice
+    {
+        return $this->prices->filter(
+            fn (MaterialPrice $f) => $f->getThickness() === $thickness
+        )->first() ?: null;
+    }
+
+    /**
+     * @throws MaterialPriceNotFoundException
+     */
+    public function getPriceById(int $id): MaterialPrice
+    {
+        return $this->findPriceById($id) ?? throw MaterialPriceNotFoundException::withId($id);
     }
 
     protected function setId(?int $id): void

@@ -122,7 +122,7 @@ abstract class Product implements TranslatableInterface
 
     public function addColor(Color $color, ?string $description = null): self
     {
-        if ($this->hasColor($color)) {
+        if ($this->findProductColorByColor($color)) {
             throw ProductColorAlreadyExistsException::withCode($color->getCode());
         }
 
@@ -132,13 +132,8 @@ abstract class Product implements TranslatableInterface
         return $this;
     }
 
-    public function removeColor(Color $color): self
+    public function removeProductColor(ProductColor $productColor): self
     {
-        $productColor = $this->findProductColorByColor($color);
-        if (!$productColor) {
-            throw ProductColorNotFoundException::withProduct($color->getCode());
-        }
-
         $this->productColors->removeElement($productColor);
 
         return $this;
@@ -158,11 +153,6 @@ abstract class Product implements TranslatableInterface
         return $this;
     }
 
-    public function hasColor(Color $color): bool
-    {
-        return $this->findProductColorByColor($color) !== null;
-    }
-
     public function getColorDescription(Color $color): ?string
     {
         return $this->findProductColorByColor($color)?->getDescription();
@@ -174,14 +164,6 @@ abstract class Product implements TranslatableInterface
     public function getProductColors(): Collection
     {
         return $this->productColors;
-    }
-
-    /**
-     * @param Collection<int, ProductColor> $productColors
-     */
-    public function setProductColors(Collection $productColors): void
-    {
-        $this->productColors = $productColors;
     }
 
     public function getImageFilename(): ?string
@@ -260,19 +242,30 @@ abstract class Product implements TranslatableInterface
         };
     }
 
+    public function findProductColorByColor(Color $color): ?ProductColor
+    {
+        return $this->productColors->filter(
+            fn (ProductColor $f) => $f->getColor() === $color
+        )->first() ?: null;
+    }
+
+    public function findProductColorById(int $id): ?ProductColor
+    {
+        return $this->productColors->filter(
+            fn (ProductColor $f) => $f->getId() === $id
+        )->first() ?: null;
+    }
+
+    /**
+     * @throws ProductColorNotFoundException
+     */
+    public function getProductColorById(int $id): ProductColor
+    {
+        return $this->findProductColorById($id) ?? throw ProductColorNotFoundException::withId($id);
+    }
+
     protected function setId(?int $id): void
     {
         $this->id = $id;
-    }
-
-    private function findProductColorByColor(Color $color): ?ProductColor
-    {
-        foreach ($this->productColors as $productColor) {
-            if ($productColor->getColor()->getCode() === $color->getCode()) {
-                return $productColor;
-            }
-        }
-
-        return null;
     }
 }

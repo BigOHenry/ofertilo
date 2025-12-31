@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\User\Repository;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\Exception\UserNotFoundException;
 
 interface UserRepositoryInterface
 {
@@ -13,6 +14,16 @@ interface UserRepositoryInterface
     public function findById(int $id): ?User;
 
     public function findByEmail(string $email): ?User;
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getById(int $id): User;
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function getByEmail(string $email): User;
 
     public function hasSuperAdmin(): bool;
 

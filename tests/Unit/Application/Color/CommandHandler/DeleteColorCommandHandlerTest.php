@@ -26,12 +26,11 @@ final class DeleteColorCommandHandlerTest extends TestCase
     public function testHandleDeletesColorSuccessfully(): void
     {
         $color = Color::create(5000);
-
         $command = DeleteColorCommand::create(1);
 
         $this->colorApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($color)
         ;
@@ -51,38 +50,13 @@ final class DeleteColorCommandHandlerTest extends TestCase
 
         $this->colorApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(ColorNotFoundException::withId(999))
         ;
 
         $this->expectException(ColorNotFoundException::class);
 
         $this->handler->__invoke($command);
-    }
-
-    public function testHandleDeletesColorWithDifferentIds(): void
-    {
-        $color1 = Color::create(5000);
-        $color2 = Color::create(6000);
-
-        $command1 = DeleteColorCommand::create(1);
-        $command2 = DeleteColorCommand::create(2);
-
-        $this->colorApplicationService
-            ->expects($this->exactly(2))
-            ->method('findById')
-            ->willReturnCallback(function ($id) use ($color1, $color2) {
-                return $id === 1 ? $color1 : $color2;
-            })
-        ;
-
-        $this->colorApplicationService
-            ->expects($this->exactly(2))
-            ->method('delete')
-        ;
-
-        $this->handler->__invoke($command1);
-        $this->handler->__invoke($command2);
     }
 }

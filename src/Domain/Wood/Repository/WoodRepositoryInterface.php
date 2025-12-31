@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Wood\Repository;
 
 use App\Domain\Wood\Entity\Wood;
+use App\Domain\Wood\Exception\WoodNotFoundException;
 use Doctrine\ORM\QueryBuilder;
 
 interface WoodRepositoryInterface
@@ -14,6 +15,16 @@ interface WoodRepositoryInterface
     public function findByName(string $name): ?Wood;
 
     public function findById(int $id): ?Wood;
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getByName(string $name): Wood;
+
+    /**
+     * @throws WoodNotFoundException
+     */
+    public function getById(int $id): Wood;
 
     public function save(Wood $wood): void;
 

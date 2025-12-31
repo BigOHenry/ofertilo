@@ -60,7 +60,7 @@ final class CreateWoodCommandHandlerTest extends TestCase
             translations: []
         );
 
-        $existingWood = $this->createMock(Wood::class);
+        $existingWood = Wood::create('oak');
 
         $this->woodApplicationService
             ->expects($this->once())
@@ -97,12 +97,12 @@ final class CreateWoodCommandHandlerTest extends TestCase
 
     public function testHandleCreatesWoodWithTranslations(): void
     {
-        $descriptionTranslation = $this->createMock(TranslationDto::class);
+        $descriptionTranslation = $this->createStub(TranslationDto::class);
         $descriptionTranslation->method('getField')->willReturn('description');
         $descriptionTranslation->method('getValue')->willReturn('Beautiful hardwood');
         $descriptionTranslation->method('getLocale')->willReturn('en');
 
-        $originTranslation = $this->createMock(TranslationDto::class);
+        $originTranslation = $this->createStub(TranslationDto::class);
         $originTranslation->method('getField')->willReturn('place_of_origin');
         $originTranslation->method('getValue')->willReturn('Europe');
         $originTranslation->method('getLocale')->willReturn('en');

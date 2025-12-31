@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Application\Material\CommandHandler;
 use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommand;
 use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommandHandler;
 use App\Application\Service\MaterialApplicationService;
-use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Wood\Entity\Wood;
@@ -29,35 +28,46 @@ final class DeleteMaterialPriceCommandHandlerTest extends TestCase
     {
         $wood = Wood::create('oak');
         $material = PlywoodMaterial::create($wood);
-        $materialPrice = MaterialPrice::create($material, 18, '1500.00');
+        $material->addPrice(18, '1500.00');
 
-        $command = DeleteMaterialPriceCommand::create(1);
+        $materialPrice = $material->getPrices()[0];
+
+        $reflection = new \ReflectionClass($materialPrice);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($materialPrice, 1);
+
+        $command = DeleteMaterialPriceCommand::create(1, 1);
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
+            ->method('getById')
             ->with(1)
-            ->willReturn($materialPrice)
+            ->willReturn($material)
         ;
 
         $this->materialService
             ->expects($this->once())
-            ->method('deleteMaterialPrice')
-            ->with($materialPrice)
+            ->method('save')
         ;
 
         $this->handler->__invoke($command);
+
+        $this->assertCount(0, $material->getPrices());
     }
 
     public function testHandleThrowsExceptionWhenMaterialPriceNotFound(): void
     {
-        $command = DeleteMaterialPriceCommand::create(999);
+        $wood = Wood::create('oak');
+        $material = PlywoodMaterial::create($wood);
+
+        $command = DeleteMaterialPriceCommand::create(1, 999);
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
-            ->with(999)
-            ->willReturn(null)
+            ->method('getById')
+            ->with(1)
+            ->willReturn($material)
         ;
 
         $this->expectException(MaterialPriceNotFoundException::class);

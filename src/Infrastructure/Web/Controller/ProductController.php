@@ -226,7 +226,7 @@ final class ProductController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function editColor(Request $request, ProductColor $productColor): Response
     {
-        $envelope = $this->bus->dispatch(new GetProductColorFormDataQuery((int) $productColor->getId()));
+        $envelope = $this->bus->dispatch(GetProductColorFormDataQuery::create($productColor));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(ProductColorFormType::class, $formData, [
@@ -237,7 +237,7 @@ final class ProductController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(EditProductColorCommand::createFromForm($form));
+                $this->bus->dispatch(EditProductColorCommand::createFromForm($form, $productColor->getProduct()));
                 $this->addFlash('success', $this->translator->trans('message.item_updated'));
 
                 $frameId = $request->request->get('frame_id');
@@ -290,7 +290,7 @@ final class ProductController extends BaseController
     {
         try {
             \assert($productColor->getId() !== null, 'ProductColor must have an ID when loaded from database');
-            $this->bus->dispatch(DeleteProductColorCommand::create($productColor->getId()));
+            $this->bus->dispatch(DeleteProductColorCommand::create($productColor->getId(), $productColor->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {

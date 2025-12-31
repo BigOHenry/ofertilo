@@ -6,7 +6,6 @@ namespace App\Application\Command\Wood\EditWood;
 
 use App\Application\Service\WoodApplicationService;
 use App\Domain\Wood\Exception\WoodAlreadyExistsException;
-use App\Domain\Wood\Exception\WoodNotFoundException;
 use App\Domain\Wood\Exception\WoodValidationException;
 use App\Domain\Wood\Validator\WoodValidator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -21,11 +20,7 @@ final readonly class EditWoodCommandHandler
 
     public function __invoke(EditWoodCommand $command): void
     {
-        $wood = $this->woodApplicationService->findById($command->getId());
-
-        if ($wood === null) {
-            throw WoodNotFoundException::withId($command->getId());
-        }
+        $wood = $this->woodApplicationService->getById($command->getId());
 
         if ($wood->getName() !== $command->getName()) {
             $foundWood = $this->woodApplicationService->findById($command->getId());

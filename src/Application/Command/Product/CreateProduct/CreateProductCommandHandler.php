@@ -32,7 +32,7 @@ final readonly class CreateProductCommandHandler
         if ($command->getCountryId() !== null) {
             $country = $this->countryService->getEnabledCountryById($command->getCountryId());
 
-            if ($this->productApplicationService->findByTypeAndCountry($type, $country)) {
+            if ($this->productApplicationService->findByTypeAndCountry($type, $country) !== null) {
                 throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
             }
         }

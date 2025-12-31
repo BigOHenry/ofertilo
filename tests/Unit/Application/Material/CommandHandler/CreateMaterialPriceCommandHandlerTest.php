@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Application\Material\CommandHandler;
 use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommand;
 use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommandHandler;
 use App\Application\Service\MaterialApplicationService;
-use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
@@ -38,27 +37,22 @@ final class CreateMaterialPriceCommandHandlerTest extends TestCase
             price: '1500.00'
         );
 
+        // getById místo findById
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($material)
         ;
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceByMaterialAndThickness')
-            ->with($material, 18)
-            ->willReturn(null)
-        ;
-
-        $this->materialService
-            ->expects($this->once())
             ->method('save')
-            ->with($material)
         ;
 
         $this->handler->__invoke($command);
+
+        $this->assertCount(1, $material->getPrices());
     }
 
     public function testHandleThrowsExceptionWhenMaterialNotFound(): void
@@ -71,9 +65,9 @@ final class CreateMaterialPriceCommandHandlerTest extends TestCase
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(MaterialNotFoundException::withId(999))
         ;
 
         $this->expectException(MaterialNotFoundException::class);
@@ -88,13 +82,14 @@ final class CreateMaterialPriceCommandHandlerTest extends TestCase
 
         $command = new CreateMaterialPriceCommand(
             materialId: 1,
-            thickness: 0,
+            thickness: -5,
             price: '1500.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($material)
         ;
 
@@ -111,12 +106,13 @@ final class CreateMaterialPriceCommandHandlerTest extends TestCase
         $command = new CreateMaterialPriceCommand(
             materialId: 1,
             thickness: 18,
-            price: '0.50'
+            price: '-100.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($material)
         ;
 
@@ -129,25 +125,19 @@ final class CreateMaterialPriceCommandHandlerTest extends TestCase
     {
         $wood = Wood::create('oak');
         $material = PlywoodMaterial::create($wood);
-        $existingPrice = $this->createMock(MaterialPrice::class);
+        $material->addPrice(18, '1500.00');
 
         $command = new CreateMaterialPriceCommand(
             materialId: 1,
             thickness: 18,
-            price: '1500.00'
+            price: '1600.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
+            ->with(1)
             ->willReturn($material)
-        ;
-
-        $this->materialService
-            ->expects($this->once())
-            ->method('findMaterialPriceByMaterialAndThickness')
-            ->with($material, 18)
-            ->willReturn($existingPrice)
         ;
 
         $this->expectException(MaterialPriceAlreadyExistsException::class);

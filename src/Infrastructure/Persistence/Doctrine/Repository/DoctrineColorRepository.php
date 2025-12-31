@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Color\Repository\ColorRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,6 +40,22 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
     public function findById(int $id): ?Color
     {
         return $this->findOneBy(['id' => $id]);
+    }
+
+    /**
+     * @throws ColorNotFoundException
+     */
+    public function getByCode(int $code): Color
+    {
+        return $this->findByCode($code) ?? throw ColorNotFoundException::withCode($code);
+    }
+
+    /**
+     * @throws ColorNotFoundException
+     */
+    public function getById(int $id): Color
+    {
+        return $this->findById($id) ?? throw ColorNotFoundException::withId($id);
     }
 
     /**

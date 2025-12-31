@@ -4,15 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\Query\Product\GetProductColorFormData;
 
-readonly class GetProductColorFormDataQuery
+use App\Application\Exception\DeveloperLogicException;
+use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Entity\ProductColor;
+
+final readonly class GetProductColorFormDataQuery
 {
     public function __construct(
-        private int $id,
+        public int $productId,
+        public int $productColorId,
     ) {
     }
 
-    public function getId(): int
+    public static function create(ProductColor $productColor): self
     {
-        return $this->id;
+        $productId = $productColor->getProduct()->getId();
+        $productColorId = $productColor->getId();
+
+        if ($productId === null) {
+            throw DeveloperLogicException::becauseEntityIsNotPersisted(Product::class);
+        }
+
+        if ($productColorId === null) {
+            throw DeveloperLogicException::becauseEntityIsNotPersisted(ProductColor::class);
+        }
+
+        return new self($productId, $productColorId);
     }
 }
