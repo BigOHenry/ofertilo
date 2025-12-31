@@ -33,7 +33,7 @@ final class DeleteMaterialCommandHandlerTest extends TestCase
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($material)
         ;
@@ -53,9 +53,9 @@ final class DeleteMaterialCommandHandlerTest extends TestCase
 
         $this->materialService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(MaterialNotFoundException::withId(999))
         ;
 
         $this->expectException(MaterialNotFoundException::class);

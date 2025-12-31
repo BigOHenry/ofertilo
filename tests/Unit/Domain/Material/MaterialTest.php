@@ -195,4 +195,76 @@ final class MaterialTest extends TestCase
             SolidWoodMaterial::getMaterialClassByType(MaterialType::SOLID_WOOD)
         );
     }
+
+    public function testFindPriceById(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+        $material->addPrice(18, '1500.00');
+
+        $prices = $material->getPrices();
+        $price = $prices[0];
+
+        $reflection = new \ReflectionClass($price);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($price, 1);
+
+        $foundPrice = $material->findPriceById(1);
+
+        $this->assertSame($price, $foundPrice);
+    }
+
+    public function testFindPriceByIdReturnsNullWhenNotFound(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+
+        $this->assertNull($material->findPriceById(999));
+    }
+
+    public function testFindPriceByThickness(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+        $material->addPrice(18, '1500.00');
+        $material->addPrice(20, '1700.00');
+
+        $foundPrice = $material->findPriceByThickness(18);
+
+        $this->assertNotNull($foundPrice);
+        $this->assertSame(18, $foundPrice->getThickness());
+        $this->assertSame('1500.00', $foundPrice->getPrice());
+    }
+
+    public function testFindPriceByThicknessReturnsNullWhenNotFound(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+
+        $this->assertNull($material->findPriceByThickness(99));
+    }
+
+    public function testGetPriceByIdThrowsExceptionWhenNotFound(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+
+        $this->expectException(MaterialPriceNotFoundException::class);
+
+        $material->getPriceById(999);
+    }
+
+    public function testGetPriceById(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+        $material->addPrice(18, '1500.00');
+
+        $prices = $material->getPrices();
+        $price = $prices[0];
+
+        $reflection = new \ReflectionClass($price);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($price, 1);
+
+        $foundPrice = $material->getPriceById(1);
+
+        $this->assertSame($price, $foundPrice);
+    }
 }

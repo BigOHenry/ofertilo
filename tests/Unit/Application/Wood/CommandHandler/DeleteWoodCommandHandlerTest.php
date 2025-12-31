@@ -31,7 +31,7 @@ final class DeleteWoodCommandHandlerTest extends TestCase
 
         $this->woodApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(1)
             ->willReturn($wood)
         ;
@@ -51,9 +51,9 @@ final class DeleteWoodCommandHandlerTest extends TestCase
 
         $this->woodApplicationService
             ->expects($this->once())
-            ->method('findById')
+            ->method('getById')
             ->with(999)
-            ->willReturn(null)
+            ->willThrowException(WoodNotFoundException::withId(999))
         ;
 
         $this->expectException(WoodNotFoundException::class);

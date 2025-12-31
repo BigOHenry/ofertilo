@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Application\Material\CommandHandler;
 use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
 use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommandHandler;
 use App\Application\Service\MaterialApplicationService;
-use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
@@ -31,32 +30,32 @@ final class EditMaterialPriceCommandHandlerTest extends TestCase
     {
         $wood = Wood::create('oak');
         $material = PlywoodMaterial::create($wood);
-        $materialPrice = MaterialPrice::create($material, 18, '1500.00');
+        $material->addPrice(18, '1500.00');
+
+        $materialPrice = $material->getPrices()[0];
+
+        $reflection = new \ReflectionClass($materialPrice);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($materialPrice, 1);
 
         $command = new EditMaterialPriceCommand(
-            id: 1,
+            materialId: 1,
+            priceId: 1,
             thickness: 20,
             price: '1700.50'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
+            ->method('getById')
             ->with(1)
-            ->willReturn($materialPrice)
+            ->willReturn($material)
         ;
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceByMaterialAndThickness')
-            ->with($material, 20)
-            ->willReturn(null)
-        ;
-
-        $this->materialService
-            ->expects($this->once())
-            ->method('saveMaterialPrice')
-            ->with($materialPrice)
+            ->method('save')
         ;
 
         $this->handler->__invoke($command);
@@ -67,17 +66,21 @@ final class EditMaterialPriceCommandHandlerTest extends TestCase
 
     public function testHandleThrowsExceptionWhenMaterialPriceNotFound(): void
     {
+        $wood = Wood::create('oak');
+        $material = PlywoodMaterial::create($wood);
+
         $command = new EditMaterialPriceCommand(
-            id: 999,
-            thickness: 18,
-            price: '1500.00'
+            materialId: 1,
+            priceId: 999,
+            thickness: 20,
+            price: '1700.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
-            ->with(999)
-            ->willReturn(null)
+            ->method('getById')
+            ->with(1)
+            ->willReturn($material)
         ;
 
         $this->expectException(MaterialPriceNotFoundException::class);
@@ -89,18 +92,27 @@ final class EditMaterialPriceCommandHandlerTest extends TestCase
     {
         $wood = Wood::create('oak');
         $material = PlywoodMaterial::create($wood);
-        $materialPrice = MaterialPrice::create($material, 18, '1500.00');
+        $material->addPrice(18, '1500.00');
+
+        $materialPrice = $material->getPrices()[0];
+
+        $reflection = new \ReflectionClass($materialPrice);
+        $idProperty = $reflection->getProperty('id');
+        $idProperty->setAccessible(true);
+        $idProperty->setValue($materialPrice, 1);
 
         $command = new EditMaterialPriceCommand(
-            id: 1,
-            thickness: 0,
+            materialId: 1,
+            priceId: 1,
+            thickness: -5,
             price: '1500.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
-            ->willReturn($materialPrice)
+            ->method('getById')
+            ->with(1)
+            ->willReturn($material)
         ;
 
         $this->expectException(MaterialPriceValidationException::class);
@@ -112,35 +124,28 @@ final class EditMaterialPriceCommandHandlerTest extends TestCase
     {
         $wood = Wood::create('oak');
         $material = PlywoodMaterial::create($wood);
-        $materialPrice = MaterialPrice::create($material, 18, '1500.00');
-        $existingPrice = MaterialPrice::create($material, 20, '1700.00');
+        $material->addPrice(18, '1500.00');
+        $material->addPrice(20, '1700.00');
+
+        $materialPrice = $material->getPrices()[0];
 
         $reflection = new \ReflectionClass($materialPrice);
         $idProperty = $reflection->getProperty('id');
         $idProperty->setAccessible(true);
         $idProperty->setValue($materialPrice, 1);
 
-        $reflection2 = new \ReflectionClass($existingPrice);
-        $idProperty2 = $reflection2->getProperty('id');
-        $idProperty2->setAccessible(true);
-        $idProperty2->setValue($existingPrice, 2);
-
         $command = new EditMaterialPriceCommand(
-            id: 1,
+            materialId: 1,
+            priceId: 1,
             thickness: 20,
-            price: '1500.00'
+            price: '1600.00'
         );
 
         $this->materialService
             ->expects($this->once())
-            ->method('findMaterialPriceById')
-            ->willReturn($materialPrice)
-        ;
-
-        $this->materialService
-            ->expects($this->once())
-            ->method('findMaterialPriceByMaterialAndThickness')
-            ->willReturn($existingPrice)
+            ->method('getById')
+            ->with(1)
+            ->willReturn($material)
         ;
 
         $this->expectException(MaterialPriceAlreadyExistsException::class);

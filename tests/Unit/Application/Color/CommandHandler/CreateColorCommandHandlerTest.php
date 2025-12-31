@@ -49,40 +49,16 @@ final class CreateColorCommandHandlerTest extends TestCase
         $this->handler->__invoke($command);
     }
 
-    public function testHandleCreatesColorWithDefaultValues(): void
-    {
-        $command = new CreateColorCommand(
-            code: 6000,
-            inStock: false,
-            enabled: true,
-            translations: []
-        );
-
-        $this->colorApplicationService
-            ->expects($this->once())
-            ->method('findByCode')
-            ->with(6000)
-            ->willReturn(null)
-        ;
-
-        $this->colorApplicationService
-            ->expects($this->once())
-            ->method('save')
-        ;
-
-        $this->handler->__invoke($command);
-    }
-
     public function testHandleThrowsExceptionWhenColorAlreadyExists(): void
     {
+        $existingColor = Color::create(5000);
+
         $command = new CreateColorCommand(
             code: 5000,
             inStock: false,
             enabled: true,
             translations: []
         );
-
-        $existingColor = $this->createMock(Color::class);
 
         $this->colorApplicationService
             ->expects($this->once())
@@ -118,16 +94,41 @@ final class CreateColorCommandHandlerTest extends TestCase
 
     public function testHandleCreatesColorWithTranslations(): void
     {
-        $descriptionTranslation = $this->createMock(TranslationDto::class);
+        $descriptionTranslation = $this->createStub(TranslationDto::class);
         $descriptionTranslation->method('getField')->willReturn('description');
-        $descriptionTranslation->method('getValue')->willReturn('Beautiful red');
+        $descriptionTranslation->method('getValue')->willReturn('Beautiful red color');
         $descriptionTranslation->method('getLocale')->willReturn('en');
+
+        $translations = [$descriptionTranslation];
 
         $command = new CreateColorCommand(
             code: 5000,
             inStock: true,
             enabled: true,
-            translations: [$descriptionTranslation]
+            translations: $translations
+        );
+
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('findByCode')
+            ->willReturn(null)
+        ;
+
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('save')
+        ;
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testHandleCreatesColorWithDefaultValues(): void
+    {
+        $command = new CreateColorCommand(
+            code: 5000,
+            inStock: false,
+            enabled: false,
+            translations: []
         );
 
         $this->colorApplicationService
