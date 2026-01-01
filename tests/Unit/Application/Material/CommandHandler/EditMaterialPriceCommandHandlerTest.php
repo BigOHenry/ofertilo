@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Material\CommandHandler;
 
-use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
-use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommandHandler;
-use App\Application\Service\MaterialApplicationService;
+use App\Application\Material\Command\EditMaterialPrice\EditMaterialPriceCommand;
+use App\Application\Material\Command\EditMaterialPrice\EditMaterialPriceCommandHandler;
+use App\Application\Material\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;

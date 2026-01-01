@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Wood\CommandHandler;
 
-use App\Application\Command\Wood\DeleteWood\DeleteWoodCommand;
-use App\Application\Command\Wood\DeleteWood\DeleteWoodCommandHandler;
-use App\Application\Service\WoodApplicationService;
+use App\Application\Wood\Command\DeleteWood\DeleteWoodCommand;
+use App\Application\Wood\Command\DeleteWood\DeleteWoodCommandHandler;
+use App\Application\Wood\Service\WoodApplicationService;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodNotFoundException;
 use PHPUnit\Framework\MockObject\MockObject;

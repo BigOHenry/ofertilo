@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Material\CommandHandler;
 
-use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommand;
-use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommandHandler;
-use App\Application\Service\MaterialApplicationService;
+use App\Application\Material\Command\DeleteMaterialPrice\DeleteMaterialPriceCommand;
+use App\Application\Material\Command\DeleteMaterialPrice\DeleteMaterialPriceCommandHandler;
+use App\Application\Material\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialPriceNotFoundException;
 use App\Domain\Wood\Entity\Wood;

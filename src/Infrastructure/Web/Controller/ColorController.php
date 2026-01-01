@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Command\Color\CreateColor\CreateColorCommand;
-use App\Application\Command\Color\DeleteColor\DeleteColorCommand;
-use App\Application\Command\Color\EditColor\EditColorCommand;
-use App\Application\Query\Color\GetColorFormData\GetColorFormDataQuery;
-use App\Application\Query\Color\GetColorsPaginatedGrid\GetColorsPaginatedGridQuery;
-use App\Application\Query\Color\GetOutOfStockColorsGrid\GetOutOfStockColorsGridQuery;
+use App\Application\Color\Command\CreateColor\CreateColorCommand;
+use App\Application\Color\Command\DeleteColor\DeleteColorCommand;
+use App\Application\Color\Command\EditColor\EditColorCommand;
+use App\Application\Color\Query\GetColorFormData\GetColorFormDataQuery;
+use App\Application\Color\Query\GetColorsPaginatedGrid\GetColorsPaginatedGridQuery;
+use App\Application\Color\Query\GetOutOfStockColorsGrid\GetOutOfStockColorsGridQuery;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorException;
 use App\Domain\User\ValueObject\Role;

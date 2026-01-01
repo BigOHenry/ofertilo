@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
-use App\Domain\Shared\Entity\Country;
-use App\Domain\Shared\Repository\CountryRepositoryInterface;
+use App\Domain\Shared\Country\Entity\Country;
+use App\Domain\Shared\Country\Repository\CountryRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Cache\InvalidArgumentException;

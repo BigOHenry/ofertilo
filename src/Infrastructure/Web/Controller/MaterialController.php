@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
-use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommand;
-use App\Application\Command\Material\DeleteMaterial\DeleteMaterialCommand;
-use App\Application\Command\Material\DeleteMaterialPrice\DeleteMaterialPriceCommand;
-use App\Application\Command\Material\EditMaterial\EditMaterialCommand;
-use App\Application\Command\Material\EditMaterialPrice\EditMaterialPriceCommand;
-use App\Application\Query\Material\CalculateMaterialPricePerUnit\CalculateMaterialPricePerUnitQuery;
-use App\Application\Query\Material\GetMaterialFormData\GetMaterialFormDataQuery;
-use App\Application\Query\Material\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
-use App\Application\Query\Material\GetMaterialPricesGrid\GetMaterialPricesGridQuery;
-use App\Application\Query\Material\GetMaterialsPaginatedGrid\GetMaterialsPaginatedGridQuery;
+use App\Application\Material\Command\CreateMaterial\CreateMaterialCommand;
+use App\Application\Material\Command\CreateMaterialPrice\CreateMaterialPriceCommand;
+use App\Application\Material\Command\DeleteMaterial\DeleteMaterialCommand;
+use App\Application\Material\Command\DeleteMaterialPrice\DeleteMaterialPriceCommand;
+use App\Application\Material\Command\EditMaterial\EditMaterialCommand;
+use App\Application\Material\Command\EditMaterialPrice\EditMaterialPriceCommand;
+use App\Application\Material\Query\CalculateMaterialPricePerUnit\CalculateMaterialPricePerUnitQuery;
+use App\Application\Material\Query\GetMaterialFormData\GetMaterialFormDataQuery;
+use App\Application\Material\Query\GetMaterialPriceFormData\GetMaterialPriceFormDataQuery;
+use App\Application\Material\Query\GetMaterialPricesGrid\GetMaterialPricesGridQuery;
+use App\Application\Material\Query\GetMaterialsPaginatedGrid\GetMaterialsPaginatedGridQuery;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Exception\MaterialException;
