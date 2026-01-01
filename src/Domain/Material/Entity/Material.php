@@ -141,9 +141,4 @@ abstract class Material
     {
         return $this->findPriceById($id) ?? throw MaterialPriceNotFoundException::withId($id);
     }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
 }

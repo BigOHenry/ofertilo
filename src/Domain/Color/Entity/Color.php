@@ -109,9 +109,4 @@ class Color implements TranslatableInterface
 
         return $this;
     }
-
-    protected function setId(int $id): void
-    {
-        $this->id = $id;
-    }
 }

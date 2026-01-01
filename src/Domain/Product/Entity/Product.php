@@ -263,9 +263,4 @@ abstract class Product implements TranslatableInterface
     {
         return $this->findProductColorById($id) ?? throw ProductColorNotFoundException::withId($id);
     }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
 }

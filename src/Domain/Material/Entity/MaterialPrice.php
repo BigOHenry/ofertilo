@@ -80,9 +80,4 @@ class MaterialPrice
     {
         $this->material = $material;
     }
-
-    protected function setId(?int $id = null): void
-    {
-        $this->id = $id;
-    }
 }
