@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Command\Wood\CreateWood\CreateWoodCommand;
-use App\Application\Command\Wood\DeleteWood\DeleteWoodCommand;
-use App\Application\Command\Wood\EditWood\EditWoodCommand;
-use App\Application\Query\Wood\GetWoodFormData\GetWoodFormDataQuery;
-use App\Application\Query\Wood\GetWoodsPaginatedGrid\GetWoodsPaginatedGridQuery;
+use App\Application\Wood\Command\CreateWood\CreateWoodCommand;
+use App\Application\Wood\Command\DeleteWood\DeleteWoodCommand;
+use App\Application\Wood\Command\EditWood\EditWoodCommand;
+use App\Application\Wood\Query\GetWoodFormData\GetWoodFormDataQuery;
+use App\Application\Wood\Query\GetWoodsPaginatedGrid\GetWoodsPaginatedGridQuery;
 use App\Domain\User\ValueObject\Role;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodException;

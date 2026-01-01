@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Material\CommandHandler;
 
-use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommand;
-use App\Application\Command\Material\CreateMaterialPrice\CreateMaterialPriceCommandHandler;
-use App\Application\Service\MaterialApplicationService;
+use App\Application\Material\Command\CreateMaterialPrice\CreateMaterialPriceCommand;
+use App\Application\Material\Command\CreateMaterialPrice\CreateMaterialPriceCommandHandler;
+use App\Application\Material\Service\MaterialApplicationService;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialNotFoundException;
 use App\Domain\Material\Exception\MaterialPriceAlreadyExistsException;

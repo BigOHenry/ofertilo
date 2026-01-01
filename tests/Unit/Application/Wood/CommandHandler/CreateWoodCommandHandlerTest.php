@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Wood\CommandHandler;
 
-use App\Application\Command\Wood\CreateWood\CreateWoodCommand;
-use App\Application\Command\Wood\CreateWood\CreateWoodCommandHandler;
-use App\Application\Service\WoodApplicationService;
+use App\Application\Wood\Command\CreateWood\CreateWoodCommand;
+use App\Application\Wood\Command\CreateWood\CreateWoodCommandHandler;
+use App\Application\Wood\Service\WoodApplicationService;
 use App\Domain\Translation\TranslationDto\TranslationDto;
 use App\Domain\Wood\Entity\Wood;
 use App\Domain\Wood\Exception\WoodAlreadyExistsException;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Web\Form;
 
 use App\Domain\Product\ValueObject\ProductType;
-use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Country\Entity\Country;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

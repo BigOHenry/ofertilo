@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Material\CommandHandler;
 
-use App\Application\Command\Material\CreateMaterial\CreateMaterialCommand;
-use App\Application\Command\Material\CreateMaterial\CreateMaterialCommandHandler;
-use App\Application\Service\MaterialApplicationService;
-use App\Application\Service\WoodApplicationService;
+use App\Application\Material\Command\CreateMaterial\CreateMaterialCommand;
+use App\Application\Material\Command\CreateMaterial\CreateMaterialCommandHandler;
+use App\Application\Material\Service\MaterialApplicationService;
+use App\Application\Wood\Service\WoodApplicationService;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Exception\MaterialAlreadyExistsException;
 use App\Domain\Material\ValueObject\MaterialType;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Color\CommandHandler;
 
-use App\Application\Command\Color\CreateColor\CreateColorCommand;
-use App\Application\Command\Color\CreateColor\CreateColorCommandHandler;
-use App\Application\Service\ColorApplicationService;
+use App\Application\Color\Command\CreateColor\CreateColorCommand;
+use App\Application\Color\Command\CreateColor\CreateColorCommandHandler;
+use App\Application\Color\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorValidationException;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Color\CommandHandler;
 
-use App\Application\Command\Color\DeleteColor\DeleteColorCommand;
-use App\Application\Command\Color\DeleteColor\DeleteColorCommandHandler;
-use App\Application\Service\ColorApplicationService;
+use App\Application\Color\Command\DeleteColor\DeleteColorCommand;
+use App\Application\Color\Command\DeleteColor\DeleteColorCommandHandler;
+use App\Application\Color\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use PHPUnit\Framework\MockObject\MockObject;

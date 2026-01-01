@@ -7,7 +7,7 @@ namespace App\Domain\Product\Repository;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Exception\ProductNotFoundException;
 use App\Domain\Product\ValueObject\ProductType;
-use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Country\Entity\Country;
 use Doctrine\ORM\QueryBuilder;
 
 interface ProductRepositoryInterface

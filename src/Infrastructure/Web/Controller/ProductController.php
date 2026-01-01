@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Command\Product\CreateProduct\CreateProductCommand;
-use App\Application\Command\Product\CreateProductColor\CreateProductColorCommand;
-use App\Application\Command\Product\DeleteProduct\DeleteProductCommand;
-use App\Application\Command\Product\DeleteProductColor\DeleteProductColorCommand;
-use App\Application\Command\Product\EditProduct\EditProductCommand;
-use App\Application\Command\Product\EditProductColor\EditProductColorCommand;
-use App\Application\Query\Product\GetProductColorFormData\GetProductColorFormDataQuery;
-use App\Application\Query\Product\GetProductColorsGrid\GetProductColorsGridQuery;
-use App\Application\Query\Product\GetProductFormData\GetProductFormDataQuery;
-use App\Application\Query\Product\GetProductsPaginatedGrid\GetProductsPaginatedGridQuery;
+use App\Application\Product\Command\CreateProduct\CreateProductCommand;
+use App\Application\Product\Command\CreateProductColor\CreateProductColorCommand;
+use App\Application\Product\Command\DeleteProduct\DeleteProductCommand;
+use App\Application\Product\Command\DeleteProductColor\DeleteProductColorCommand;
+use App\Application\Product\Command\EditProduct\EditProductCommand;
+use App\Application\Product\Command\EditProductColor\EditProductColorCommand;
+use App\Application\Product\Query\GetProductColorFormData\GetProductColorFormDataQuery;
+use App\Application\Product\Query\GetProductColorsGrid\GetProductColorsGridQuery;
+use App\Application\Product\Query\GetProductFormData\GetProductFormDataQuery;
+use App\Application\Product\Query\GetProductsPaginatedGrid\GetProductsPaginatedGridQuery;
 use App\Domain\Product\Entity\Product;
 use App\Domain\Product\Entity\ProductColor;
 use App\Domain\Product\Exception\ProductException;

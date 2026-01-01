@@ -8,7 +8,7 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\ProductType;
-use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Country\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -262,10 +262,5 @@ abstract class Product implements TranslatableInterface
     public function getProductColorById(int $id): ProductColor
     {
         return $this->findProductColorById($id) ?? throw ProductColorNotFoundException::withId($id);
-    }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
     }
 }

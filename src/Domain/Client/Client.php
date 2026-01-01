@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Client;
 
-use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Country\Entity\Country;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -46,11 +46,6 @@ class Client
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getName(): ?string

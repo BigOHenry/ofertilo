@@ -207,9 +207,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return new TotpConfiguration($this->two_fa_secret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
 }

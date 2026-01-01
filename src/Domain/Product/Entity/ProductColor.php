@@ -82,9 +82,4 @@ class ProductColor
     {
         $this->color = $color;
     }
-
-    protected function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
 }

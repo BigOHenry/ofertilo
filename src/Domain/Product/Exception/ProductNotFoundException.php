@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Product\Exception;
 
 use App\Domain\Product\ValueObject\ProductType;
-use App\Domain\Shared\Entity\Country;
+use App\Domain\Shared\Country\Entity\Country;
 
 class ProductNotFoundException extends ProductException
 {

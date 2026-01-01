@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Service\TwoFactorService;
+use App\Application\User\Service\TwoFactorService;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
 use Endroid\QrCode\QrCode;

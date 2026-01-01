@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Color\CommandHandler;
 
-use App\Application\Command\Color\EditColor\EditColorCommand;
-use App\Application\Command\Color\EditColor\EditColorCommandHandler;
-use App\Application\Service\ColorApplicationService;
+use App\Application\Color\Command\EditColor\EditColorCommand;
+use App\Application\Color\Command\EditColor\EditColorCommandHandler;
+use App\Application\Color\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorNotFoundException;
