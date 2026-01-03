@@ -44,7 +44,12 @@ abstract class BaseController extends AbstractController
                 }
 
                 try {
-                    $formField = $form->get($field);
+                    $fieldParts = explode('.', $field);
+
+                    $formField = $form;
+                    foreach ($fieldParts as $part) {
+                        $formField = $formField->get($part);
+                    }
 
                     if ($formField->has('first') && $formField->has('second')) {
                         $formField->get('first')->addError(new FormError($message));

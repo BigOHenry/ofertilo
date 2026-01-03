@@ -70,7 +70,7 @@ final class ProductController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => CreateProductCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productModal_frame',
-            'form_template' => '/product/components/_form.html.twig',
+            'form_template' => '/components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'product-form',
@@ -126,7 +126,7 @@ final class ProductController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => EditProductCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productModal_frame',
-            'form_template' => 'product/components/_form.html.twig',
+            'form_template' => '/components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'product' => $product,

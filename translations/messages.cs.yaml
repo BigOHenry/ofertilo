@@ -50,6 +50,7 @@ field:
   enabled: "Aktivní"
   country: "Stát"
   color: "Barva"
+  short_description: "Krátký popis"
 
 button:
   save: "Uložit"

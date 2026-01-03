@@ -7,7 +7,6 @@ namespace App\Infrastructure\Web\Form\Helper;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Infrastructure\Service\LocaleService;
-use Doctrine\Common\Collections\ArrayCollection;
 
 final readonly class TranslationFormHelper
 {
@@ -23,7 +22,7 @@ final readonly class TranslationFormHelper
      *
      * @throws \Exception
      *
-     * @return array{translations: ArrayCollection<int, TranslationEntity>}
+     * @return array{translations: TranslationEntity[]}
      */
     public function prepareFormData(string $entityClass): array
     {
@@ -33,23 +32,24 @@ final readonly class TranslationFormHelper
     }
 
     /**
-     * @return ArrayCollection<int, TranslationEntity>
+     * @return TranslationEntity[]
      */
-    public function prepareTranslationsFromEntity(TranslatableInterface $entity): ArrayCollection
+    public function prepareTranslationsFromEntity(TranslatableInterface $entity): array
     {
         $entityClass = $entity::class;
         $translatableFields = $entityClass::getTranslatableFields();
         $supportedLocales = $this->localeService->getSupportedLocales();
         $existingTranslations = $entity->getTranslations();
 
-        $translations = new ArrayCollection();
+        $translations = [];
 
         foreach ($supportedLocales as $locale) {
             foreach ($translatableFields as $field) {
                 $found = false;
+
                 foreach ($existingTranslations as $trans) {
                     if ($trans->getLocale() === $locale && $trans->getField() === $field) {
-                        $translations->add($trans);
+                        $translations[] = $trans;
                         $found = true;
                         break;
                     }
@@ -60,7 +60,7 @@ final readonly class TranslationFormHelper
                     $translation->setLocale($locale);
                     $translation->setField($field);
                     $translation->setValue('');
-                    $translations->add($translation);
+                    $translations[] = $translation;
                 }
             }
         }
@@ -75,18 +75,20 @@ final readonly class TranslationFormHelper
      *
      * @throws \Exception
      *
-     * @return ArrayCollection<int, TranslationEntity>
+     * @return TranslationEntity[]
      */
-    private function prepareTranslations(string $entityClass): ArrayCollection
+    private function prepareTranslations(string $entityClass): array
     {
         /* @phpstan-ignore-next-line */
         if (is_subclass_of($entityClass, TranslatableInterface::class) === false) {
             throw new \Exception(\sprintf('Entity class %s must implement %s', $entityClass, TranslatableInterface::class));
         }
+
         $translatableFields = $entityClass::getTranslatableFields();
         $supportedLocales = $this->localeService->getSupportedLocales();
 
-        $translations = new ArrayCollection();
+        $translations = [];
+
         foreach ($supportedLocales as $locale) {
             foreach ($translatableFields as $field) {
                 $translation = new TranslationEntity();
@@ -94,7 +96,7 @@ final readonly class TranslationFormHelper
                 $translation->setLocale($locale);
                 $translation->setField($field);
                 $translation->setValue('');
-                $translations->add($translation);
+                $translations[] = $translation;
             }
         }
 

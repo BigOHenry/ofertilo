@@ -22,7 +22,7 @@ final readonly class GetProductsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, description: string|null, country: string, type: string, enabled: bool}>, last_page: int}
+     * @return array{data: list<array{id: int|null, name: string|null, country: string, type: string, enabled: bool}>, last_page: int}
      */
     public function __invoke(GetProductsPaginatedGridQuery $query): array
     {
@@ -55,7 +55,7 @@ final readonly class GetProductsPaginatedGridQueryHandler
         foreach ($paginator as $product) {
             $data[] = [
                 'id' => $product->getId(),
-                'description' => $product->getDescription($this->localeService->getCurrentLocale()),
+                'name' => $product->getName($this->localeService->getCurrentLocale()),
                 'country' => $product->getCountry() ? '(' . $product->getCountry()->getAlpha2() . ') ' . $product->getCountry()->getName() : '',
                 'type' => $this->translator->trans('product.type.' . $product->getType()->value, domain: 'enum'),
                 'enabled' => $product->isEnabled(),

@@ -64,7 +64,7 @@ final class ColorController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => CreateColorCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'colorModal_frame',
-            'form_template' => 'color/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'color-form',
@@ -119,7 +119,7 @@ final class ColorController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => EditColorCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'colorModal_frame',
-            'form_template' => 'color/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'color-form',

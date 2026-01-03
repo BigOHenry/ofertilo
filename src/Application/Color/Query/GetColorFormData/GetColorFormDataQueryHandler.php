@@ -8,7 +8,6 @@ use App\Application\Color\Service\ColorApplicationService;
 use App\Domain\Color\Exception\ColorNotFoundException;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,7 +20,7 @@ final readonly class GetColorFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, code: int, inStock: bool, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
+     * @return array{id: int|null, code: int, inStock: bool, enabled: bool, translations: array<int, TranslationEntity>}
      */
     public function __invoke(GetColorFormDataQuery $query): array
     {

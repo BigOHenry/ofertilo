@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Product\Command\EditProduct;
 
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

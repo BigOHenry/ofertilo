@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Form;
 
+use App\Domain\Wood\Entity\Wood;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,14 +24,10 @@ class WoodFormType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'field.name',
             ])
-            ->add('translations', CollectionType::class, [
-                'entry_type' => TranslationFormType::class,
+            ->add('translations', TranslationsFormType::class, [
                 'mapped' => true,
-                'by_reference' => false,
                 'label' => false,
-                'entry_options' => [
-                    'label' => false,
-                ],
+                'entity_class' => Wood::class,
             ])
             ->add('latinName', TextType::class, [
                 'label' => 'field.latinName',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Form;
 
+use App\Domain\Product\Entity\Product;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
 use Doctrine\ORM\EntityRepository;
@@ -11,9 +12,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -31,14 +32,10 @@ class ProductFormType extends AbstractType
         $enabled = $productId === null ? true : ($builder->getData()['enabled'] ?? null);
 
         $builder
-            ->add('translations', CollectionType::class, [
-                'entry_type' => TranslationFormType::class,
+            ->add('translations', TranslationsFormType::class, [
                 'mapped' => true,
-                'by_reference' => false,
                 'label' => false,
-                'entry_options' => [
-                    'label' => false,
-                ],
+                'entity_class' => Product::class,
             ])
             ->add('type', ChoiceType::class, [
                 'label' => 'field.type',
@@ -46,6 +43,9 @@ class ProductFormType extends AbstractType
                     array_map(fn ($v) => $this->translator->trans($v->label(), domain: 'enum'), ProductType::cases()),
                     ProductType::cases()
                 ),
+            ])
+            ->add('code', TextType::class, [
+                'label' => 'field.code',
             ])
             ->add('country', EntityType::class, [
                 'label' => 'field.country',

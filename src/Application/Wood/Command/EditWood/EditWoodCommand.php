@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Wood\Command\EditWood;
 
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditWoodCommand

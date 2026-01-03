@@ -30,9 +30,13 @@ abstract class Product implements TranslatableInterface
     use TranslatableTrait;
 
     public const string ENTITY_FILES_FOLDER_NAME = 'products';
+    public const string TRANSLATION_FIELD_NAME = 'name';
+    public const string TRANSLATION_FIELD_SHORT_DESCRIPTION = 'short_description';
     public const string TRANSLATION_FIELD_DESCRIPTION = 'description';
 
     private const array TRANSLATION_FIELDS = [
+        self::TRANSLATION_FIELD_NAME,
+        self::TRANSLATION_FIELD_SHORT_DESCRIPTION,
         self::TRANSLATION_FIELD_DESCRIPTION,
     ];
 
@@ -53,6 +57,12 @@ abstract class Product implements TranslatableInterface
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private string $code;
+
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    private string $npn;
 
     private ?UploadedFile $imageFile = null;
 
@@ -97,6 +107,22 @@ abstract class Product implements TranslatableInterface
         return $this->enabled;
     }
 
+    public function setCode(string $code): void
+    {
+        $this->code = mb_strtoupper($code);
+        $this->npn = str_replace('-', '', $this->code);
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function getNpn(): string
+    {
+        return $this->npn;
+    }
+
     public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
@@ -110,6 +136,16 @@ abstract class Product implements TranslatableInterface
         return self::TRANSLATION_FIELDS;
     }
 
+    public function getName(?string $locale = null): ?string
+    {
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_NAME, $locale ?? 'en');
+    }
+
+    public function setName(?string $value, string $locale = 'en'): void
+    {
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_NAME, $value, $locale);
+    }
+
     public function getDescription(?string $locale = null): ?string
     {
         return $this->getTranslationValue(self::TRANSLATION_FIELD_DESCRIPTION, $locale ?? 'en');
@@ -118,6 +154,16 @@ abstract class Product implements TranslatableInterface
     public function setDescription(?string $value, string $locale = 'en'): void
     {
         $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_DESCRIPTION, $value, $locale);
+    }
+
+    public function getShortDescription(?string $locale = null): ?string
+    {
+        return $this->getTranslationValue(self::TRANSLATION_FIELD_SHORT_DESCRIPTION, $locale ?? 'en');
+    }
+
+    public function setShortDescription(?string $value, string $locale = 'en'): void
+    {
+        $this->addOrUpdateTranslation(self::TRANSLATION_FIELD_SHORT_DESCRIPTION, $value, $locale);
     }
 
     public function addColor(Color $color, ?string $description = null): self

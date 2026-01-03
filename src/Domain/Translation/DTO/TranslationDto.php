@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Translation\TranslationDto;
+namespace App\Domain\Translation\DTO;
 
 use App\Domain\Translation\Entity\TranslationEntity;
 
