@@ -35,11 +35,11 @@ class WoodFormType extends AbstractType
             ])
             ->add('dryDensity', IntegerType::class, [
                 'label' => 'field.dryDensity',
-                'required' => false,
+                'required' => true,
             ])
             ->add('hardness', IntegerType::class, [
                 'label' => 'field.hardness',
-                'required' => false,
+                'required' => true,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'button.save',

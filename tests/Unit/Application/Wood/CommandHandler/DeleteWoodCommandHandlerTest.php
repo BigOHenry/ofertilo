@@ -26,13 +26,14 @@ final class DeleteWoodCommandHandlerTest extends TestCase
     public function testHandleDeletesWoodSuccessfully(): void
     {
         $wood = Wood::create('oak');
+        $woodId = $wood->getId();
 
-        $command = DeleteWoodCommand::create(1);
+        $command = DeleteWoodCommand::create($woodId);
 
         $this->woodApplicationService
             ->expects($this->once())
             ->method('getById')
-            ->with(1)
+            ->with($woodId)
             ->willReturn($wood)
         ;
 
@@ -47,16 +48,41 @@ final class DeleteWoodCommandHandlerTest extends TestCase
 
     public function testHandleThrowsExceptionWhenWoodNotFound(): void
     {
-        $command = DeleteWoodCommand::create(999);
+        $nonExistentId = '00000000-0000-0000-0000-000000000999';
+
+        $command = DeleteWoodCommand::create($nonExistentId);
 
         $this->woodApplicationService
             ->expects($this->once())
             ->method('getById')
-            ->with(999)
-            ->willThrowException(WoodNotFoundException::withId(999))
+            ->with($nonExistentId)
+            ->willThrowException(WoodNotFoundException::withId($nonExistentId))
         ;
 
         $this->expectException(WoodNotFoundException::class);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testHandleCallsDeleteOnlyOnce(): void
+    {
+        $wood = Wood::create('oak');
+        $woodId = $wood->getId();
+
+        $command = DeleteWoodCommand::create($woodId);
+
+        $this->woodApplicationService
+            ->expects($this->once())
+            ->method('getById')
+            ->willReturn($wood)
+        ;
+
+        // Verify delete is called exactly once
+        $this->woodApplicationService
+            ->expects($this->once())
+            ->method('delete')
+            ->with($this->identicalTo($wood))
+        ;
 
         $this->handler->__invoke($command);
     }

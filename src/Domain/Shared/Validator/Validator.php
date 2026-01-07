@@ -69,11 +69,11 @@ class Validator
         $errors = [];
         $strLen = mb_strlen(mb_trim($string ?? ''));
 
-        if (($min !== null) && $strLen < $min) {
+        if ($min !== null && $strLen < $min) {
             $errors[$field] = ['key' => 'general.string.tooShort', 'params' => ['%min%' => $min]];
         }
 
-        if (($max !== null) && $strLen > $max) {
+        if ($max !== null && $strLen > $max) {
             $errors[$field] = ['key' => 'general.string.tooLong', 'params' => ['%max%' => $max]];
         }
 
@@ -87,11 +87,11 @@ class Validator
     {
         $errors = [];
 
-        if (($min !== null) && $integer < $min) {
+        if ($min !== null && $integer < $min) {
             $errors[$field] = ['key' => 'general.number.tooSmall', 'params' => ['%min%' => $min]];
         }
 
-        if (($max !== null) && $integer > $max) {
+        if ($max !== null && $integer > $max) {
             $errors[$field] = ['key' => 'general.number.tooBig', 'params' => ['%max%' => $max]];
         }
 
@@ -105,11 +105,11 @@ class Validator
     {
         $errors = [];
 
-        if (($min !== null) && $float < $min) {
+        if ($min !== null && $float < $min) {
             $errors[$field] = ['key' => 'general.number.tooSmall', 'params' => ['%min%' => $min]];
         }
 
-        if (($max !== null) && $float > $max) {
+        if ($max !== null && $float > $max) {
             $errors[$field] = ['key' => 'general.number.tooBig', 'params' => ['%max%' => $max]];
         }
 

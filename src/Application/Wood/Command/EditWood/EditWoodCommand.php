@@ -17,8 +17,8 @@ final readonly class EditWoodCommand
         private string $id,
         private string $name,
         private ?string $latinName,
-        private ?int $dryDensity,
-        private ?int $hardness,
+        private int $dryDensity,
+        private int $hardness,
         private bool $enabled,
         private array $translations,
     ) {
@@ -60,12 +60,12 @@ final readonly class EditWoodCommand
         return $this->latinName;
     }
 
-    public function getDryDensity(): ?int
+    public function getDryDensity(): int
     {
         return $this->dryDensity;
     }
 
-    public function getHardness(): ?int
+    public function getHardness(): int
     {
         return $this->hardness;
     }

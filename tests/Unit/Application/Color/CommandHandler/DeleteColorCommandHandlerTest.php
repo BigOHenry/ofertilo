@@ -26,12 +26,14 @@ final class DeleteColorCommandHandlerTest extends TestCase
     public function testHandleDeletesColorSuccessfully(): void
     {
         $color = Color::create(5000);
-        $command = DeleteColorCommand::create(1);
+        $colorId = $color->getId();
+
+        $command = DeleteColorCommand::create($colorId);
 
         $this->colorApplicationService
             ->expects($this->once())
             ->method('getById')
-            ->with(1)
+            ->with($colorId)
             ->willReturn($color)
         ;
 
@@ -46,16 +48,41 @@ final class DeleteColorCommandHandlerTest extends TestCase
 
     public function testHandleThrowsExceptionWhenColorNotFound(): void
     {
-        $command = DeleteColorCommand::create(999);
+        $nonExistentId = '00000000-0000-0000-0000-000000000999';
+
+        $command = DeleteColorCommand::create($nonExistentId);
 
         $this->colorApplicationService
             ->expects($this->once())
             ->method('getById')
-            ->with(999)
-            ->willThrowException(ColorNotFoundException::withId(999))
+            ->with($nonExistentId)
+            ->willThrowException(ColorNotFoundException::withId($nonExistentId))
         ;
 
         $this->expectException(ColorNotFoundException::class);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testHandleCallsDeleteOnlyOnce(): void
+    {
+        $color = Color::create(5000);
+        $colorId = $color->getId();
+
+        $command = DeleteColorCommand::create($colorId);
+
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('getById')
+            ->willReturn($color)
+        ;
+
+        // Verify delete is called exactly once with the same instance
+        $this->colorApplicationService
+            ->expects($this->once())
+            ->method('delete')
+            ->with($this->identicalTo($color))
+        ;
 
         $this->handler->__invoke($command);
     }

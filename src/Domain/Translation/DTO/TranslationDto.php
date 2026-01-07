@@ -58,6 +58,24 @@ class TranslationDto implements \Serializable
         );
     }
 
+    public static function create(
+        string $id,
+        string $objectId,
+        string $objectClass,
+        string $locale,
+        string $field,
+        ?string $value = null,
+    ): self {
+        return new self(
+            id: $id,
+            objectId: $objectId,
+            objectClass: $objectClass,
+            locale: $locale,
+            field: $field,
+            value: $value
+        );
+    }
+
     public function getId(): string
     {
         return $this->id;
