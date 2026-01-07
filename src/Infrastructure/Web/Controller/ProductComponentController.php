@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Product\Command\CreateProductSize\CreateProductSizeCommand;
-use App\Application\Product\Command\DeleteProductSize\DeleteProductSizeCommand;
-use App\Application\Product\Command\EditProductSize\EditProductSizeCommand;
-use App\Application\Product\Query\GetProductSizeFormData\GetProductSizeFormDataQuery;
-use App\Application\Product\Query\GetProductSizesGrid\GetProductSizesGridQuery;
+use App\Application\Product\Command\CreateProductComponent\CreateProductComponentCommand;
+use App\Application\Product\Command\DeleteProductComponent\DeleteProductComponentCommand;
+use App\Application\Product\Command\EditProductComponent\EditProductComponentCommand;
+use App\Application\Product\Query\GetProductComponentFormData\GetProductComponentFormDataQuery;
+use App\Application\Product\Query\GetProductComponentsGrid\GetProductComponentsGridQuery;
+use App\Application\Product\Query\GetProductSizeComponentsGrid\GetProductSizeComponentsGridQuery;
 use App\Domain\Product\Entity\Product;
+use App\Domain\Product\Entity\ProductComponent;
 use App\Domain\Product\Entity\ProductSize;
 use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
-use App\Infrastructure\Web\Form\ProductSizeFormType;
+use App\Infrastructure\Web\Form\ProductComponentFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,14 +26,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
-final class ProductSizeController extends BaseController
+final class ProductComponentController extends BaseController
 {
-    #[Route('/product/{id}/size/new', name: 'product_size_new', methods: ['GET', 'POST'])]
+    #[Route('/product/{id}/component/new', name: 'product_component_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function newSize(Request $request, Product $product): Response
+    public function newComponent(Request $request, Product $product): Response
     {
-        $form = $this->createForm(ProductSizeFormType::class, ['product' => $product], [
-            'action' => $this->generateUrl('product_size_new', ['id' => $product->getId()]),
+        $form = $this->createForm(ProductComponentFormType::class, ['product' => $product], [
+            'action' => $this->generateUrl('product_component_new', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
 
@@ -39,13 +41,13 @@ final class ProductSizeController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(CreateProductSizeCommand::createFromForm($form, $product));
+                $this->bus->dispatch(CreateProductComponentCommand::createFromForm($form, $product));
                 $this->addFlash('success', $this->translator->trans('message.item_created'));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                if ($frameId === 'productSizeModal_frame') {
+                if ($frameId === 'productComponentModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
 
@@ -56,12 +58,12 @@ final class ProductSizeController extends BaseController
         }
 
         $response = $this->render('components/form_frame.html.twig', [
-            'data_class' => CreateProductSizeCommand::class,
-            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productSizeModal_frame',
+            'data_class' => CreateProductComponentCommand::class,
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productComponentModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
-                'form_id' => 'product-size-form',
+                'form_id' => 'product-component-form',
             ],
         ]);
 
@@ -72,44 +74,44 @@ final class ProductSizeController extends BaseController
         return $response;
     }
 
-    #[Route('/product/size/{id}/edit', name: 'product_size_edit')]
+    #[Route('/product/component/{id}/edit', name: 'product_component_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function editSize(Request $request, ProductSize $productSize): Response
+    public function editComponent(Request $request, ProductComponent $productComponent): Response
     {
-        $envelope = $this->bus->dispatch(GetProductSizeFormDataQuery::create($productSize));
+        $envelope = $this->bus->dispatch(GetProductComponentFormDataQuery::create($productComponent));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(ProductSizeFormType::class, $formData, [
-            'action' => $this->generateUrl('product_size_edit', ['id' => $productSize->getId()]),
+        $form = $this->createForm(ProductComponentFormType::class, $formData, [
+            'action' => $this->generateUrl('product_component_edit', ['id' => $productComponent->getId()]),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(EditProductSizeCommand::createFromForm($form, $productSize->getProduct()));
+                $this->bus->dispatch(EditProductComponentCommand::createFromForm($form, $productComponent->getProduct()));
                 $this->addFlash('success', $this->translator->trans('message.item_updated'));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                if ($frameId === 'productSizeModal_frame') {
+                if ($frameId === 'productComponentModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
 
-                return $this->redirectToRoute('product_detail', ['id' => $productSize->getProduct()->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('product_detail', ['id' => $productComponent->getProduct()->getId()], Response::HTTP_SEE_OTHER);
             } catch (HandlerFailedException $e) {
                 $this->handleHandlerException($e, $form);
             }
         }
 
         $response = $this->render('components/form_frame.html.twig', [
-            'data_class' => EditProductSizeCommand::class,
-            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productSizeModal_frame',
+            'data_class' => EditProductComponentCommand::class,
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productComponentModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
-                'form_id' => 'product-size-form',
+                'form_id' => 'product-component-form',
             ],
         ]);
 
@@ -120,12 +122,12 @@ final class ProductSizeController extends BaseController
         return $response;
     }
 
-    #[Route('/api/product/{id}/sizes', name: 'api_product_sizes')]
+    #[Route('/api/product/size/{id}/components', name: 'api_product_size_components')]
     #[IsGranted(Role::READER->value)]
-    public function productSizesApi(Product $product): JsonResponse
+    public function productComponentsApi(ProductSize $productSize): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetProductSizesGridQuery::create($product->getId()));
+            $envelope = $this->bus->dispatch(GetProductSizeComponentsGridQuery::createFromProductSize($productSize));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
@@ -133,12 +135,12 @@ final class ProductSizeController extends BaseController
         }
     }
 
-    #[Route('/product/size/{id}', name: 'product_size_delete', methods: ['DELETE'])]
+    #[Route('/product/component/{id}', name: 'product_component_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(ProductSize $productSize): JsonResponse
+    public function delete(ProductComponent $productComponent): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteProductSizeCommand::create($productSize->getProduct()->getId(), $productSize->getId()));
+            $this->bus->dispatch(DeleteProductComponentCommand::create($productComponent->getProduct()->getId(), $productComponent->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {
@@ -148,13 +150,13 @@ final class ProductSizeController extends BaseController
         }
     }
 
-    #[Route('/product/size/{id}', name: 'product_size_detail', methods: ['GET'])]
+    #[Route('/product/component/{id}', name: 'product_component_detail', methods: ['GET'])]
     #[IsGranted(Role::READER->value)]
-    public function detail(ProductSize $productSize): Response
+    public function detail(ProductComponent $productComponent): Response
     {
-        return $this->render('product/size.html.twig', [
-            'productSize' => $productSize,
-            'product' => $productSize->getProduct(),
+        return $this->render('product/component.html.twig', [
+            'productComponent' => $productComponent,
+            'product' => $productComponent->getProduct(),
         ]);
     }
 }

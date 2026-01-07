@@ -23,8 +23,8 @@ class ProductComponent
     private ProductSize $productSize;
 
     #[ORM\ManyToOne(targetEntity: Material::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Material $material;
+    #[ORM\JoinColumn(nullable: false)]
+    private Material $material;
 
     #[ORM\Column(type: 'integer')]
     private int $quantity;
@@ -107,7 +107,7 @@ class ProductComponent
         return $this;
     }
 
-    public function getMaterial(): ?Material
+    public function getMaterial(): Material
     {
         return $this->material;
     }
@@ -155,7 +155,7 @@ class ProductComponent
         return $this;
     }
 
-    public function getThickness(): ?int
+    public function getThickness(): int
     {
         return $this->thickness;
     }

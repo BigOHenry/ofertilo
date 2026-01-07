@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.productSize'|trans }}{% endblock %}
+
+{% block body %}
+    <div id="product-size-card" class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <div id="product-size-title">
+                {% include 'product/components/size/_header.html.twig' with { product: product } %}
+            </div>
+{#            <a class="btn btn-sm btn-primary" data-modal-id="productModal" data-modal-src="{{ path('product_edit', {'id': product.id}) }}" data-modal-title="{{ product.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>#}
+        </div>
+    </div>
+
+    <div id="product-component-card" class="card shadow-sm mt-3">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <div id="product-components-title">
+                <h2 class="mb-0">{{ 'title.productComponent'|trans }}</h2>
+            </div>
+            <button class="btn btn-primary" data-modal-id="productComponentModal" data-modal-src="{{ path('product_component_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_component'|trans }}">
+                <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+            </button>
+        </div>
+        <div class="card-body">
+            {{ component('tabulator_grid', {
+                id: 'product-components-table',
+                pagination: false,
+                windowVariable: 'productComponent',
+                apiUrl: path('api_product_size_components', {'id': productSize.id}),
+                showActions: true,
+                editRoute: 'product_component_edit',
+                deleteRoute: 'product_component_delete',
+                editModalId: 'productComponentModal',
+                columns: [
+                    { title: 'field.height'|trans, field: "height", headerSort: false},
+                    { title: 'field.width'|trans, field: "width", headerSort: false},
+                    { title: 'field.thickness'|trans, field: "thickness", headerSort: false},
+                ]
+            }) }}
+        </div>
+    </div>
+
+{#    {% include 'components/form_modal_frame.html.twig' with {#}
+{#        modal_id: 'productSizeModal',#}
+{#        title: 'title.product_size'|trans#}
+{#    } %}#}
+
+{#    {% include 'components/form_modal_frame.html.twig' with {#}
+{#        modal_id: 'productColorModal',#}
+{#        title: 'title.product_color'|trans#}
+{#    } %}#}
+
+{#    {% include 'components/form_modal_frame.html.twig' with {#}
+{#        modal_id: 'productModal',#}
+{#        title: 'title.product'|trans#}
+{#    } %}#}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

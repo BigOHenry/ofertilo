@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Application\Product\Query\GetProductSizeComponentsGrid;
+
+use App\Domain\Product\Entity\ProductSize;
+
+final readonly class GetProductSizeComponentsGridQuery
+{
+    protected function __construct(public string $productId, public string $productSizeId)
+    {
+    }
+
+    public static function createFromProductSize(ProductSize $productSize): self
+    {
+        return new self($productSize->getProduct()->getId(), $productSize->getId());
+    }
+}

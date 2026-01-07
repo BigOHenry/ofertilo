@@ -61,6 +61,7 @@
                 windowVariable: 'productSizes',
                 apiUrl: path('api_product_sizes', {'id': product.id}),
                 showActions: true,
+                rowClickRoute: 'product_size_detail',
                 editRoute: 'product_size_edit',
                 deleteRoute: 'product_size_delete',
                 editModalId: 'productSizeModal',
@@ -75,7 +76,7 @@
 
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'productSizeModal',
-        title: 'title.product_size'|trans
+        title: 'title.productSize'|trans
     } %}
 
     {% include 'components/form_modal_frame.html.twig' with {
