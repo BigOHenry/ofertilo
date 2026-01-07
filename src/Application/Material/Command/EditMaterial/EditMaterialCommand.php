@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormInterface;
 
 final readonly class EditMaterialCommand
 {
-    public function __construct(private int $id, private int $woodId, private bool $enabled = true)
+    public function __construct(public string $materialId, public string $woodId, public bool $enabled = true)
     {
     }
 
@@ -16,21 +16,6 @@ final readonly class EditMaterialCommand
     {
         $data = $form->getData();
 
-        return new self((int) $data['id'], $data['wood']->getId(), $data['enabled']);
-    }
-
-    public function getWoodId(): int
-    {
-        return $this->woodId;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function isEnabled(): bool
-    {
-        return $this->enabled;
+        return new self($data['id'], $data['wood']->getId(), $data['enabled']);
     }
 }

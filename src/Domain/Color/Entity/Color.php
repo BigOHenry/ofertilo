@@ -7,6 +7,7 @@ namespace App\Domain\Color\Entity;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'color')]
@@ -21,9 +22,8 @@ class Color implements TranslatableInterface
     ];
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(type: 'integer', length: 4, unique: true, nullable: false)]
     private int $code;
@@ -36,6 +36,7 @@ class Color implements TranslatableInterface
 
     protected function __construct()
     {
+        $this->id = Uuid::uuid4()->toString();
         $this->initializeTranslations();
     }
 
@@ -57,7 +58,7 @@ class Color implements TranslatableInterface
         return self::TRANSLATION_FIELDS;
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }

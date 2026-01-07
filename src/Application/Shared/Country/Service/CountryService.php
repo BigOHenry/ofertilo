@@ -15,7 +15,7 @@ readonly class CountryService
     ) {
     }
 
-    public function getEnabledCountryById(int $id): Country
+    public function getEnabledCountryById(string $id): Country
     {
         $country = $this->countryRepository->findById($id);
 

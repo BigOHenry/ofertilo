@@ -18,7 +18,7 @@ final readonly class GetProductColorFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, product: Product, color: Color, description: string|null}
+     * @return array{id: string, product: Product, color: Color, description: string|null}
      */
     public function __invoke(GetProductColorFormDataQuery $query): array
     {

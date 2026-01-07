@@ -14,7 +14,7 @@ final readonly class EditWoodCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private int $id,
+        private string $id,
         private string $name,
         private ?string $latinName,
         private ?int $dryDensity,
@@ -35,7 +35,7 @@ final readonly class EditWoodCommand
         }
 
         return new self(
-            (int) $data['id'],
+            $data['id'],
             $data['name'],
             $data['latinName'],
             $data['dryDensity'],
@@ -45,7 +45,7 @@ final readonly class EditWoodCommand
         );
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

@@ -17,14 +17,14 @@ final readonly class GetMaterialPricesGridQueryHandler
     }
 
     /**
-     * @return list<array{id: int|null, thickness: int, price: string, formatted_price: non-falsy-string, formatted_thickness: non-falsy-string}>
+     * @return list<array{id: string, thickness: int, price: string, formatted_price: non-falsy-string, formatted_thickness: non-falsy-string}>
      */
     public function __invoke(GetMaterialPricesGridQuery $query): array
     {
-        $material = $this->materialApplicationService->findById($query->getMaterialId());
+        $material = $this->materialApplicationService->findById($query->materialId);
 
         if ($material === null) {
-            throw MaterialNotFoundException::withId($query->getMaterialId());
+            throw MaterialNotFoundException::withId($query->materialId);
         }
 
         $data = [];

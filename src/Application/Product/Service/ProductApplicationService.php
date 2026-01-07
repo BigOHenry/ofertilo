@@ -20,7 +20,7 @@ final readonly class ProductApplicationService
     ) {
     }
 
-    public function findById(int $id): ?Product
+    public function findById(string $id): ?Product
     {
         return $this->productRepository->findById($id);
     }
@@ -28,7 +28,7 @@ final readonly class ProductApplicationService
     /**
      * @throws ProductNotFoundException
      */
-    public function getById(int $id): Product
+    public function getById(string $id): Product
     {
         return $this->productRepository->getById($id);
     }

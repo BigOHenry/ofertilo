@@ -81,7 +81,7 @@ final class WoodController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function woodEdit(Request $request, Wood $wood): Response
     {
-        $envelope = $this->bus->dispatch(new GetWoodFormDataQuery((int) $wood->getId()));
+        $envelope = $this->bus->dispatch(new GetWoodFormDataQuery($wood->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(WoodFormType::class, data: $formData, options: [
@@ -159,7 +159,7 @@ final class WoodController extends BaseController
     public function delete(Wood $wood): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteWoodCommand::create((int) $wood->getId()));
+            $this->bus->dispatch(DeleteWoodCommand::create($wood->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (WoodException $e) {

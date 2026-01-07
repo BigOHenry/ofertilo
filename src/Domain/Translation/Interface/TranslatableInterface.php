@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 interface TranslatableInterface
 {
-    public function getId(): ?int;
+    public function getId(): string;
 
     public function addOrUpdateTranslation(string $field, string $value, string $locale): void;
 

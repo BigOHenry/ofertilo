@@ -46,7 +46,7 @@ class DoctrineProductRepository extends BaseRepository implements ProductReposit
         ;
     }
 
-    public function findById(int $id): ?Product
+    public function findById(string $id): ?Product
     {
         return $this->findOneBy(['id' => $id]);
     }
@@ -54,7 +54,7 @@ class DoctrineProductRepository extends BaseRepository implements ProductReposit
     /**
      * @throws ProductNotFoundException
      */
-    public function getById(int $id): Product
+    public function getById(string $id): Product
     {
         return $this->findById($id) ?? throw ProductNotFoundException::withId($id);
     }

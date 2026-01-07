@@ -6,17 +6,12 @@ namespace App\Application\Product\Query\GetProductColorsGrid;
 
 final readonly class GetProductColorsGridQuery
 {
-    protected function __construct(private int $productId)
+    protected function __construct(public string $productId)
     {
     }
 
-    public static function create(int $productId): self
+    public static function create(string $productId): self
     {
         return new self($productId);
-    }
-
-    public function getProductId(): int
-    {
-        return $this->productId;
     }
 }

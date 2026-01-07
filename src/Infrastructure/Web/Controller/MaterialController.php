@@ -93,7 +93,7 @@ final class MaterialController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function materialEdit(Request $request, Material $material): Response
     {
-        $envelope = $this->bus->dispatch(new GetMaterialFormDataQuery((int) $material->getId()));
+        $envelope = $this->bus->dispatch(new GetMaterialFormDataQuery($material->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(MaterialFormType::class, data: $formData, options: [
@@ -159,7 +159,7 @@ final class MaterialController extends BaseController
     public function deleteMaterial(Material $material): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteMaterialCommand::create((int) $material->getId()));
+            $this->bus->dispatch(DeleteMaterialCommand::create($material->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (MaterialException $e) {
@@ -281,7 +281,6 @@ final class MaterialController extends BaseController
     public function materialPricesApi(Material $material): JsonResponse
     {
         try {
-            \assert($material->getId() !== null, 'Material must have an ID when loaded from database');
             $envelope = $this->bus->dispatch(GetMaterialPricesGridQuery::create($material->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
@@ -295,7 +294,7 @@ final class MaterialController extends BaseController
     public function priceDelete(MaterialPrice $materialPrice): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteMaterialPriceCommand::create((int) $materialPrice->getMaterial()->getId(), (int) $materialPrice->getId()));
+            $this->bus->dispatch(DeleteMaterialPriceCommand::create($materialPrice->getMaterial()->getId(), $materialPrice->getId()));
             $this->addFlash('success', $this->translator->trans('message.item_deleted'));
 
             return new JsonResponse(['success' => true]);

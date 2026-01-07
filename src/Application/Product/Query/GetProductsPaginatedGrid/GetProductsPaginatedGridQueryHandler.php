@@ -22,7 +22,7 @@ final readonly class GetProductsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: string|null, country: string, type: string, enabled: bool}>, last_page: int}
+     * @return array{data: list<array{id: string, name: string|null, country: string, type: string, enabled: bool}>, last_page: int}
      */
     public function __invoke(GetProductsPaginatedGridQuery $query): array
     {

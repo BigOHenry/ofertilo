@@ -20,7 +20,7 @@ final readonly class GetWoodFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, name: string, latinName: string|null, dryDensity: int|null,
+     * @return array{id: string, name: string, latinName: string|null, dryDensity: int|null,
      *      hardness: int|null, enabled: bool, translations: array<int, TranslationEntity>}
      */
     public function __invoke(GetWoodFormDataQuery $query): array

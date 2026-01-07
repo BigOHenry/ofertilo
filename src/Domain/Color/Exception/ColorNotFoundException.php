@@ -11,7 +11,7 @@ class ColorNotFoundException extends ColorException
         return new self(\sprintf("Color with code '%s' not found!", $code));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf("Color with id '%s' not found!", $id));
     }

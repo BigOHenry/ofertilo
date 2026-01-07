@@ -22,7 +22,7 @@ final readonly class GetProductFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, type: ProductType, country: Country|null, enabled: bool, translations: array<int, TranslationEntity>}
+     * @return array{id: string, type: ProductType, country: Country|null, enabled: bool, translations: array<int, TranslationEntity>}
      */
     public function __invoke(GetProductFormDataQuery $query): array
     {

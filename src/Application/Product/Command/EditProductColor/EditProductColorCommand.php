@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Product\Command\EditProductColor;
 
-use App\Application\Shared\Exception\DeveloperLogicException;
 use App\Domain\Product\Entity\Product;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditProductColorCommand
 {
-    public function __construct(public int $productId, public int $productColorId, public int $colorId, public string $description)
+    public function __construct(public string $productId, public string $productColorId, public string $colorId, public string $description)
     {
     }
 
@@ -18,11 +17,6 @@ final readonly class EditProductColorCommand
     {
         $data = $form->getData();
 
-        $productId = $product->getId();
-        if ($productId === null) {
-            throw DeveloperLogicException::becauseEntityIsNotPersisted(Product::class);
-        }
-
-        return new self($productId, (int) $data['id'], $data['color']->getId(), $data['description']);
+        return new self($product->getId(), $data['id'], $data['color']->getId(), $data['description']);
     }
 }

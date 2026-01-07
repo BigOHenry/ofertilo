@@ -17,7 +17,7 @@ final readonly class CreateProductCommand
      */
     public function __construct(
         public ProductType $type,
-        public ?int $countryId,
+        public ?string $countryId,
         public string $code,
         public ?UploadedFile $imageFile, // TODO replace this object
         public array $translations,

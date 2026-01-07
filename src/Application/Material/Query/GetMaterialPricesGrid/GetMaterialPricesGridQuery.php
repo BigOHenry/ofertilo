@@ -6,17 +6,12 @@ namespace App\Application\Material\Query\GetMaterialPricesGrid;
 
 final readonly class GetMaterialPricesGridQuery
 {
-    protected function __construct(private int $materialId)
+    protected function __construct(public string $materialId)
     {
     }
 
-    public static function create(int $materialId): self
+    public static function create(string $materialId): self
     {
         return new self($materialId);
-    }
-
-    public function getMaterialId(): int
-    {
-        return $this->materialId;
     }
 }

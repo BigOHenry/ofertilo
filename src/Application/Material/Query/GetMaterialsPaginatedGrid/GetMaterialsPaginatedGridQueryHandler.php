@@ -22,7 +22,7 @@ final readonly class GetMaterialsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, description: string|null, type: string, enabled: bool}>, last_page: int}
+     * @return array{data: list<array{id: string, description: string|null, type: string, enabled: bool}>, last_page: int}
      */
     public function __invoke(GetMaterialsPaginatedGridQuery $query): array
     {

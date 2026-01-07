@@ -20,16 +20,16 @@ final readonly class EditMaterialCommandHandler
 
     public function __invoke(EditMaterialCommand $command): void
     {
-        $material = $this->materialApplicationService->getById($command->getId());
-        $wood = $this->woodService->getById($command->getWoodId());
+        $material = $this->materialApplicationService->getById($command->materialId);
+        $wood = $this->woodService->getById($command->woodId);
 
         $foundMaterial = $this->materialApplicationService->findByWoodAndType($wood, $material->getType());
-        if ($foundMaterial !== null && $foundMaterial->getId() !== $command->getId()) {
+        if ($foundMaterial !== null && $foundMaterial->getId() !== $command->materialId) {
             throw MaterialAlreadyExistsException::withWoodAndType($wood, $material->getType());
         }
 
         $material->setWood($wood);
-        $material->setEnabled($command->isEnabled());
+        $material->setEnabled($command->enabled);
 
         $this->materialApplicationService->save($material);
     }

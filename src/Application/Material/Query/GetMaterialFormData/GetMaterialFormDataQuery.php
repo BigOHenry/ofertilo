@@ -7,11 +7,11 @@ namespace App\Application\Material\Query\GetMaterialFormData;
 readonly class GetMaterialFormDataQuery
 {
     public function __construct(
-        private int $id,
+        private string $id,
     ) {
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

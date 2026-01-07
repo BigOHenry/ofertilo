@@ -14,7 +14,7 @@ interface ColorRepositoryInterface
 
     public function findByCode(int $code): ?Color;
 
-    public function findById(int $id): ?Color;
+    public function findById(string $id): ?Color;
 
     /**
      * @throws ColorNotFoundException
@@ -24,7 +24,7 @@ interface ColorRepositoryInterface
     /**
      * @throws ColorNotFoundException
      */
-    public function getById(int $id): Color;
+    public function getById(string $id): Color;
 
     public function save(Color $color): void;
 

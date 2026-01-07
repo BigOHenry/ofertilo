@@ -82,7 +82,7 @@ final class ColorController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function colorEdit(Request $request, Color $color): Response
     {
-        $envelope = $this->bus->dispatch(new GetColorFormDataQuery((int) $color->getId()));
+        $envelope = $this->bus->dispatch(new GetColorFormDataQuery($color->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(ColorFormType::class, data: $formData, options: [
@@ -160,7 +160,7 @@ final class ColorController extends BaseController
     public function deletePrice(Color $color): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteColorCommand::create((int) $color->getId()));
+            $this->bus->dispatch(DeleteColorCommand::create($color->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ColorException $e) {

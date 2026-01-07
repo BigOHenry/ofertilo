@@ -26,12 +26,12 @@ class CountryNotFoundException extends CountryException
         return new self(\sprintf("Country with alpha3 '%s' not active!", $alpha3));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf("Country with id '%s' not found!", $id));
     }
 
-    public static function withIdNotActive(int $id): self
+    public static function withIdNotActive(string $id): self
     {
         return new self(\sprintf("Country with id '%s' not active!", $id));
     }

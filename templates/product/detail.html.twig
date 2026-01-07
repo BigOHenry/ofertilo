@@ -45,6 +45,39 @@
         </div>
     </div>
 
+    <div id="product-card" class="card shadow-sm mt-3">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <div id="product-sizes-title">
+                <h2 class="mb-0">{{ 'title.productSizes'|trans }}</h2>
+            </div>
+            <button class="btn btn-primary" data-modal-id="productSizeModal" data-modal-src="{{ path('product_size_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
+                <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+            </button>
+        </div>
+        <div class="card-body">
+            {{ component('tabulator_grid', {
+                id: 'product-sizes-table',
+                pagination: false,
+                windowVariable: 'productSizes',
+                apiUrl: path('api_product_sizes', {'id': product.id}),
+                showActions: true,
+                editRoute: 'product_size_edit',
+                deleteRoute: 'product_size_delete',
+                editModalId: 'productSizeModal',
+                columns: [
+                    { title: 'field.height'|trans, field: "height", headerSort: false},
+                    { title: 'field.width'|trans, field: "width", headerSort: false},
+                    { title: 'field.thickness'|trans, field: "thickness", headerSort: false},
+                ]
+            }) }}
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productSizeModal',
+        title: 'title.product_size'|trans
+    } %}
+
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'productColorModal',
         title: 'title.product_color'|trans

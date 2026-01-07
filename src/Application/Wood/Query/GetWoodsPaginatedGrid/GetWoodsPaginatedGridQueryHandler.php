@@ -20,7 +20,7 @@ final readonly class GetWoodsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, name: string, description: string|null, enabled: bool}>, last_page: float}
+     * @return array{data: list<array{id: string, name: string, description: string|null, enabled: bool}>, last_page: float}
      */
     public function __invoke(GetWoodsPaginatedGridQuery $query): array
     {

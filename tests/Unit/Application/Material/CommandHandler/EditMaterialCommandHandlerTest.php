@@ -41,7 +41,7 @@ final class EditMaterialCommandHandlerTest extends TestCase
         $material = PlywoodMaterial::create($wood);
 
         $command = new EditMaterialCommand(
-            id: 1,
+            materialId: 1,
             woodId: 2,
             enabled: false
         );
@@ -81,7 +81,7 @@ final class EditMaterialCommandHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenMaterialNotFound(): void
     {
         $command = new EditMaterialCommand(
-            id: 999,
+            materialId: 999,
             woodId: 1,
             enabled: true
         );
@@ -109,7 +109,7 @@ final class EditMaterialCommandHandlerTest extends TestCase
         $material = PlywoodMaterial::create($wood);
 
         $command = new EditMaterialCommand(
-            id: 1,
+            materialId: 1,
             woodId: 999,
             enabled: true
         );
@@ -147,7 +147,7 @@ final class EditMaterialCommandHandlerTest extends TestCase
         $idProperty->setValue($existingMaterial, 2);
 
         $command = new EditMaterialCommand(
-            id: 1,
+            materialId: 1,
             woodId: 2,
             enabled: true
         );

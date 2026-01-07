@@ -11,14 +11,14 @@ interface UserRepositoryInterface
 {
     public function save(User $user): void;
 
-    public function findById(int $id): ?User;
+    public function findById(string $id): ?User;
 
     public function findByEmail(string $email): ?User;
 
     /**
      * @throws UserNotFoundException
      */
-    public function getById(int $id): User;
+    public function getById(string $id): User;
 
     /**
      * @throws UserNotFoundException

@@ -7,6 +7,7 @@ namespace App\Domain\Wood\Entity;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'wood')]
@@ -23,9 +24,8 @@ class Wood implements TranslatableInterface
     ];
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(length: 50, unique: true, nullable: false)]
     private string $name;
@@ -44,6 +44,7 @@ class Wood implements TranslatableInterface
 
     protected function __construct()
     {
+        $this->id = Uuid::uuid4()->toString();
         $this->initializeTranslations();
     }
 
@@ -72,7 +73,7 @@ class Wood implements TranslatableInterface
         return self::TRANSLATION_FIELDS;
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }

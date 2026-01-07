@@ -16,12 +16,12 @@ interface ProductRepositoryInterface
 
     public function findByTypeAndCountry(ProductType $type, Country $country): ?Product;
 
-    public function findById(int $id): ?Product;
+    public function findById(string $id): ?Product;
 
     /**
      * @throws ProductNotFoundException
      */
-    public function getById(int $id): Product;
+    public function getById(string $id): Product;
 
     public function save(Product $product): void;
 

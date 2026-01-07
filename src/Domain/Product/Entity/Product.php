@@ -8,6 +8,7 @@ use App\Domain\Color\Entity\Color;
 use App\Domain\Material\Entity\Material;
 use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
+use App\Domain\Product\Exception\ProductSizeNotFoundException;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
 use App\Domain\Translation\Interface\TranslatableInterface;
@@ -15,6 +16,7 @@ use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity]
@@ -42,9 +44,8 @@ abstract class Product implements TranslatableInterface
     ];
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: true)]
@@ -89,10 +90,9 @@ abstract class Product implements TranslatableInterface
     )]
     private Collection $productSizes;
 
-
     protected function __construct(?Country $country)
     {
-        $this->id = null;
+        $this->id = Uuid::uuid4()->toString();
         $this->country = $country;
         $this->productColors = new ArrayCollection();
         $this->productSizes = new ArrayCollection();
@@ -101,7 +101,7 @@ abstract class Product implements TranslatableInterface
 
     abstract public function getType(): ProductType;
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -309,7 +309,7 @@ abstract class Product implements TranslatableInterface
         )->first() ?: null;
     }
 
-    public function findProductColorById(int $id): ?ProductColor
+    public function findProductColorById(string $id): ?ProductColor
     {
         return $this->productColors->filter(
             fn (ProductColor $f) => $f->getId() === $id
@@ -319,9 +319,17 @@ abstract class Product implements TranslatableInterface
     /**
      * @throws ProductColorNotFoundException
      */
-    public function getProductColorById(int $id): ProductColor
+    public function getProductColorById(string $id): ProductColor
     {
         return $this->findProductColorById($id) ?? throw ProductColorNotFoundException::withId($id);
+    }
+
+    /**
+     * @throws ProductColorNotFoundException
+     */
+    public function getProductSizeById(string $id): ProductSize
+    {
+        return $this->findProductSizeById($id) ?? throw ProductSizeNotFoundException::withId($id);
     }
 
     public function addProductSize(int $length, int $width, ?int $thickness = null): ProductSize
@@ -341,6 +349,7 @@ abstract class Product implements TranslatableInterface
     public function removeProductSize(ProductSize $productSize): self
     {
         $this->productSizes->removeElement($productSize);
+
         return $this;
     }
 
@@ -352,19 +361,19 @@ abstract class Product implements TranslatableInterface
         return $this->productSizes;
     }
 
-    public function findProductSizeByDimensions(int $length, int $width, ?int $thickness = null): ?ProductSize
+    public function findProductSizeByDimensions(int $height, int $width, ?int $thickness = null): ?ProductSize
     {
         return $this->productSizes->filter(
-            fn(ProductSize $ps) => $ps->getLength() === $length
+            fn (ProductSize $ps) => $ps->getHeight() === $height
                 && $ps->getWidth() === $width
                 && $ps->getThickness() === $thickness
         )->first() ?: null;
     }
 
-    public function findProductSizeById(int $id): ?ProductSize
+    public function findProductSizeById(string $id): ?ProductSize
     {
         return $this->productSizes->filter(
-            fn(ProductSize $ps) => $ps->getId() === $id
+            fn (ProductSize $ps) => $ps->getId() === $id
         )->first() ?: null;
     }
 
@@ -379,7 +388,7 @@ abstract class Product implements TranslatableInterface
         int $length,
         int $width,
         int $thickness,
-        ?string $shapeDescription = null
+        ?string $shapeDescription = null,
     ): ProductComponent {
         if ($productSize->getProduct() !== $this) {
             throw new \InvalidArgumentException('ProductSize must belong to this Product');
@@ -405,11 +414,13 @@ abstract class Product implements TranslatableInterface
         }
 
         $productSize->removeProductComponent($productComponent);
+
         return $this;
     }
 
     /**
-     * Returns all ProductComponents from all ProductSizes
+     * Returns all ProductComponents from all ProductSizes.
+     *
      * @return ProductComponent[]
      */
     public function getAllProductComponents(): array
@@ -420,11 +431,13 @@ abstract class Product implements TranslatableInterface
                 $components[] = $component;
             }
         }
+
         return $components;
     }
 
     /**
-     * Returns the ProductComponent for a specific ProductSize
+     * Returns the ProductComponent for a specific ProductSize.
+     *
      * @return Collection<int, ProductComponent>
      */
     public function getProductComponentsBySize(ProductSize $productSize): Collection
@@ -437,9 +450,9 @@ abstract class Product implements TranslatableInterface
     }
 
     /**
-     * Finds ProductComponent by ID across all ProductSize
+     * Finds ProductComponent by ID across all ProductSize.
      */
-    public function findProductComponentById(int $id): ?ProductComponent
+    public function findProductComponentById(string $id): ?ProductComponent
     {
         foreach ($this->productSizes as $productSize) {
             foreach ($productSize->getProductComponents() as $component) {
@@ -448,19 +461,20 @@ abstract class Product implements TranslatableInterface
                 }
             }
         }
+
         return null;
     }
 
     /**
-     * Returns the number of all components
+     * Returns the number of all components.
      */
     public function getProductComponentsCount(): int
     {
-        return count($this->getAllProductComponents());
+        return \count($this->getAllProductComponents());
     }
 
     /**
-     * Validates whether it makes sense to have components for this ProductSize
+     * Validates whether it makes sense to have components for this ProductSize.
      */
     public function canHaveComponentsForSize(ProductSize $productSize): bool
     {
@@ -468,7 +482,8 @@ abstract class Product implements TranslatableInterface
     }
 
     /**
-     * Gets all materials used in the components of this product
+     * Gets all materials used in the components of this product.
+     *
      * @return Material[]
      */
     public function getUsedMaterials(): array
@@ -476,16 +491,18 @@ abstract class Product implements TranslatableInterface
         $materials = [];
         foreach ($this->getAllProductComponents() as $component) {
             $material = $component->getMaterial();
-            if ($material && !in_array($material, $materials, true)) {
+            if ($material && !\in_array($material, $materials, true)) {
                 $materials[] = $material;
             }
         }
+
         return $materials;
     }
 
     /**
      * Returns the total amount of material used according to the type of measurement.
-     * @return array<string, float> Key is the name of the material, value is the amount.
+     *
+     * @return array<string, float> key is the name of the material, value is the amount
      */
     public function calculateTotalMaterialUsage(): array
     {

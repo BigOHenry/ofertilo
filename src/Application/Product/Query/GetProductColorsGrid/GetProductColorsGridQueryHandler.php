@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Product\Query\GetProductColorsGrid;
 
 use App\Application\Product\Service\ProductApplicationService;
-use App\Domain\Product\Exception\ProductNotFoundException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -17,15 +16,11 @@ final readonly class GetProductColorsGridQueryHandler
     }
 
     /**
-     * @return list<array{id: int|null, color: int, colorDescription: string|null, description: string|null, inStock: bool}>
+     * @return list<array{id: string, color: int, colorDescription: string|null, description: string|null, inStock: bool}>
      */
     public function __invoke(GetProductColorsGridQuery $query): array
     {
-        $product = $this->productApplicationService->findById($query->getProductId());
-
-        if ($product === null) {
-            throw ProductNotFoundException::withId($query->getProductId());
-        }
+        $product = $this->productApplicationService->getById($query->productId);
 
         $data = [];
         foreach ($product->getProductColors() as $productColor) {

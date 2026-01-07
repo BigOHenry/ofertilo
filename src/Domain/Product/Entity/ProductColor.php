@@ -6,6 +6,7 @@ namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity]
@@ -21,9 +22,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class ProductColor
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'productColors')]
     #[ORM\JoinColumn(nullable: false)]
@@ -36,9 +36,9 @@ class ProductColor
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
     private ?string $description = null;
 
-    protected function __construct(Product $product, ?int $id = null)
+    protected function __construct(Product $product)
     {
-        $this->id = $id;
+        $this->id = Uuid::uuid4()->toString();
         $this->product = $product;
     }
 
@@ -51,7 +51,7 @@ class ProductColor
         return $productColor;
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }

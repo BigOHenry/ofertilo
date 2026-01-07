@@ -7,12 +7,12 @@ namespace App\Application\Product\Command\DeleteProductColor;
 final readonly class DeleteProductColorCommand
 {
     protected function __construct(
-        public int $productId,
-        public int $productColorId,
+        public string $productId,
+        public string $productColorId,
     ) {
     }
 
-    public static function create(int $productId, int $productColorId): self
+    public static function create(string $productId, string $productColorId): self
     {
         return new self($productId, $productColorId);
     }

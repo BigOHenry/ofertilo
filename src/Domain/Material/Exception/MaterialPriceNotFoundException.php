@@ -11,7 +11,7 @@ class MaterialPriceNotFoundException extends MaterialException
         return new self(\sprintf('Price for thickness %s mm not found', $thickness));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf('Price for id %s not found', $id));
     }

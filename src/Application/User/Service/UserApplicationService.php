@@ -47,7 +47,7 @@ readonly class UserApplicationService
     /**
      * @throws UserNotFoundException
      */
-    public function getById(int $id): User
+    public function getById(string $id): User
     {
         return $this->userRepository->getById($id);
     }

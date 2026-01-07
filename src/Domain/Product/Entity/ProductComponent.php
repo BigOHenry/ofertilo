@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Material\Entity\Material;
 use App\Domain\Material\ValueObject\MeasurementType;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity]
@@ -12,17 +15,16 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class ProductComponent
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\ManyToOne(targetEntity: ProductSize::class, inversedBy: 'productComponents')]
     #[ORM\JoinColumn(nullable: false)]
     private ProductSize $productSize;
 
     #[ORM\ManyToOne(targetEntity: Material::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Material $material;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Material $material;
 
     #[ORM\Column(type: 'integer')]
     private int $quantity;
@@ -39,8 +41,11 @@ class ProductComponent
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $shapeDescription = null;
 
+    /**
+     * @var resource|string|null
+     */
     #[ORM\Column(type: 'blob', nullable: true)]
-    private $blueprintImage = null;
+    private $blueprintImage;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $blueprintOriginalName = null;
@@ -54,11 +59,13 @@ class ProductComponent
         ProductSize $productSize,
         Material $material,
         int $quantity,
-        ?int $length = null,
-        ?int $width = null,
-        ?int $thickness = null,
-        ?string $shapeDescription = null
+        int $length,
+        int $width,
+        int $thickness,
+        ?string $shapeDescription = null,
     ) {
+        $this->id = Uuid::uuid4()->toString();
+
         $this->productSize = $productSize;
         $this->material = $material;
         $this->quantity = $quantity;
@@ -75,14 +82,15 @@ class ProductComponent
         int $length,
         int $width,
         int $thickness,
-        ?string $shapeDescription = null
+        ?string $shapeDescription = null,
     ): self {
         $component = new self($productSize, $material, $quantity, $length, $width, $thickness, $shapeDescription);
         $productSize->addProductComponent($component);
+
         return $component;
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -95,6 +103,7 @@ class ProductComponent
     public function setProductSize(ProductSize $productSize): self
     {
         $this->productSize = $productSize;
+
         return $this;
     }
 
@@ -106,6 +115,7 @@ class ProductComponent
     public function setMaterial(?Material $material): self
     {
         $this->material = $material;
+
         return $this;
     }
 
@@ -117,6 +127,7 @@ class ProductComponent
     public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
+
         return $this;
     }
 
@@ -125,9 +136,10 @@ class ProductComponent
         return $this->length;
     }
 
-    public function setLength(?int $length): self
+    public function setLength(int $length): self
     {
         $this->length = $length;
+
         return $this;
     }
 
@@ -136,9 +148,10 @@ class ProductComponent
         return $this->width;
     }
 
-    public function setWidth(?int $width): self
+    public function setWidth(int $width): self
     {
         $this->width = $width;
+
         return $this;
     }
 
@@ -147,9 +160,10 @@ class ProductComponent
         return $this->thickness;
     }
 
-    public function setThickness(?int $thickness): self
+    public function setThickness(int $thickness): self
     {
         $this->thickness = $thickness;
+
         return $this;
     }
 
@@ -161,21 +175,31 @@ class ProductComponent
     public function setShapeDescription(?string $shapeDescription): self
     {
         $this->shapeDescription = $shapeDescription;
+
         return $this;
     }
 
-    // Blueprint image metody
-    public function getBlueprintImage(): false|string|null
+    public function getBlueprintImage(): ?string
     {
-        if (is_resource($this->blueprintImage)) {
-            return stream_get_contents($this->blueprintImage, -1, 0);
+        if ($this->blueprintImage === null) {
+            return null;
         }
+
+        if (\is_resource($this->blueprintImage)) {
+            $content = stream_get_contents($this->blueprintImage, -1, 0);
+
+            return $content !== false ? $content : null;
+        }
+
+        \assert(\is_string($this->blueprintImage));
+
         return $this->blueprintImage;
     }
 
-    public function setBlueprintImage($blueprintImage): self
+    public function setBlueprintImage(string $blueprintImage): self
     {
         $this->blueprintImage = $blueprintImage;
+
         return $this;
     }
 
@@ -189,6 +213,7 @@ class ProductComponent
         $this->blueprintImage = null;
         $this->blueprintOriginalName = null;
         $this->blueprintMimeType = null;
+
         return $this;
     }
 
@@ -200,6 +225,7 @@ class ProductComponent
     public function setBlueprintOriginalName(?string $blueprintOriginalName): self
     {
         $this->blueprintOriginalName = $blueprintOriginalName;
+
         return $this;
     }
 
@@ -211,6 +237,7 @@ class ProductComponent
     public function setBlueprintMimeType(?string $blueprintMimeType): self
     {
         $this->blueprintMimeType = $blueprintMimeType;
+
         return $this;
     }
 
@@ -226,6 +253,7 @@ class ProductComponent
             $this->setBlueprintOriginalName($blueprintFile->getClientOriginalName());
             $this->setBlueprintMimeType($blueprintFile->getMimeType());
         }
+
         return $this;
     }
 
@@ -235,6 +263,7 @@ class ProductComponent
         if ($imageData === null) {
             return null;
         }
+
         return base64_encode($imageData);
     }
 
@@ -245,7 +274,8 @@ class ProductComponent
         }
         $base64 = $this->getBlueprintAsBase64();
         $mimeType = $this->blueprintMimeType ?? 'image/jpeg';
-        return sprintf('data:%s;base64,%s', $mimeType, $base64);
+
+        return \sprintf('data:%s;base64,%s', $mimeType, $base64);
     }
 
     public function hasComplexShape(): bool
@@ -256,31 +286,33 @@ class ProductComponent
     public function getDimensionsString(): string
     {
         $dimensions = \sprintf('%s×%s×%s', $this->length, $this->width, $this->thickness);
+
         return $dimensions . ' mm';
     }
 
     /**
-     * Returns a description of the component, including the material
+     * Returns a description of the component, including the material.
      */
     public function getFullDescription(?string $locale = null): string
     {
         $parts = [];
-        $parts[] = $this->material->getDescription($locale);
+        $parts[] = $this->material?->getDescription($locale);
         $parts[] = $this->getDimensionsString();
-        $parts[] = \sprintf("(%s× ks)", $this->quantity);
+        $parts[] = \sprintf('(%s ks)', $this->quantity);
 
         return implode(' ', $parts);
     }
 
     /**
-     * Calculates volume/area according to material type
+     * Calculates volume/area according to material type.
      */
     public function calculateMaterialAmount(): ?float
     {
-        return match ($this->material->getMeasurementType()) {
+        return match ($this->material?->getMeasurementType()) {
             MeasurementType::VOLUME => $this->calculateVolume(),
             MeasurementType::AREA => $this->calculateArea(),
             MeasurementType::PIECE => (float) $this->quantity,
+            default => null,
         };
     }
 
@@ -289,6 +321,7 @@ class ProductComponent
         if (!$this->length || !$this->width || !$this->thickness) {
             return null;
         }
+
         // Calculation in m³
         return ($this->length / 1000) * ($this->width / 1000) * ($this->thickness / 1000) * $this->quantity;
     }
@@ -298,6 +331,7 @@ class ProductComponent
         if (!$this->length || !$this->width) {
             return null;
         }
+
         // Calculation in m²
         return ($this->length / 1000) * ($this->width / 1000) * $this->quantity;
     }

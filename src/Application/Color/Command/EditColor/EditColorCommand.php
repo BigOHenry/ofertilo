@@ -14,7 +14,7 @@ final readonly class EditColorCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private int $id,
+        private string $id,
         private int $code,
         private bool $inStock,
         private bool $enabled,
@@ -32,10 +32,10 @@ final readonly class EditColorCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self((int) $data['id'], $data['code'], $data['inStock'], $data['enabled'] ?? true, $translations);
+        return new self($data['id'], $data['code'], $data['inStock'], $data['enabled'] ?? true, $translations);
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

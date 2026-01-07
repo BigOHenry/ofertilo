@@ -7,16 +7,16 @@ namespace App\Application\Wood\Command\DeleteWood;
 final readonly class DeleteWoodCommand
 {
     protected function __construct(
-        private int $id,
+        private string $id,
     ) {
     }
 
-    public static function create(int $id): self
+    public static function create(string $id): self
     {
         return new self($id);
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

@@ -7,11 +7,11 @@ namespace App\Application\Product\Query\GetProductFormData;
 readonly class GetProductFormDataQuery
 {
     public function __construct(
-        private int $id,
+        private string $id,
     ) {
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

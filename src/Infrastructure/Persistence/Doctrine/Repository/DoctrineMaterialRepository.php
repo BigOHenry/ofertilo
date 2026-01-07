@@ -46,7 +46,7 @@ class DoctrineMaterialRepository extends BaseRepository implements MaterialRepos
         ;
     }
 
-    public function findById(int $id): ?Material
+    public function findById(string $id): ?Material
     {
         return $this->findOneBy(['id' => $id]);
     }
@@ -54,7 +54,7 @@ class DoctrineMaterialRepository extends BaseRepository implements MaterialRepos
     /**
      * @throws MaterialNotFoundException
      */
-    public function getById(int $id): Material
+    public function getById(string $id): Material
     {
         return $this->findById($id) ?? throw MaterialNotFoundException::withId($id);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Translation\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'translation')]
@@ -13,15 +14,14 @@ use Doctrine\ORM\Mapping as ORM;
 class TranslationEntity
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(length: 100, nullable: false)]
     private string $object_class;
 
     #[ORM\Column(nullable: false)]
-    private ?int $object_id = null;
+    private string $object_id;
 
     #[ORM\Column(length: 2, nullable: false)]
     private string $locale;
@@ -32,7 +32,12 @@ class TranslationEntity
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $value = null;
 
-    public function getId(): ?int
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4()->toString();
+    }
+
+    public function getId(): string
     {
         return $this->id;
     }
@@ -47,12 +52,12 @@ class TranslationEntity
         $this->object_class = $objectClass;
     }
 
-    public function getObjectId(): ?int
+    public function getObjectId(): string
     {
         return $this->object_id;
     }
 
-    public function setObjectId(int $objectId): void
+    public function setObjectId(string $objectId): void
     {
         $this->object_id = $objectId;
     }

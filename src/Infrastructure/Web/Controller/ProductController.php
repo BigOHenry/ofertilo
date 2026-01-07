@@ -89,7 +89,7 @@ final class ProductController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function productEdit(Request $request, Product $product): Response
     {
-        $envelope = $this->bus->dispatch(new GetProductFormDataQuery((int) $product->getId()));
+        $envelope = $this->bus->dispatch(new GetProductFormDataQuery($product->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(ProductFormType::class, $formData, [
@@ -168,7 +168,7 @@ final class ProductController extends BaseController
     public function deleteProduct(Product $product): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteProductCommand::create((int) $product->getId()));
+            $this->bus->dispatch(DeleteProductCommand::create($product->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {
@@ -275,7 +275,6 @@ final class ProductController extends BaseController
     public function productColorsApi(Product $product): JsonResponse
     {
         try {
-            \assert($product->getId() !== null, 'Product must have an ID when loaded from database');
             $envelope = $this->bus->dispatch(GetProductColorsGridQuery::create($product->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
@@ -289,7 +288,6 @@ final class ProductController extends BaseController
     public function delete(ProductColor $productColor): JsonResponse
     {
         try {
-            \assert($productColor->getId() !== null, 'ProductColor must have an ID when loaded from database');
             $this->bus->dispatch(DeleteProductColorCommand::create($productColor->getId(), $productColor->getId()));
 
             return new JsonResponse(['success' => true]);

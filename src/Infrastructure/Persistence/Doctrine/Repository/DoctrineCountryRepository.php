@@ -26,7 +26,7 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
         parent::__construct($registry, Country::class);
     }
 
-    public function findById(int $id): ?Country
+    public function findById(string $id): ?Country
     {
         return $this->find($id);
     }
@@ -52,7 +52,7 @@ class DoctrineCountryRepository extends ServiceEntityRepository implements Count
     /**
      * @throws InvalidArgumentException
      *
-     * @return array<string, int>
+     * @return array<string, string>
      */
     public function findAllAsChoices(): array
     {

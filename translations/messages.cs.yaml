@@ -26,7 +26,8 @@ title:
   new_wood: 'Nové dřevo'
   colors_out_of_stock: 'Barvy k zakoupení'
   home: 'Domů'
-  flagSizes: 'Rozměry'
+  productSizes: 'Rozměry'
+  product_size: 'Rozměr'
 
 field:
   email: "E-mail"
@@ -41,6 +42,7 @@ field:
   dryDensity: "Hustota suchého dřeva (kg/m³)"
   hardness: "Tvrdost dřeva (Janka)"
   thickness: "Tloušťka (mm)"
+  height: "Výška (mm)"
   length: "Délka (mm)"
   width: "Šířka (mm)"
   price: "Cena"

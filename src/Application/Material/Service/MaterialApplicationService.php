@@ -22,7 +22,7 @@ readonly class MaterialApplicationService
         return $this->materialRepository->findByWoodAndType($wood, $type);
     }
 
-    public function findById(int $id): ?Material
+    public function findById(string $id): ?Material
     {
         return $this->materialRepository->findById($id);
     }
@@ -30,7 +30,7 @@ readonly class MaterialApplicationService
     /**
      * @throws MaterialNotFoundException
      */
-    public function getById(int $id): Material
+    public function getById(string $id): Material
     {
         return $this->materialRepository->getById($id);
     }

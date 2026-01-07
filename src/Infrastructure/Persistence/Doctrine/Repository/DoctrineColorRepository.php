@@ -37,7 +37,7 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
         return $this->findOneBy(['code' => $code]);
     }
 
-    public function findById(int $id): ?Color
+    public function findById(string $id): ?Color
     {
         return $this->findOneBy(['id' => $id]);
     }
@@ -53,7 +53,7 @@ class DoctrineColorRepository extends BaseRepository implements ColorRepositoryI
     /**
      * @throws ColorNotFoundException
      */
-    public function getById(int $id): Color
+    public function getById(string $id): Color
     {
         return $this->findById($id) ?? throw ColorNotFoundException::withId($id);
     }

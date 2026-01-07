@@ -6,6 +6,7 @@ namespace App\Domain\User\Entity;
 
 use App\Domain\User\ValueObject\Role;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
@@ -17,9 +18,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(name: 'email', type: 'string', length: 255, unique: true)]
     private string $email;
@@ -48,18 +48,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(type: 'jsonb')]
     private array $roles = [];
 
-    public static function create(string $email, string $password, string $name, Role $role = Role::READER): self
+    /**
+     * @param Role[]|string[] $roles
+     */
+    public function __construct(string $email, string $password, string $name, array $roles)
     {
-        $user = new self();
-        $user->setEmail($email);
-        $user->setPassword($password);
-        $user->setName($name);
-        $user->setRoles([$role]);
-
-        return $user;
+        $this->id = Uuid::uuid4()->toString();
+        $this->email = $email;
+        $this->password = $password;
+        $this->name = $name;
+        $this->roles = $roles;
     }
 
-    public function getId(): ?int
+    public static function create(string $email, string $password, string $name, Role $role = Role::READER): self
+    {
+        return new self($email, $password, $name, [$role]);
+    }
+
+    public function getId(): string
     {
         return $this->id;
     }
