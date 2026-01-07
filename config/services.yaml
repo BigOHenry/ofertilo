@@ -47,14 +47,16 @@ services:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository
-    App\Domain\Shared\Repository\CountryRepositoryInterface:
+    App\Domain\Shared\Country\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineCountryRepository
     App\Domain\Wood\Repository\WoodRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineWoodRepository
+    App\Domain\Shared\File\Repository\FileRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineFileRepository
 
     App\Infrastructure\Web\Form\Helper\TranslationFormHelper:
 
-    App\Infrastructure\Service\FileUploader:
+    App\Infrastructure\Service\FileStorage:
         autowire: true
         arguments:
             $secureUploadsDirectory: '%secure_uploads_directory%'

@@ -19,7 +19,7 @@ final readonly class CreateProductCommand
         public ProductType $type,
         public ?string $countryId,
         public string $code,
-        public ?UploadedFile $imageFile, // TODO replace this object
+        public ?UploadedFile $imageFile,
         public array $translations,
     ) {
     }

@@ -30,6 +30,7 @@ title:
   productSize: 'Rozměr'
   product_size: 'Rozměr'
   productComponent: 'Komponenta'
+  productComponents: 'Komponenty'
 
 field:
   email: "E-mail"
@@ -55,7 +56,7 @@ field:
   enabled: "Aktivní"
   country: "Stát"
   color: "Barva"
-  short_description: "Krátký popis"
+  shortDescription: "Krátký popis"
 
 button:
   save: "Uložit"

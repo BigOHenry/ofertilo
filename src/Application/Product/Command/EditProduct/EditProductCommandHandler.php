@@ -7,6 +7,9 @@ namespace App\Application\Product\Command\EditProduct;
 use App\Application\Product\Service\ProductApplicationService;
 use App\Application\Shared\Country\Service\CountryService;
 use App\Domain\Product\Exception\ProductAlreadyExistsException;
+use App\Domain\Shared\File\Entity\File;
+use App\Domain\Shared\File\ValueObject\FileType;
+use App\Infrastructure\Service\FileStorage;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -15,6 +18,7 @@ final readonly class EditProductCommandHandler
     public function __construct(
         private ProductApplicationService $productApplicationService,
         private CountryService $countryService,
+        private FileStorage $fileStorage
     ) {
     }
 
@@ -38,11 +42,18 @@ final readonly class EditProductCommandHandler
         $product->setEnabled($command->isEnabled());
 
         if ($command->getImageFile()) {
-            $oldImageFilename = $product->getImageFilename();
-            if ($oldImageFilename) {
-                $this->productApplicationService->removeProductImage($product, $oldImageFilename);
+            $oldImageFile = $product->getImageFile();
+
+            if ($oldImageFile && $this->fileStorage->exists($oldImageFile)) {
+                $this->fileStorage->delete($oldImageFile);
             }
-            $this->productApplicationService->handleImageUpload($product, $command->getImageFile());
+
+            $newImageFile = File::createFromUploadedFile(
+                uploadedFile: $command->getImageFile(),
+                type: FileType::IMAGE
+            );
+
+            $product->setImageFile($newImageFile);
         }
 
         foreach ($command->getTranslations() as $translation) {

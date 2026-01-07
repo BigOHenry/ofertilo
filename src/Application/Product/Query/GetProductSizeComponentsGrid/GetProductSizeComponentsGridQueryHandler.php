@@ -18,7 +18,7 @@ final readonly class GetProductSizeComponentsGridQueryHandler
     }
 
     /**
-     * @return list<array{id: string, length: int, width: int, thickness: int}>
+     * @return list<array{id: string, material: non-falsy-string, length: int|null, width: int|null, thickness: int, description: string|null}>
      */
     public function __invoke(GetProductSizeComponentsGridQuery $query): array
     {

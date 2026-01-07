@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Product\Validator;
 
+use App\Domain\Shared\File\ValueObject\FileType;
 use App\Domain\Shared\Validator\Validator;
 use App\Domain\Translation\DTO\TranslationDto;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductValidator extends Validator
 {
@@ -21,9 +23,9 @@ class ProductValidator extends Validator
     /**
      * @param TranslationDto[] $translations
      *
-     * @return array<string, array{key: string, params?: array<string, int|null>}>
+     * @return array<string, array{key: string, params?: array<string, float|int|string|null>}>
      */
-    public static function validate(string $code, array $translations): array
+    public static function validate(string $code, array $translations, ?UploadedFile $file): array
     {
         $errors = [];
 
@@ -36,7 +38,8 @@ class ProductValidator extends Validator
         return array_merge(
             $errors,
             self::validateTranslatableFields($translations, $fieldRules),
-            self::validateCode($code)
+            self::validateCode($code),
+            self::validateUploadedFile('imageFile', $file, FileType::IMAGE)
         );
     }
 

@@ -11,13 +11,13 @@ use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\Exception\ProductSizeNotFoundException;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
+use App\Domain\Shared\File\Entity\File;
 use App\Domain\Translation\Interface\TranslatableInterface;
 use App\Domain\Translation\Trait\TranslatableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product')]
@@ -51,12 +51,6 @@ abstract class Product implements TranslatableInterface
     #[ORM\JoinColumn(name: 'country_id', referencedColumnName: 'id', nullable: true)]
     private ?Country $country;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $imageFilename = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $imageOriginalName = null;
-
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $enabled = true;
 
@@ -66,7 +60,9 @@ abstract class Product implements TranslatableInterface
     #[ORM\Column(type: 'string', length: 80, nullable: true)]
     private string $npn;
 
-    private ?UploadedFile $imageFile = null;
+    #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'image_file_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?File $imageFile = null;
 
     /**
      * @var Collection<int, ProductColor>
@@ -226,64 +222,26 @@ abstract class Product implements TranslatableInterface
         return $this->productColors;
     }
 
-    public function getImageFilename(): ?string
+    public function getImageFile(): ?File
     {
-        return $this->imageFilename;
+        return $this->imageFile;
     }
 
-    public function setImageFilename(?string $imageFilename): self
+    public function setImageFile(?File $imageFile): self
     {
-        $this->imageFilename = $imageFilename;
+        $this->imageFile = $imageFile;
 
         return $this;
     }
 
     public function hasImage(): bool
     {
-        return $this->imageFilename !== null;
+        return $this->imageFile !== null;
     }
 
     public function removeImage(): self
     {
-        $this->imageFilename = null;
-        $this->imageOriginalName = null;
-
-        return $this;
-    }
-
-    public function getEncodedFilename(): ?string
-    {
-        if (empty($this->imageFilename)) {
-            return null;
-        }
-
-        return base64_encode($this->imageFilename);
-    }
-
-    public function getImageOriginalName(): ?string
-    {
-        return $this->imageOriginalName;
-    }
-
-    public function setImageOriginalName(?string $imageOriginalName): self
-    {
-        $this->imageOriginalName = $imageOriginalName;
-
-        return $this;
-    }
-
-    public function getImageFile(): ?UploadedFile
-    {
-        return $this->imageFile;
-    }
-
-    public function setImageFile(?UploadedFile $imageFile): self
-    {
-        $this->imageFile = $imageFile;
-
-        if ($imageFile) {
-            $this->setImageOriginalName($imageFile->getClientOriginalName());
-        }
+        $this->imageFile = null;
 
         return $this;
     }
@@ -491,7 +449,7 @@ abstract class Product implements TranslatableInterface
         $materials = [];
         foreach ($this->getAllProductComponents() as $component) {
             $material = $component->getMaterial();
-            if ($material && !\in_array($material, $materials, true)) {
+            if (!\in_array($material, $materials, true)) {
                 $materials[] = $material;
             }
         }
@@ -510,10 +468,6 @@ abstract class Product implements TranslatableInterface
 
         foreach ($this->getAllProductComponents() as $component) {
             $material = $component->getMaterial();
-            if (!$material) {
-                continue;
-            }
-
             $materialName = $material->getName();
             $amount = $component->calculateMaterialAmount();
 

@@ -15,9 +15,9 @@ use App\Domain\Product\Exception\ProductValidationException;
 use App\Domain\Product\Validator\ProductValidator;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use App\Domain\Shared\File\Entity\File;
+use App\Domain\Shared\File\ValueObject\FileType;
 
-#[AsMessageHandler]
 final readonly class CreateProductCommandHandler
 {
     public function __construct(
@@ -33,14 +33,13 @@ final readonly class CreateProductCommandHandler
 
         if ($command->countryId !== null) {
             $country = $this->countryService->getEnabledCountryById($command->countryId);
-
-            if ($this->productApplicationService->findByTypeAndCountry($type, $country) !== null) {
-                throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
-            }
         }
 
-        $errors = ProductValidator::validate($command->code, $command->translations);
+        if ($country !== null && $this->productApplicationService->findByTypeAndCountry($type, $country) !== null) {
+            throw ProductAlreadyExistsException::withTypeAndCountry($type, $country);
+        }
 
+        $errors = ProductValidator::validate($command->code, $command->translations, $command->imageFile);
         if (!empty($errors)) {
             throw ProductValidationException::withErrors($errors);
         }
@@ -49,12 +48,20 @@ final readonly class CreateProductCommandHandler
         $product->setCode($command->code);
 
         if ($command->imageFile) {
-            $this->productApplicationService->handleImageUpload($product, $command->imageFile);
+            $file = File::createFromUploadedFile(
+                $command->imageFile,
+                FileType::IMAGE
+            );
+            $product->setImageFile($file);
         }
 
         foreach ($command->translations as $translation) {
             $value = mb_trim($translation->getValue() ?? '');
-            $product->addOrUpdateTranslation($translation->getField(), $value, $translation->getLocale());
+            $product->addOrUpdateTranslation(
+                $translation->getField(),
+                $value,
+                $translation->getLocale()
+            );
         }
 
         $this->productApplicationService->save($product);

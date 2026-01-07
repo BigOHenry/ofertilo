@@ -17,7 +17,6 @@ use Doctrine\Persistence\Proxy;
 
 #[AsDoctrineListener(event: Events::postLoad)]
 #[AsDoctrineListener(event: Events::preFlush)]
-#[AsDoctrineListener(event: Events::postFlush)]
 readonly class TranslationListener
 {
     public function __construct(
@@ -146,8 +145,6 @@ readonly class TranslationListener
 
     private function ensureMissingTranslations(TranslatableInterface $entity): void
     {
-        $entityId = $entity->getId();
-
         $activeLocales = $this->localeService->getSupportedLocales();
 
         $translatableFields = $entity::getTranslatableFields();

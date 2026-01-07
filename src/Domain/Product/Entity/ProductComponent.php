@@ -112,7 +112,7 @@ class ProductComponent
         return $this->material;
     }
 
-    public function setMaterial(?Material $material): self
+    public function setMaterial(Material $material): self
     {
         $this->material = $material;
 
@@ -296,7 +296,7 @@ class ProductComponent
     public function getFullDescription(?string $locale = null): string
     {
         $parts = [];
-        $parts[] = $this->material?->getDescription($locale);
+        $parts[] = $this->material->getDescription($locale);
         $parts[] = $this->getDimensionsString();
         $parts[] = \sprintf('(%s ks)', $this->quantity);
 
@@ -308,11 +308,10 @@ class ProductComponent
      */
     public function calculateMaterialAmount(): ?float
     {
-        return match ($this->material?->getMeasurementType()) {
+        return match ($this->material->getMeasurementType()) {
             MeasurementType::VOLUME => $this->calculateVolume(),
             MeasurementType::AREA => $this->calculateArea(),
             MeasurementType::PIECE => (float) $this->quantity,
-            default => null,
         };
     }
 

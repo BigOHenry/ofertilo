@@ -9,14 +9,13 @@ use App\Domain\Product\Exception\ProductNotFoundException;
 use App\Domain\Product\Repository\ProductRepositoryInterface;
 use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
-use App\Infrastructure\Service\FileUploader;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Infrastructure\Service\FileStorage;
 
 final readonly class ProductApplicationService
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
-        private FileUploader $fileUploader,
+        private FileStorage $fileStorage,
     ) {
     }
 
@@ -40,31 +39,21 @@ final readonly class ProductApplicationService
 
     public function save(Product $product): void
     {
+        $imageFile = $product->getImageFile();
+        if ($imageFile && $imageFile->getUploadedFile()) {
+            $this->fileStorage->store($imageFile, $imageFile->getUploadedFile());
+        }
+
         $this->productRepository->save($product);
     }
 
     public function delete(Product $product): void
     {
+        $imageFile = $product->getImageFile();
+        if ($imageFile && $this->fileStorage->exists($imageFile)) {
+            $this->fileStorage->delete($imageFile);
+        }
+
         $this->productRepository->remove($product);
-    }
-
-    public function handleImageUpload(Product $product, UploadedFile $imageFile): void
-    {
-        try {
-            $uploadResult = $this->fileUploader->upload($imageFile, $product->getEntityFolder());
-            $product->setImageFilename($uploadResult['filename']);
-            $product->setImageOriginalName($uploadResult['originalName']);
-        } catch (\RuntimeException $e) {
-            // TODO throw exception
-        }
-    }
-
-    public function removeProductImage(Product $product, string $filename): void
-    {
-        try {
-            $this->fileUploader->remove($product->getEntityFolder(), $filename);
-        } catch (\Exception $e) {
-            // TODO Log error but don't fail the operation
-        }
     }
 }

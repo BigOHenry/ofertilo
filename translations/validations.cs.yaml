@@ -11,6 +11,9 @@ general:
     tooBig: "Hodnota musí být maximálně %max%"
   phone:
     invalid: 'Neplatný formát telefoního čísla'
+  file:
+    invalidMimeType: 'Nepovolený formát. Povolené jsou: %allowed%'
+    tooBig: 'Soubor může mít maximální velikos %size% MB'
 
 user:
   password:

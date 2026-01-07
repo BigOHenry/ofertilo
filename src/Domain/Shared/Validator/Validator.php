@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Shared\Validator;
 
+use App\Domain\Shared\File\Entity\File;
+use App\Domain\Shared\File\ValueObject\FileType;
 use App\Domain\Translation\DTO\TranslationDto;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Validator
 {
@@ -111,6 +114,38 @@ class Validator
 
         if ($max !== null && $float > $max) {
             $errors[$field] = ['key' => 'general.number.tooBig', 'params' => ['%max%' => $max]];
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @return array<string, array{key: string, params?: array<string, float|int|string|null>}>
+     */
+    public static function validateUploadedFile(string $field, ?UploadedFile $file, FileType $type): array
+    {
+        if ($file === null) {
+            return [];
+        }
+
+        $mimeType = $file->getMimeType();
+        $size = $file->getSize();
+        $errors = [];
+        $allowedMimeTypes = match ($type) {
+            FileType::IMAGE => File::IMAGE_MIME_TYPES,
+            FileType::OTHER => [],
+        };
+
+        if (!empty($allowedMimeTypes) && !in_array($mimeType, $allowedMimeTypes, true)) {
+            $errors[$field] = ['key' => 'general.file.invalidMimeType', 'params' => ['%allowed%' => implode(', ' , $allowedMimeTypes)]];
+        }
+
+        $maxSize = match ($type) {
+            FileType::IMAGE, FileType::OTHER => File::MAX_IMAGE_SIZE,
+        };
+
+        if ($size > $maxSize) {
+            $errors[$field] = ['key' => 'general.file.tooBig', 'params' => ['%size%' => $maxSize / 1024 / 1024]];
         }
 
         return $errors;
