@@ -8,6 +8,7 @@ window.bootstrap = bootstrap;
 
 import './js/tabulator-locales';
 import './js/grid-helpers';
+import './js/tinymce-init.js';
 
 function autoDismissAlerts() {
     const alerts = document.querySelectorAll('#flash-messages .alert');

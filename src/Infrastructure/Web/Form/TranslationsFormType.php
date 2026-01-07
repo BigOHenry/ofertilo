@@ -104,7 +104,7 @@ final class TranslationsFormType extends AbstractType implements DataMapperInter
      * @param \Traversable<string, FormInterface> $forms
      * @param TranslationEntity[]|null            $viewData
      */
-    public function mapFormsToData(\Traversable $forms, $viewData): void
+    public function mapFormsToData(\Traversable $forms, mixed &$viewData): void
     {
         if ($viewData === null || empty($viewData)) {
             return;

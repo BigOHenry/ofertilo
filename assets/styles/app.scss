@@ -38,6 +38,9 @@ $h6-font-size: $font-size-base !default;
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 
+@import 'tinymce/skins/ui/oxide/skin.css';
+@import 'tinymce/skins/content/default/content.css';
+
 body {
   font-family: 'Montserrat', sans-serif;
 }

@@ -26,6 +26,7 @@ title:
   new_wood: 'Nové dřevo'
   colors_out_of_stock: 'Barvy k zakoupení'
   home: 'Domů'
+  flagSizes: 'Rozměry'
 
 field:
   email: "E-mail"

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
+use App\Domain\Material\Entity\Material;
 use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\ValueObject\ProductType;
@@ -77,11 +78,24 @@ abstract class Product implements TranslatableInterface
     )]
     private Collection $productColors;
 
+    /**
+     * @var Collection<int, ProductSize>
+     */
+    #[ORM\OneToMany(
+        targetEntity: ProductSize::class,
+        mappedBy: 'product',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $productSizes;
+
+
     protected function __construct(?Country $country)
     {
         $this->id = null;
         $this->country = $country;
         $this->productColors = new ArrayCollection();
+        $this->productSizes = new ArrayCollection();
         $this->initializeTranslations();
     }
 
@@ -308,5 +322,192 @@ abstract class Product implements TranslatableInterface
     public function getProductColorById(int $id): ProductColor
     {
         return $this->findProductColorById($id) ?? throw ProductColorNotFoundException::withId($id);
+    }
+
+    public function addProductSize(int $length, int $width, ?int $thickness = null): ProductSize
+    {
+        $existingSize = $this->findProductSizeByDimensions($length, $width, $thickness);
+
+        if ($existingSize !== null) {
+            return $existingSize;
+        }
+
+        $productSize = ProductSize::create($this, $length, $width, $thickness);
+        $this->productSizes->add($productSize);
+
+        return $productSize;
+    }
+
+    public function removeProductSize(ProductSize $productSize): self
+    {
+        $this->productSizes->removeElement($productSize);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductSize>
+     */
+    public function getProductSizes(): Collection
+    {
+        return $this->productSizes;
+    }
+
+    public function findProductSizeByDimensions(int $length, int $width, ?int $thickness = null): ?ProductSize
+    {
+        return $this->productSizes->filter(
+            fn(ProductSize $ps) => $ps->getLength() === $length
+                && $ps->getWidth() === $width
+                && $ps->getThickness() === $thickness
+        )->first() ?: null;
+    }
+
+    public function findProductSizeById(int $id): ?ProductSize
+    {
+        return $this->productSizes->filter(
+            fn(ProductSize $ps) => $ps->getId() === $id
+        )->first() ?: null;
+    }
+
+    // ========================================
+    // Metody pro ProductComponent
+    // ========================================
+
+    public function addProductComponent(
+        ProductSize $productSize,
+        Material $material,
+        int $quantity,
+        int $length,
+        int $width,
+        int $thickness,
+        ?string $shapeDescription = null
+    ): ProductComponent {
+        if ($productSize->getProduct() !== $this) {
+            throw new \InvalidArgumentException('ProductSize must belong to this Product');
+        }
+
+        return ProductComponent::create(
+            $productSize,
+            $material,
+            $quantity,
+            $length,
+            $width,
+            $thickness,
+            $shapeDescription
+        );
+    }
+
+    public function removeProductComponent(ProductComponent $productComponent): self
+    {
+        $productSize = $productComponent->getProductSize();
+
+        if ($productSize->getProduct() !== $this) {
+            throw new \InvalidArgumentException('ProductComponent does not belong to this Product');
+        }
+
+        $productSize->removeProductComponent($productComponent);
+        return $this;
+    }
+
+    /**
+     * Returns all ProductComponents from all ProductSizes
+     * @return ProductComponent[]
+     */
+    public function getAllProductComponents(): array
+    {
+        $components = [];
+        foreach ($this->productSizes as $productSize) {
+            foreach ($productSize->getProductComponents() as $component) {
+                $components[] = $component;
+            }
+        }
+        return $components;
+    }
+
+    /**
+     * Returns the ProductComponent for a specific ProductSize
+     * @return Collection<int, ProductComponent>
+     */
+    public function getProductComponentsBySize(ProductSize $productSize): Collection
+    {
+        if ($productSize->getProduct() !== $this) {
+            throw new \InvalidArgumentException('ProductSize must belong to this Product');
+        }
+
+        return $productSize->getProductComponents();
+    }
+
+    /**
+     * Finds ProductComponent by ID across all ProductSize
+     */
+    public function findProductComponentById(int $id): ?ProductComponent
+    {
+        foreach ($this->productSizes as $productSize) {
+            foreach ($productSize->getProductComponents() as $component) {
+                if ($component->getId() === $id) {
+                    return $component;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the number of all components
+     */
+    public function getProductComponentsCount(): int
+    {
+        return count($this->getAllProductComponents());
+    }
+
+    /**
+     * Validates whether it makes sense to have components for this ProductSize
+     */
+    public function canHaveComponentsForSize(ProductSize $productSize): bool
+    {
+        return $productSize->getProduct() === $this;
+    }
+
+    /**
+     * Gets all materials used in the components of this product
+     * @return Material[]
+     */
+    public function getUsedMaterials(): array
+    {
+        $materials = [];
+        foreach ($this->getAllProductComponents() as $component) {
+            $material = $component->getMaterial();
+            if ($material && !in_array($material, $materials, true)) {
+                $materials[] = $material;
+            }
+        }
+        return $materials;
+    }
+
+    /**
+     * Returns the total amount of material used according to the type of measurement.
+     * @return array<string, float> Key is the name of the material, value is the amount.
+     */
+    public function calculateTotalMaterialUsage(): array
+    {
+        $usage = [];
+
+        foreach ($this->getAllProductComponents() as $component) {
+            $material = $component->getMaterial();
+            if (!$material) {
+                continue;
+            }
+
+            $materialName = $material->getName();
+            $amount = $component->calculateMaterialAmount();
+
+            if ($amount !== null) {
+                if (!isset($usage[$materialName])) {
+                    $usage[$materialName] = 0.0;
+                }
+                $usage[$materialName] += $amount;
+            }
+        }
+
+        return $usage;
     }
 }
