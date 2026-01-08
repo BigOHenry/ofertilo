@@ -79,5 +79,5 @@ deploy: version
 	docker compose exec -T app npm run build
 	docker compose exec -T app php bin/console doctrine:migrations:migrate --no-interaction
 	docker compose exec -T app chown -R www-data:www-data /var/www/app/var
-	docker compose exec -T app php bin/console cache:clear --no-interaction
+	docker compose exec -T app php bin/console cache:clear --no-interaction --env=prod
 
