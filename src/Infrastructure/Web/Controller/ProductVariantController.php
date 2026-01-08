@@ -93,6 +93,16 @@ final class ProductVariantController extends BaseController
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
+                $referer = $request->headers->get('referer') ?? '';
+                $isDetailPage = str_contains($referer, '/product/variant/');
+
+                if ($isDetailPage) {
+                    return $this->render('productVariant/_streams/_card.stream.html.twig', [
+                        'productVariant' => $productVariant,
+                        'product' => $productVariant->getProduct(),
+                    ]);
+                }
+
                 if ($frameId === 'productVariantModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
@@ -152,7 +162,7 @@ final class ProductVariantController extends BaseController
     #[IsGranted(Role::READER->value)]
     public function detail(ProductVariant $productVariant): Response
     {
-        return $this->render('product/variant.html.twig', [
+        return $this->render('productVariant/detail.html.twig', [
             'productVariant' => $productVariant,
             'product' => $productVariant->getProduct(),
         ]);

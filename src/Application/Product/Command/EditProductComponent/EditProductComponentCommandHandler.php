@@ -60,6 +60,7 @@ final readonly class EditProductComponentCommandHandler
             );
 
             $productComponent->setBlueprintFile($newBlueprintFile);
+            $this->fileStorage->store($newBlueprintFile, $command->blueprintFile);
         }
 
         $this->productService->save($productComponent->getProductVariant()->getProduct());

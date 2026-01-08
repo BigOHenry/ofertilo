@@ -6,9 +6,11 @@
     <div id="product-variant-card" class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between">
             <div id="product-variant-title">
-                {% include 'product/components/variant/_header.html.twig' with { product: product } %}
+                {% include 'productVariant/components/_header.html.twig' with { product: product, productVariant: productVariant } %}
             </div>
-{#            <a class="btn btn-sm btn-primary" data-modal-id="productModal" data-modal-src="{{ path('product_edit', {'id': product.id}) }}" data-modal-title="{{ product.description(app.request.locale) }}"><i class="fa-solid fa-pen-to-square"></i></a>#}
+            <div>
+                <a class="btn btn-sm btn-primary" data-modal-id="productVariantModal" data-modal-src="{{ path('product_variant_edit', {'id': productVariant.id}) }}" data-modal-title="{{ productVariant.dimensionsString }}"><i class="fa-solid fa-fw fa-pen-to-square"></i></a>
+            </div>
         </div>
     </div>
 
@@ -28,6 +30,7 @@
                 windowVariable: 'productComponent',
                 apiUrl: path('api_product_variant_components', {'id': productVariant.id}),
                 showActions: true,
+                rowClickRoute: 'product_component_detail',
                 editRoute: 'product_component_edit',
                 deleteRoute: 'product_component_delete',
                 editModalId: 'productComponentModal',
@@ -44,7 +47,12 @@
 
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'productComponentModal',
-        title: 'title.product_component'|trans
+        title: 'title.productComponent'|trans
+    } %}
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productVariantModal',
+        title: 'title.productVariant'|trans
     } %}
 {% endblock %}
 

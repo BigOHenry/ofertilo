@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="product-component-title">
+    <template>
+        {% include 'productComponent/components/_header.html.twig' with { productComponent: productComponent } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="product-component-detail">
+    <template>
+        {% include 'productComponent/components/_detail.html.twig' with { productComponent: productComponent } %}
+    </template>
+</turbo-stream>
+
+{% include 'components/stream_modal_cleanup.html.twig' %}

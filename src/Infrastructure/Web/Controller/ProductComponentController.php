@@ -93,6 +93,17 @@ final class ProductComponentController extends BaseController
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
+                $referer = $request->headers->get('referer') ?? '';
+                $isDetailPage = str_contains($referer, '/product/component/');
+
+                if ($isDetailPage) {
+                    return $this->render('productComponent/_streams/_card.stream.html.twig', [
+                        'productComponent' => $productComponent,
+                        'productVariant' => $productComponent->getProductVariant(),
+                        'product' => $productComponent->getProductVariant()->getProduct(),
+                    ]);
+                }
+
                 if ($frameId === 'productComponentModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
@@ -150,5 +161,16 @@ final class ProductComponentController extends BaseController
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'An error occurred while deleting the price'], 500);
         }
+    }
+
+    #[Route('/product/component/{id}', name: 'product_component_detail', methods: ['GET'])]
+    #[IsGranted(Role::READER->value)]
+    public function detail(ProductComponent $productComponent): Response
+    {
+        return $this->render('productComponent/detail.html.twig', [
+            'productComponent' => $productComponent,
+            'productVariant' => $productComponent->getProductVariant(),
+            'product' => $productComponent->getProductVariant()->getProduct(),
+        ]);
     }
 }

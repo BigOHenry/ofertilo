@@ -15,7 +15,7 @@ final readonly class DeleteProductComponentCommandHandler
     public function __construct(
         private ProductComponentRepositoryInterface $componentRepository,
         private ProductApplicationService $productService,
-        private FileStorage $fileStorage
+        private FileStorage $fileStorage,
     ) {
     }
 

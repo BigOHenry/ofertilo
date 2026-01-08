@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 #[ORM\Table(name: 'file')]
 class File
 {
-    public const string STORAGE_FOLDER = 'uploads';
+    public const string STORAGE_FOLDER = 'files';
 
     public const int MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 
