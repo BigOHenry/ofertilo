@@ -46,7 +46,9 @@ services:
     App\Domain\Color\Repository\ColorRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineColorRepository
     App\Domain\Product\Repository\ProductRepositoryInterface:
-        alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineProductRepository
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\Product\DoctrineProductRepository
+    App\Domain\Product\Repository\ProductVariantRepositoryInterface:
+        alias: App\Infrastructure\Persistence\Doctrine\Repository\Product\DoctrineProductVariantRepository
     App\Domain\Shared\Country\Repository\CountryRepositoryInterface:
         alias: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineCountryRepository
     App\Domain\Wood\Repository\WoodRepositoryInterface:

@@ -47,24 +47,24 @@
 
     <div id="product-card" class="card shadow-sm mt-3">
         <div class="card-header bg-light d-flex justify-content-between">
-            <div id="product-sizes-title">
-                <h2 class="mb-0">{{ 'title.productSizes'|trans }}</h2>
+            <div id="product-variants-title">
+                <h2 class="mb-0">{{ 'title.productVariants'|trans }}</h2>
             </div>
-            <button class="btn btn-primary" data-modal-id="productSizeModal" data-modal-src="{{ path('product_size_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
+            <button class="btn btn-primary" data-modal-id="productVariantModal" data-modal-src="{{ path('product_variant_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
                 <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
             </button>
         </div>
         <div class="card-body">
             {{ component('tabulator_grid', {
-                id: 'product-sizes-table',
+                id: 'product-variants-table',
                 pagination: false,
-                windowVariable: 'productSizes',
-                apiUrl: path('api_product_sizes', {'id': product.id}),
+                windowVariable: 'productVariants',
+                apiUrl: path('api_product_variants', {'id': product.id}),
                 showActions: true,
-                rowClickRoute: 'product_size_detail',
-                editRoute: 'product_size_edit',
-                deleteRoute: 'product_size_delete',
-                editModalId: 'productSizeModal',
+                rowClickRoute: 'product_variant_detail',
+                editRoute: 'product_variant_edit',
+                deleteRoute: 'product_variant_delete',
+                editModalId: 'productVariantModal',
                 columns: [
                     { title: 'field.height'|trans, field: "height", headerSort: false},
                     { title: 'field.width'|trans, field: "width", headerSort: false},
@@ -75,8 +75,8 @@
     </div>
 
     {% include 'components/form_modal_frame.html.twig' with {
-        modal_id: 'productSizeModal',
-        title: 'title.productSize'|trans
+        modal_id: 'productVariantModal',
+        title: 'title.productVariant'|trans
     } %}
 
     {% include 'components/form_modal_frame.html.twig' with {

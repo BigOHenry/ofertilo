@@ -13,7 +13,9 @@ title:
   material_price: 'Cena materiálu'
   new_material_price: 'Nová cena materiálu'
   product_color: 'Barva produktu'
+  product_component: 'Komponenta velikosti produktu'
   new_product_color: 'Nová barva produktu'
+  new_product_component: 'Nová komponenta velikosti produktu'
   localization: 'Lokalizace'
   2fa_setup: 'Nastavení dvoufaktorového ověření'
   2fa: 'Dvoufaktorové ověření'
@@ -26,9 +28,9 @@ title:
   new_wood: 'Nové dřevo'
   colors_out_of_stock: 'Barvy k zakoupení'
   home: 'Domů'
-  productSizes: 'Rozměry'
-  productSize: 'Rozměr'
-  product_size: 'Rozměr'
+  productVariants: 'Rozměry'
+  productVariant: 'Rozměr'
+  product_variant: 'Rozměr'
   productComponent: 'Komponenta'
   productComponents: 'Komponenty'
 
@@ -57,6 +59,10 @@ field:
   country: "Stát"
   color: "Barva"
   shortDescription: "Krátký popis"
+  shapeDescription: "Popis atypického tvaru"
+  quantity: "Počet kusů"
+  blueprintFile: "Plánek atypického tvaru"
+  atypicalShape: "Atypický tvar"
 
 button:
   save: "Uložit"
@@ -76,7 +82,7 @@ message:
   item_deleted: "Položka úspěšně odstraněna"
   duplicate_value: "Duplicitní hodnota"
   duplicate_value_field: "Duplicitní hodnota v poli '%field%'"
-  file_help_message: "Maximální velikost: %size%. Povolené formáty: %formats%"
+  file_help_message: "Maximální velikost: %variant%. Povolené formáty: %formats%"
   invalid_file_type_with_allowed_formats: "Nahrajte platný soubor s otiskem prstu (%formats%)"
   price_help: "Kč/%unit%"
 

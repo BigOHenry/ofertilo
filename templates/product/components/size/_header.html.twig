@@ -1,6 +1,0 @@
-<h1>
-    {{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }}
-    {% if product.country %} - ({{ product.country.alpha2 }}) {{ product.country.name }} {% endif %}
-    {% if product.name(app.request.locale) %} - {{ product.name(app.request.locale) }} {% endif %}
-     - {{ productSize.dimensionsString }}
-</h1>

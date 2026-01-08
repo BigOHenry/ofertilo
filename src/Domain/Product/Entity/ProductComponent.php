@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Product\Entity;
 
-use App\Domain\Material\Entity\Material;
-use App\Domain\Material\ValueObject\MeasurementType;
+use App\Domain\Shared\File\Entity\File;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_component')]
@@ -18,13 +16,9 @@ class ProductComponent
     #[ORM\Column(type: 'string', length: 36, unique: true)]
     private string $id;
 
-    #[ORM\ManyToOne(targetEntity: ProductSize::class, inversedBy: 'productComponents')]
+    #[ORM\ManyToOne(targetEntity: ProductVariant::class, inversedBy: 'productComponents')]
     #[ORM\JoinColumn(nullable: false)]
-    private ProductSize $productSize;
-
-    #[ORM\ManyToOne(targetEntity: Material::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Material $material;
+    private ProductVariant $productVariant;
 
     #[ORM\Column(type: 'integer')]
     private int $quantity;
@@ -41,23 +35,12 @@ class ProductComponent
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $shapeDescription = null;
 
-    /**
-     * @var resource|string|null
-     */
-    #[ORM\Column(type: 'blob', nullable: true)]
-    private $blueprintImage;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $blueprintOriginalName = null;
-
-    #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    private ?string $blueprintMimeType = null;
-
-    private ?UploadedFile $blueprintFile = null;
+    #[ORM\OneToOne(targetEntity: File::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'blueprint_file_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?File $blueprintFile = null;
 
     private function __construct(
-        ProductSize $productSize,
-        Material $material,
+        ProductVariant $productVariant,
         int $quantity,
         int $length,
         int $width,
@@ -65,9 +48,7 @@ class ProductComponent
         ?string $shapeDescription = null,
     ) {
         $this->id = Uuid::uuid4()->toString();
-
-        $this->productSize = $productSize;
-        $this->material = $material;
+        $this->productVariant = $productVariant;
         $this->quantity = $quantity;
         $this->length = $length;
         $this->width = $width;
@@ -76,16 +57,15 @@ class ProductComponent
     }
 
     public static function create(
-        ProductSize $productSize,
-        Material $material,
+        ProductVariant $productVariant,
         int $quantity,
         int $length,
         int $width,
         int $thickness,
         ?string $shapeDescription = null,
     ): self {
-        $component = new self($productSize, $material, $quantity, $length, $width, $thickness, $shapeDescription);
-        $productSize->addProductComponent($component);
+        $component = new self($productVariant, $quantity, $length, $width, $thickness, $shapeDescription);
+        $productVariant->addProductComponent($component);
 
         return $component;
     }
@@ -95,26 +75,14 @@ class ProductComponent
         return $this->id;
     }
 
-    public function getProductSize(): ProductSize
+    public function getProductVariant(): ProductVariant
     {
-        return $this->productSize;
+        return $this->productVariant;
     }
 
-    public function setProductSize(ProductSize $productSize): self
+    public function setProductVariant(ProductVariant $productVariant): self
     {
-        $this->productSize = $productSize;
-
-        return $this;
-    }
-
-    public function getMaterial(): Material
-    {
-        return $this->material;
-    }
-
-    public function setMaterial(Material $material): self
-    {
-        $this->material = $material;
+        $this->productVariant = $productVariant;
 
         return $this;
     }
@@ -179,140 +147,47 @@ class ProductComponent
         return $this;
     }
 
-    public function getBlueprintImage(): ?string
+    public function getBlueprintFile(): ?File
     {
-        if ($this->blueprintImage === null) {
-            return null;
-        }
-
-        if (\is_resource($this->blueprintImage)) {
-            $content = stream_get_contents($this->blueprintImage, -1, 0);
-
-            return $content !== false ? $content : null;
-        }
-
-        \assert(\is_string($this->blueprintImage));
-
-        return $this->blueprintImage;
+        return $this->blueprintFile;
     }
 
-    public function setBlueprintImage(string $blueprintImage): self
+    public function setBlueprintFile(?File $blueprintFile): self
     {
-        $this->blueprintImage = $blueprintImage;
+        $this->blueprintFile = $blueprintFile;
 
         return $this;
     }
 
     public function hasBlueprint(): bool
     {
-        return $this->blueprintImage !== null;
+        return $this->blueprintFile !== null;
     }
 
     public function removeBlueprint(): self
     {
-        $this->blueprintImage = null;
-        $this->blueprintOriginalName = null;
-        $this->blueprintMimeType = null;
+        $this->blueprintFile = null;
 
         return $this;
-    }
-
-    public function getBlueprintOriginalName(): ?string
-    {
-        return $this->blueprintOriginalName;
-    }
-
-    public function setBlueprintOriginalName(?string $blueprintOriginalName): self
-    {
-        $this->blueprintOriginalName = $blueprintOriginalName;
-
-        return $this;
-    }
-
-    public function getBlueprintMimeType(): ?string
-    {
-        return $this->blueprintMimeType;
-    }
-
-    public function setBlueprintMimeType(?string $blueprintMimeType): self
-    {
-        $this->blueprintMimeType = $blueprintMimeType;
-
-        return $this;
-    }
-
-    public function getBlueprintFile(): ?UploadedFile
-    {
-        return $this->blueprintFile;
-    }
-
-    public function setBlueprintFile(?UploadedFile $blueprintFile): self
-    {
-        $this->blueprintFile = $blueprintFile;
-        if ($blueprintFile) {
-            $this->setBlueprintOriginalName($blueprintFile->getClientOriginalName());
-            $this->setBlueprintMimeType($blueprintFile->getMimeType());
-        }
-
-        return $this;
-    }
-
-    public function getBlueprintAsBase64(): ?string
-    {
-        $imageData = $this->getBlueprintImage();
-        if ($imageData === null) {
-            return null;
-        }
-
-        return base64_encode($imageData);
-    }
-
-    public function getBlueprintDataUri(): ?string
-    {
-        if (!$this->hasBlueprint()) {
-            return null;
-        }
-        $base64 = $this->getBlueprintAsBase64();
-        $mimeType = $this->blueprintMimeType ?? 'image/jpeg';
-
-        return \sprintf('data:%s;base64,%s', $mimeType, $base64);
     }
 
     public function hasComplexShape(): bool
     {
-        return $this->shapeDescription !== null || $this->blueprintImage !== null;
+        return $this->shapeDescription !== null || $this->blueprintFile !== null;
     }
 
     public function getDimensionsString(): string
     {
-        $dimensions = \sprintf('%s×%s×%s', $this->length, $this->width, $this->thickness);
-
-        return $dimensions . ' mm';
+        return sprintf('%s×%s×%s mm', $this->length, $this->width, $this->thickness);
     }
 
-    /**
-     * Returns a description of the component, including the material.
-     */
     public function getFullDescription(?string $locale = null): string
     {
         $parts = [];
-        $parts[] = $this->material->getDescription($locale);
         $parts[] = $this->getDimensionsString();
-        $parts[] = \sprintf('(%s ks)', $this->quantity);
+        $parts[] = sprintf('(%s ks)', $this->quantity);
 
         return implode(' ', $parts);
-    }
-
-    /**
-     * Calculates volume/area according to material type.
-     */
-    public function calculateMaterialAmount(): ?float
-    {
-        return match ($this->material->getMeasurementType()) {
-            MeasurementType::VOLUME => $this->calculateVolume(),
-            MeasurementType::AREA => $this->calculateArea(),
-            MeasurementType::PIECE => (float) $this->quantity,
-        };
     }
 
     private function calculateVolume(): ?float

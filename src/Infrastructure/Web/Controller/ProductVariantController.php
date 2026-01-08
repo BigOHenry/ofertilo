@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Product\Command\CreateProductVariantComponent\CreateProductVariantComponentCommand;
-use App\Application\Product\Query\GetProductVariantComponentsGrid\GetProductVariantComponentsGridQuery;
+use App\Application\Product\Command\CreateProductVariant\CreateProductVariantComponentCommand;
+use App\Application\Product\Command\DeleteProductVariant\DeleteProductVariantCommand;
+use App\Application\Product\Command\EditProductVariant\EditProductVariantCommand;
+use App\Application\Product\Query\GetProductVariantFormData\GetProductVariantFormDataQuery;
+use App\Application\Product\Query\GetProductVariantsGrid\GetProductVariantsGridQuery;
 use App\Domain\Product\Entity\Product;
-use App\Domain\Product\Entity\ProductComponent;
 use App\Domain\Product\Entity\ProductVariant;
 use App\Domain\Product\Exception\ProductException;
 use App\Domain\User\ValueObject\Role;
-use App\Infrastructure\Web\Form\ProductComponentFormType;
+use App\Infrastructure\Web\Form\ProductVariantFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +24,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Turbo\TurboBundle;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
-final class ProductComponentController extends BaseController
+final class ProductVariantController extends BaseController
 {
-    #[Route('/product/variant/{id}/component/new', name: 'product_component_new', methods: ['GET', 'POST'])]
+    #[Route('/product/{id}/variant/new', name: 'product_variant_new', methods: ['GET', 'POST'])]
     #[IsGranted(Role::WRITER->value)]
-    public function newComponent(Request $request, ProductVariant $productVariant): Response
+    public function newVariant(Request $request, Product $product): Response
     {
-        $form = $this->createForm(ProductComponentFormType::class, ['productVariant' => $productVariant], [
-            'action' => $this->generateUrl('product_component_new', ['id' => $productVariant->getId()]),
+        $form = $this->createForm(ProductVariantFormType::class, ['product' => $product], [
+            'action' => $this->generateUrl('product_variant_new', ['id' => $product->getId()]),
             'method' => 'POST',
         ]);
 
@@ -37,17 +39,17 @@ final class ProductComponentController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(CreateProductVariantComponentCommand::createFromForm($form, $productVariant));
+                $this->bus->dispatch(CreateProductVariantComponentCommand::createFromForm($form, $product));
                 $this->addFlash('success', $this->translator->trans('message.item_created'));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                if ($frameId === 'productComponentModal_frame') {
+                if ($frameId === 'productVariantModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
 
-                return $this->redirectToRoute('product_detail', ['id' => $productVariant->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('product_detail', ['id' => $product->getId()], Response::HTTP_SEE_OTHER);
             } catch (HandlerFailedException $e) {
                 $this->handleHandlerException($e, $form);
             }
@@ -55,11 +57,11 @@ final class ProductComponentController extends BaseController
 
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => CreateProductVariantComponentCommand::class,
-            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productComponentModal_frame',
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productVariantModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
-                'form_id' => 'product-component-form',
+                'form_id' => 'product-variant-form',
             ],
         ]);
 
@@ -70,44 +72,44 @@ final class ProductComponentController extends BaseController
         return $response;
     }
 
-    #[Route('/product/component/{id}/edit', name: 'product_component_edit')]
+    #[Route('/product/variant/{id}/edit', name: 'product_variant_edit')]
     #[IsGranted(Role::WRITER->value)]
-    public function editComponent(Request $request, ProductComponent $productComponent): Response
+    public function editVariant(Request $request, ProductVariant $productVariant): Response
     {
-        $envelope = $this->bus->dispatch(GetProductComponentFormDataQuery::create($productComponent));
+        $envelope = $this->bus->dispatch(GetProductVariantFormDataQuery::create($productVariant));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
-        $form = $this->createForm(ProductComponentFormType::class, $formData, [
-            'action' => $this->generateUrl('product_component_edit', ['id' => $productComponent->getId()]),
+        $form = $this->createForm(ProductVariantFormType::class, $formData, [
+            'action' => $this->generateUrl('product_variant_edit', ['id' => $productVariant->getId()]),
             'method' => 'POST',
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(EditProductComponentCommand::createFromForm($form, $productComponent->getProduct()));
+                $this->bus->dispatch(EditProductVariantCommand::createFromForm($form, $productVariant->getProduct()));
                 $this->addFlash('success', $this->translator->trans('message.item_updated'));
 
                 $frameId = $request->request->get('frame_id');
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-                if ($frameId === 'productComponentModal_frame') {
+                if ($frameId === 'productVariantModal_frame') {
                     return $this->render('components/stream_modal_cleanup.html.twig');
                 }
 
-                return $this->redirectToRoute('product_detail', ['id' => $productComponent->getProduct()->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('product_detail', ['id' => $productVariant->getProduct()->getId()], Response::HTTP_SEE_OTHER);
             } catch (HandlerFailedException $e) {
                 $this->handleHandlerException($e, $form);
             }
         }
 
         $response = $this->render('components/form_frame.html.twig', [
-            'data_class' => EditProductComponentCommand::class,
-            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productComponentModal_frame',
+            'data_class' => EditProductVariantCommand::class,
+            'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productVariantModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
-                'form_id' => 'product-component-form',
+                'form_id' => 'product-variant-form',
             ],
         ]);
 
@@ -118,12 +120,12 @@ final class ProductComponentController extends BaseController
         return $response;
     }
 
-    #[Route('/api/product/size/{id}/components', name: 'api_product_variant_components')]
+    #[Route('/api/product/{id}/variants', name: 'api_product_variants')]
     #[IsGranted(Role::READER->value)]
-    public function productComponentsApi(ProductVariant $productVariant): JsonResponse
+    public function productVariantsApi(Product $product): JsonResponse
     {
         try {
-            $envelope = $this->bus->dispatch(GetProductVariantComponentsGridQuery::createFromProductVariant($productVariant));
+            $envelope = $this->bus->dispatch(GetProductVariantsGridQuery::create($product->getId()));
 
             return $this->json($envelope->last(HandledStamp::class)?->getResult());
         } catch (\InvalidArgumentException $e) {
@@ -131,12 +133,12 @@ final class ProductComponentController extends BaseController
         }
     }
 
-    #[Route('/product/component/{id}', name: 'product_component_delete', methods: ['DELETE'])]
+    #[Route('/product/variant/{id}', name: 'product_variant_delete', methods: ['DELETE'])]
     #[IsGranted(Role::WRITER->value)]
-    public function delete(ProductComponent $productComponent): JsonResponse
+    public function delete(ProductVariant $productVariant): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteProductComponentCommand::create($productComponent->getProduct()->getId(), $productComponent->getId()));
+            $this->bus->dispatch(DeleteProductVariantCommand::create($productVariant->getProduct()->getId(), $productVariant->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ProductException $e) {
@@ -146,13 +148,13 @@ final class ProductComponentController extends BaseController
         }
     }
 
-    #[Route('/product/component/{id}', name: 'product_component_detail', methods: ['GET'])]
+    #[Route('/product/variant/{id}', name: 'product_variant_detail', methods: ['GET'])]
     #[IsGranted(Role::READER->value)]
-    public function detail(ProductComponent $productComponent): Response
+    public function detail(ProductVariant $productVariant): Response
     {
-        return $this->render('product/component.html.twig', [
-            'productComponent' => $productComponent,
-            'product' => $productComponent->getProduct(),
+        return $this->render('product/variant.html.twig', [
+            'productVariant' => $productVariant,
+            'product' => $productVariant->getProduct(),
         ]);
     }
 }
