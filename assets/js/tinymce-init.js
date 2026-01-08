@@ -9,7 +9,7 @@ import 'tinymce/plugins/image';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/fullscreen';
-import 'tinymce/plugins/paste';
+// import 'tinymce/plugins/paste';
 import 'tinymce/plugins/wordcount';
 
 document.addEventListener('DOMContentLoaded', function() {
