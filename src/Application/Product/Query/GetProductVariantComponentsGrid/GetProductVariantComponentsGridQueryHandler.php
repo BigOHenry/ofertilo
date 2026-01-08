@@ -28,6 +28,7 @@ final readonly class GetProductVariantComponentsGridQueryHandler
         foreach ($productVariant->getProductComponents() as $productComponent) {
             $data[] = [
                 'id' => $productComponent->getId(),
+                'quantity' => $productComponent->getQuantity(),
                 'length' => $productComponent->getLength(),
                 'width' => $productComponent->getWidth(),
                 'thickness' => $productComponent->getThickness(),
