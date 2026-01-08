@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Shared\File\Entity;
 
-use App\Domain\Shared\File\Exception\FileErrorException;
-use App\Domain\Shared\File\Exception\FileValidationException;
 use App\Domain\Shared\File\ValueObject\FileType;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -62,25 +60,25 @@ class File
         string $filename,
         string $originalName,
         string $mimeType,
-        FileType $type
+        FileType $type,
     ) {
         $this->id = Uuid::uuid4()->toString();
         $this->filename = $filename;
         $this->originalName = $originalName;
         $this->mimeType = $mimeType;
         $this->type = $type;
-        $this->extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $this->extension = pathinfo($originalName, \PATHINFO_EXTENSION);
     }
 
     public static function createFromUploadedFile(
         UploadedFile $uploadedFile,
-        FileType $type
+        FileType $type,
     ): self {
         $originalName = $uploadedFile->getClientOriginalName();
         $mimeType = $uploadedFile->getMimeType() ?? 'application/octet-stream';
 
-        $extension = $uploadedFile->guessExtension() ?? pathinfo($originalName, PATHINFO_EXTENSION);
-        $filename = sprintf(
+        $extension = $uploadedFile->guessExtension() ?? pathinfo($originalName, \PATHINFO_EXTENSION);
+        $filename = \sprintf(
             '%s_%s.%s',
             bin2hex(random_bytes(6)) . '_' . str_replace('.', '_', uniqid('', true)),
             time(),
@@ -95,19 +93,6 @@ class File
         }
 
         return $file;
-    }
-
-    private function extractImageDimensions(UploadedFile $file): void
-    {
-        try {
-            $imageInfo = getimagesize($file->getPathname());
-            if ($imageInfo !== false) {
-                $this->width = $imageInfo[0];
-                $this->height = $imageInfo[1];
-            }
-        } catch (\Exception) {
-            // Ignore
-        }
     }
 
     public function getId(): string
@@ -175,5 +160,18 @@ class File
     public function getRelativePath(): string
     {
         return self::STORAGE_FOLDER . '/' . $this->filename;
+    }
+
+    private function extractImageDimensions(UploadedFile $file): void
+    {
+        try {
+            $imageInfo = getimagesize($file->getPathname());
+            if ($imageInfo !== false) {
+                $this->width = $imageInfo[0];
+                $this->height = $imageInfo[1];
+            }
+        } catch (\Exception) {
+            // Ignore
+        }
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Shared\File\Exception;
 
-
 class FileNotFoundException extends FileException
 {
     public static function withId(string $id): self

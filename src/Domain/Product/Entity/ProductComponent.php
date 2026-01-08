@@ -178,18 +178,19 @@ class ProductComponent
 
     public function getDimensionsString(): string
     {
-        return sprintf('%s×%s×%s mm', $this->length, $this->width, $this->thickness);
+        return \sprintf('%s×%s×%s mm', $this->length, $this->width, $this->thickness);
     }
 
     public function getFullDescription(?string $locale = null): string
     {
         $parts = [];
         $parts[] = $this->getDimensionsString();
-        $parts[] = sprintf('(%s ks)', $this->quantity);
+        $parts[] = \sprintf('(%s ks)', $this->quantity);
 
         return implode(' ', $parts);
     }
 
+    /* @phpstan-ignore-next-line */
     private function calculateVolume(): ?float
     {
         if (!$this->length || !$this->width || !$this->thickness) {
@@ -200,6 +201,7 @@ class ProductComponent
         return ($this->length / 1000) * ($this->width / 1000) * ($this->thickness / 1000) * $this->quantity;
     }
 
+    /* @phpstan-ignore-next-line */
     private function calculateArea(): ?float
     {
         if (!$this->length || !$this->width) {

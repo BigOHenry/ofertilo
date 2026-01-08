@@ -6,7 +6,6 @@ namespace App\Infrastructure\Service;
 
 use App\Domain\Shared\File\Entity\File;
 use App\Domain\Shared\File\Exception\FileErrorException;
-use Random\RandomException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -19,7 +18,7 @@ readonly class FileStorage
 
     public function store(File $file, UploadedFile $uploadedFile): void
     {
-        $targetDirectory = $this->secureUploadsDirectory . DIRECTORY_SEPARATOR . File::STORAGE_FOLDER;
+        $targetDirectory = $this->secureUploadsDirectory . \DIRECTORY_SEPARATOR . File::STORAGE_FOLDER;
 
         if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0755, true) && !is_dir($targetDirectory)) {
             throw FileErrorException::failToCreateOrFindFolder($targetDirectory);
@@ -44,9 +43,9 @@ readonly class FileStorage
     public function getPath(File $file): string
     {
         return $this->secureUploadsDirectory
-            . DIRECTORY_SEPARATOR
+            . \DIRECTORY_SEPARATOR
             . File::STORAGE_FOLDER
-            . DIRECTORY_SEPARATOR
+            . \DIRECTORY_SEPARATOR
             . $file->getFilename();
     }
 
@@ -65,6 +64,6 @@ readonly class FileStorage
      */
     public function getEntityDirectory(string $entityFolder): string
     {
-        return $this->secureUploadsDirectory . DIRECTORY_SEPARATOR . $entityFolder;
+        return $this->secureUploadsDirectory . \DIRECTORY_SEPARATOR . $entityFolder;
     }
 }

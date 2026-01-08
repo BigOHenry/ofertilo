@@ -18,7 +18,7 @@ final readonly class EditProductCommandHandler
     public function __construct(
         private ProductApplicationService $productApplicationService,
         private CountryService $countryService,
-        private FileStorage $fileStorage
+        private FileStorage $fileStorage,
     ) {
     }
 

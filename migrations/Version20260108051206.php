@@ -9,7 +9,6 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20260108051206 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE product_component DROP CONSTRAINT fk_275e17da9854b397');

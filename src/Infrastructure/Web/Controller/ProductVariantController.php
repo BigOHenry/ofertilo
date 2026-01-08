@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Controller;
 
-use App\Application\Product\Command\CreateProductVariant\CreateProductVariantComponentCommand;
+use App\Application\Product\Command\CreateProductVariant\CreateProductVariantCommand;
 use App\Application\Product\Command\DeleteProductVariant\DeleteProductVariantCommand;
 use App\Application\Product\Command\EditProductVariant\EditProductVariantCommand;
 use App\Application\Product\Query\GetProductVariantFormData\GetProductVariantFormDataQuery;
@@ -39,7 +39,7 @@ final class ProductVariantController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->bus->dispatch(CreateProductVariantComponentCommand::createFromForm($form, $product));
+                $this->bus->dispatch(CreateProductVariantCommand::createFromForm($form, $product));
                 $this->addFlash('success', $this->translator->trans('message.item_created'));
 
                 $frameId = $request->request->get('frame_id');
@@ -56,7 +56,7 @@ final class ProductVariantController extends BaseController
         }
 
         $response = $this->render('components/form_frame.html.twig', [
-            'data_class' => CreateProductVariantComponentCommand::class,
+            'data_class' => CreateProductVariantCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'productVariantModal_frame',
             'form_template' => 'components/_form.html.twig',
             'form_context' => [

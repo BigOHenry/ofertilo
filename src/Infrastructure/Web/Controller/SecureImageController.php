@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SecureImageController extends AbstractController
 {
     /**
-     * New route - using File ID
+     * New route - using File ID.
      */
     #[Route('/secure/file/{id}', name: 'secure_file', requirements: ['id' => '[0-9a-f-]+'])]
     #[IsGranted(Role::READER->value)]
@@ -41,7 +41,7 @@ class SecureImageController extends AbstractController
 
         // Set proper headers
         $response->headers->set('Content-Type', $file->getMimeType());
-        $response->headers->set('Content-Disposition', sprintf(
+        $response->headers->set('Content-Disposition', \sprintf(
             'inline; filename="%s"',
             $file->getOriginalName()
         ));
@@ -50,7 +50,8 @@ class SecureImageController extends AbstractController
     }
 
     /**
-     * Legacy route - for backward compatibility with old encoded filenames
+     * Legacy route - for backward compatibility with old encoded filenames.
+     *
      * @deprecated Use showFile() with File ID instead
      */
     #[Route('/secure/image/{entityFolder}/{filename}', name: 'secure_image', requirements: ['filename' => '.+'])]
@@ -67,7 +68,7 @@ class SecureImageController extends AbstractController
 
         // Try to find file by filename in repository
         // This is legacy support - you might want to remove this eventually
-        $imagePath = $fileStorage->getEntityDirectory($entityFolder) . DIRECTORY_SEPARATOR . $filename;
+        $imagePath = $fileStorage->getEntityDirectory($entityFolder) . \DIRECTORY_SEPARATOR . $filename;
 
         if (!file_exists($imagePath)) {
             throw $this->createNotFoundException('Image not found');

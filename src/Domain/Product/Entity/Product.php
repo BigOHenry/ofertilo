@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Product\Entity;
 
 use App\Domain\Color\Entity\Color;
-use App\Domain\Material\Entity\Material;
 use App\Domain\Product\Exception\ProductColorAlreadyExistsException;
 use App\Domain\Product\Exception\ProductColorNotFoundException;
 use App\Domain\Product\Exception\ProductVariantNotFoundException;
@@ -215,7 +214,7 @@ abstract class Product implements TranslatableInterface
     }
 
     /**
-     * @return Collection<int, ProductColor>
+     * @return Collection<string, ProductColor>
      */
     public function getProductColors(): Collection
     {

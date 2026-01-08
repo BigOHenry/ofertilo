@@ -20,7 +20,7 @@ class ProductComponentValidator extends Validator
     public const int THICKNESS_MAX_VALUE = 200;
 
     /**
-     * @return array<string, array{key: string, params?: array<string, int|null>}>
+     * @return array<string, array{key: string, params?: array<string, float|int|string|null>}>
      */
     public static function validate(int $quantity, int $length, int $width, int $thickness, ?UploadedFile $blueprintFile): array
     {

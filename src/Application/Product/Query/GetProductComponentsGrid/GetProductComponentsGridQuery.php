@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Product\Query\GetProductVariantComponentsGrid;
+namespace App\Application\Product\Query\GetProductComponentsGrid;
 
 use App\Domain\Product\Entity\ProductVariant;
 
-final readonly class GetProductVariantComponentsGridQuery
+final readonly class GetProductComponentsGridQuery
 {
     protected function __construct(public string $productVariantId)
     {

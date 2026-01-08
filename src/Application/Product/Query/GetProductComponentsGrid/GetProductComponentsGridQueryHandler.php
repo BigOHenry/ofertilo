@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Product\Query\GetProductVariantComponentsGrid;
+namespace App\Application\Product\Query\GetProductComponentsGrid;
 
-use App\Application\Product\Service\ProductApplicationService;
 use App\Domain\Product\Repository\ProductVariantRepositoryInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
-final readonly class GetProductVariantComponentsGridQueryHandler
+final readonly class GetProductComponentsGridQueryHandler
 {
     public function __construct(
         private ProductVariantRepositoryInterface $variantRepository,
@@ -18,9 +16,9 @@ final readonly class GetProductVariantComponentsGridQueryHandler
     }
 
     /**
-     * @return list<array{id: string, length: int, width: int, thickness: int, atypicalShape: bool}>
+     * @return list<array{id: string, quantity: int, length: int|null, width: int|null, thickness: int, atypicalShape: bool}>
      */
-    public function __invoke(GetProductVariantComponentsGridQuery $query): array
+    public function __invoke(GetProductComponentsGridQuery $query): array
     {
         $productVariant = $this->variantRepository->getById($query->productVariantId);
 
@@ -32,7 +30,7 @@ final readonly class GetProductVariantComponentsGridQueryHandler
                 'length' => $productComponent->getLength(),
                 'width' => $productComponent->getWidth(),
                 'thickness' => $productComponent->getThickness(),
-                'atypicalShape' => $productComponent->getShapeDescription() !== null || $productComponent->getBlueprintFile() !== null
+                'atypicalShape' => $productComponent->getShapeDescription() !== null || $productComponent->getBlueprintFile() !== null,
             ];
         }
 
