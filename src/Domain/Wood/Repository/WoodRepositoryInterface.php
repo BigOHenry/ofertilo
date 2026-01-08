@@ -14,7 +14,7 @@ interface WoodRepositoryInterface
 
     public function findByName(string $name): ?Wood;
 
-    public function findById(int $id): ?Wood;
+    public function findById(string $id): ?Wood;
 
     /**
      * @throws WoodNotFoundException
@@ -24,7 +24,7 @@ interface WoodRepositoryInterface
     /**
      * @throws WoodNotFoundException
      */
-    public function getById(int $id): Wood;
+    public function getById(string $id): Wood;
 
     public function save(Wood $wood): void;
 

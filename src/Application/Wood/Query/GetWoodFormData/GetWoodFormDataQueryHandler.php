@@ -8,7 +8,6 @@ use App\Application\Wood\Service\WoodApplicationService;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Domain\Wood\Exception\WoodNotFoundException;
 use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,8 +20,8 @@ final readonly class GetWoodFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, name: string, latinName: string|null, dryDensity: int|null,
-     *      hardness: int|null, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
+     * @return array{id: string, name: string, latinName: string|null, dryDensity: int|null,
+     *      hardness: int|null, enabled: bool, translations: array<int, TranslationEntity>}
      */
     public function __invoke(GetWoodFormDataQuery $query): array
     {

@@ -11,7 +11,7 @@ class WoodNotFoundException extends WoodException
         return new self(\sprintf("Wood with name '%s' not found!", $name));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf("Wood with id '%s' not found!", $id));
     }

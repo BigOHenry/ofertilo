@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Color\Command\EditColor;
 
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditColorCommand
@@ -14,7 +14,7 @@ final readonly class EditColorCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private int $id,
+        private string $id,
         private int $code,
         private bool $inStock,
         private bool $enabled,
@@ -32,10 +32,10 @@ final readonly class EditColorCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self((int) $data['id'], $data['code'], $data['inStock'], $data['enabled'] ?? true, $translations);
+        return new self($data['id'], $data['code'], $data['inStock'], $data['enabled'] ?? true, $translations);
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

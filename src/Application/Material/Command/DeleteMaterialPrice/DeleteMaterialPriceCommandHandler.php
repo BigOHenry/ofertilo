@@ -17,8 +17,8 @@ final readonly class DeleteMaterialPriceCommandHandler
 
     public function __invoke(DeleteMaterialPriceCommand $command): void
     {
-        $material = $this->materialApplicationService->getById($command->getMaterialId());
-        $materialPrice = $material->getPriceById($command->getPriceId());
+        $material = $this->materialApplicationService->getById($command->materialId);
+        $materialPrice = $material->getPriceById($command->priceId);
 
         $material->removePrice($materialPrice);
 

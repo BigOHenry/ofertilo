@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-md-8 col-12">
+        <div class="row">
+            <div class="col-12"><label class="fw-semibold">{{ 'field.shapeDescription'|trans }}:</label> <span>{{ productComponent.shapeDescription }}</span></div>
+        </div>
+    </div>
+    <div class="col-md-4 col-12">
+        {% if productComponent.hasBlueprint %}
+            <div class="col-12">
+                <img src="{{ file_url(productComponent.blueprintFile) }}" class="img-thumbnail" style="max-width: 300px;" alt="{{ 'field.blueprintFile'|trans }}">
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+

@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormInterface;
 
 final readonly class CreateMaterialCommand
 {
-    public function __construct(private int $woodId, private MaterialType $type)
+    public function __construct(public string $woodId, public MaterialType $type)
     {
     }
 
@@ -18,15 +18,5 @@ final readonly class CreateMaterialCommand
         $data = $form->getData();
 
         return new self($data['wood']->getId(), $data['type']);
-    }
-
-    public function getWoodId(): int
-    {
-        return $this->woodId;
-    }
-
-    public function getType(): MaterialType
-    {
-        return $this->type;
     }
 }

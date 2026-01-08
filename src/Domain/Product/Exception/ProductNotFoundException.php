@@ -14,7 +14,7 @@ class ProductNotFoundException extends ProductException
         return new self(\sprintf("Product with type '%s' and country '%s' not found!", $type->value, $country->getAlpha3()));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf("Product with id '%s' not found!", $id));
     }

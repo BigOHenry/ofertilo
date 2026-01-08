@@ -21,16 +21,16 @@ final readonly class CreateProductColorCommandHandler
 
     public function __invoke(CreateProductColorCommand $command): void
     {
-        $product = $this->productApplicationService->getById($command->getProductId());
-        $color = $this->colorApplicationService->getById($command->getColorId());
+        $product = $this->productApplicationService->getById($command->productId);
+        $color = $this->colorApplicationService->getById($command->colorId);
 
-        $errors = ProductColorValidator::validate($command->getDescription());
+        $errors = ProductColorValidator::validate($command->description);
 
         if (!empty($errors)) {
             throw WoodValidationException::withErrors($errors);
         }
 
-        $product->addColor($color, $command->getDescription());
+        $product->addColor($color, $command->description);
         $this->productApplicationService->save($product);
     }
 }

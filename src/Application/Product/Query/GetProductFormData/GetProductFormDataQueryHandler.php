@@ -10,7 +10,6 @@ use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
 use App\Domain\Translation\Entity\TranslationEntity;
 use App\Infrastructure\Web\Form\Helper\TranslationFormHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -23,7 +22,7 @@ final readonly class GetProductFormDataQueryHandler
     }
 
     /**
-     * @return array{id: int|null, type: ProductType, country: Country|null, enabled: bool, translations: ArrayCollection<int, TranslationEntity>}
+     * @return array{id: string, type: ProductType, country: Country|null, enabled: bool, translations: array<int, TranslationEntity>}
      */
     public function __invoke(GetProductFormDataQuery $query): array
     {

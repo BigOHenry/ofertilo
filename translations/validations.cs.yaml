@@ -11,6 +11,9 @@ general:
     tooBig: "Hodnota musí být maximálně %max%"
   phone:
     invalid: 'Neplatný formát telefoního čísla'
+  file:
+    invalidMimeType: 'Nepovolený formát. Povolené jsou: %allowed%'
+    tooBig: 'Soubor může mít maximální velikos %size% MB'
 
 user:
   password:
@@ -18,6 +21,9 @@ user:
   roles:
     invalid: 'Neplatná role. Musí být jedna z: %roles%'
     empty: 'Je nutné definovat alespoň jednu roli'
+product:
+  code:
+    invalid: 'Neplatný formát, povoleny jsou pouze písmena, čísla a tyto znaky: .-_#'
 wood:
   name:
     invalid: 'Neplatný formát, povoleny jsou pouze malá písmena a podtržítko'

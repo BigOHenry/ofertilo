@@ -10,7 +10,7 @@ use App\Application\Color\Service\ColorApplicationService;
 use App\Domain\Color\Entity\Color;
 use App\Domain\Color\Exception\ColorAlreadyExistsException;
 use App\Domain\Color\Exception\ColorValidationException;
-use App\Domain\Translation\TranslationDto\TranslationDto;
+use App\Domain\Translation\DTO\TranslationDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

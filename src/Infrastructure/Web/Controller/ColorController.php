@@ -64,7 +64,7 @@ final class ColorController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => CreateColorCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'colorModal_frame',
-            'form_template' => 'color/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'color-form',
@@ -82,7 +82,7 @@ final class ColorController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function colorEdit(Request $request, Color $color): Response
     {
-        $envelope = $this->bus->dispatch(new GetColorFormDataQuery((int) $color->getId()));
+        $envelope = $this->bus->dispatch(new GetColorFormDataQuery($color->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(ColorFormType::class, data: $formData, options: [
@@ -119,7 +119,7 @@ final class ColorController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => EditColorCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'colorModal_frame',
-            'form_template' => 'color/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'color-form',
@@ -160,7 +160,7 @@ final class ColorController extends BaseController
     public function deletePrice(Color $color): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteColorCommand::create((int) $color->getId()));
+            $this->bus->dispatch(DeleteColorCommand::create($color->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (ColorException $e) {

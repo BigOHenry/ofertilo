@@ -7,11 +7,11 @@ namespace App\Application\Wood\Query\GetWoodFormData;
 readonly class GetWoodFormDataQuery
 {
     public function __construct(
-        private int $id,
+        private string $id,
     ) {
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Web\Form;
 
+use App\Domain\Color\Entity\Color;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,14 +26,10 @@ class ColorFormType extends AbstractType
                 'label' => 'field.code',
                 'scale' => 0,
             ])
-            ->add('translations', CollectionType::class, [
-                'entry_type' => TranslationFormType::class,
+            ->add('translations', TranslationsFormType::class, [
                 'mapped' => true,
-                'by_reference' => false,
                 'label' => false,
-                'entry_options' => [
-                    'label' => false,
-                ],
+                'entity_class' => Color::class,
             ])
             ->add('inStock', CheckboxType::class, [
                 'label' => 'field.inStock',

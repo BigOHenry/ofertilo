@@ -7,6 +7,7 @@ namespace App\Domain\Translation\Trait;
 use App\Domain\Translation\Entity\TranslationEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 trait TranslatableTrait
 {
@@ -17,10 +18,17 @@ trait TranslatableTrait
     private ?string $defaultLocale = null;
     private bool $translationsLoaded = false;
 
-    /**
-     * @return string[]
-     */
     abstract public static function getTranslatableFields(): array;
+
+    abstract public function getId(): ?string;
+
+    #[ORM\PostLoad]
+    #[ORM\PostPersist]
+    public function initializeTranslationsFromDatabase(): void
+    {
+        // After loading or persisting, the entity is managed
+        $this->translationsLoaded = false;
+    }
 
     public function setDefaultLocale(string $locale): void
     {
@@ -72,10 +80,6 @@ trait TranslatableTrait
 
         $targetLocale = $locale ?? $this->defaultLocale ?? 'en';
 
-        if (!$this->translationsLoaded && $this->getId() !== null) {
-            $this->lazyLoadTranslations();
-        }
-
         foreach ($this->translations as $translation) {
             if ($translation->getField() === $field && $translation->getLocale() === $targetLocale) {
                 return $translation->getValue();
@@ -92,10 +96,7 @@ trait TranslatableTrait
         $t->setLocale($locale);
         $t->setValue($value);
         $t->setObjectClass(static::class);
-
-        if ($this->getId() !== null) {
-            $t->setObjectId($this->getId());
-        }
+        $t->setObjectId($this->getId());
 
         $this->translations->add($t);
         $this->translationsLoaded = true;
@@ -119,37 +120,10 @@ trait TranslatableTrait
         $this->translations->clear();
     }
 
-    abstract public function getId(): ?int;
-
     private function initializeTranslations(): void
     {
         if (!isset($this->translations)) {
             $this->translations = new ArrayCollection();
         }
-    }
-
-    private function lazyLoadTranslations(): void
-    {
-        if ($this->translationsLoaded) {
-            return;
-        }
-
-        global $entityManager;
-
-        if (isset($entityManager)) {
-            $translations = $entityManager
-                ->getRepository(TranslationEntity::class)
-                ->findBy([
-                    'object_class' => static::class,
-                    'object_id' => $this->getId(),
-                ])
-            ;
-
-            foreach ($translations as $translation) {
-                $this->translations->add($translation);
-            }
-        }
-
-        $this->translationsLoaded = true;
     }
 }

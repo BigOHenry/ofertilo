@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Material;
 
 use App\Domain\Material\Entity\EdgeGluedPanelMaterial;
+use App\Domain\Material\Entity\MaterialPrice;
 use App\Domain\Material\Entity\PieceMaterial;
 use App\Domain\Material\Entity\PlywoodMaterial;
 use App\Domain\Material\Entity\SolidWoodMaterial;
@@ -122,7 +123,10 @@ final class MaterialTest extends TestCase
 
         $prices = $material->getPrices();
         $this->assertCount(1, $prices);
-        $this->assertSame(18, $prices[0]->getThickness());
+
+        $firstPrice = $prices->first();
+        $this->assertInstanceOf(MaterialPrice::class, $firstPrice);
+        $this->assertSame(18, $firstPrice->getThickness());
     }
 
     public function testAddMultiplePrices(): void
@@ -153,8 +157,9 @@ final class MaterialTest extends TestCase
         $material->addPrice(20, '1700.00');
 
         $prices = $material->getPrices();
-        $priceToRemove = $prices[0];
+        $priceToRemove = $prices->first();
 
+        $this->assertInstanceOf(MaterialPrice::class, $priceToRemove);
         $material->removePrice($priceToRemove);
 
         $this->assertCount(1, $material->getPrices());
@@ -166,8 +171,9 @@ final class MaterialTest extends TestCase
         $otherMaterial = PlywoodMaterial::create($this->wood);
         $otherMaterial->addPrice(18, '1500.00');
 
-        $priceFromOtherMaterial = $otherMaterial->getPrices()[0];
+        $priceFromOtherMaterial = $otherMaterial->getPrices()->first();
 
+        $this->assertInstanceOf(MaterialPrice::class, $priceFromOtherMaterial);
         $this->expectException(MaterialPriceNotFoundException::class);
 
         $material->removePrice($priceFromOtherMaterial);
@@ -202,14 +208,13 @@ final class MaterialTest extends TestCase
         $material->addPrice(18, '1500.00');
 
         $prices = $material->getPrices();
-        $price = $prices[0];
+        $price = $prices->first();
 
-        $reflection = new \ReflectionClass($price);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($price, 1);
+        $this->assertInstanceOf(MaterialPrice::class, $price);
 
-        $foundPrice = $material->findPriceById(1);
+        $priceId = $price->getId();
+
+        $foundPrice = $material->findPriceById($priceId);
 
         $this->assertSame($price, $foundPrice);
     }
@@ -218,7 +223,8 @@ final class MaterialTest extends TestCase
     {
         $material = PlywoodMaterial::create($this->wood);
 
-        $this->assertNull($material->findPriceById(999));
+        $nonExistentId = '00000000-0000-0000-0000-000000000000';
+        $this->assertNull($material->findPriceById($nonExistentId));
     }
 
     public function testFindPriceByThickness(): void
@@ -247,7 +253,8 @@ final class MaterialTest extends TestCase
 
         $this->expectException(MaterialPriceNotFoundException::class);
 
-        $material->getPriceById(999);
+        $nonExistentId = '00000000-0000-0000-0000-000000000000';
+        $material->getPriceById($nonExistentId);
     }
 
     public function testGetPriceById(): void
@@ -256,15 +263,46 @@ final class MaterialTest extends TestCase
         $material->addPrice(18, '1500.00');
 
         $prices = $material->getPrices();
-        $price = $prices[0];
+        $price = $prices->first();
 
-        $reflection = new \ReflectionClass($price);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($price, 1);
+        $this->assertInstanceOf(MaterialPrice::class, $price);
 
-        $foundPrice = $material->getPriceById(1);
+        $priceId = $price->getId();
+
+        $foundPrice = $material->getPriceById($priceId);
 
         $this->assertSame($price, $foundPrice);
+    }
+
+    public function testMaterialHasUuidId(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+
+        $id = $material->getId();
+
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+            $id,
+            'ID should be a valid UUID v4'
+        );
+    }
+
+    public function testMaterialPriceHasUuidId(): void
+    {
+        $material = PlywoodMaterial::create($this->wood);
+        $material->addPrice(18, '1500.00');
+
+        $prices = $material->getPrices();
+        $price = $prices->first();
+
+        $this->assertInstanceOf(MaterialPrice::class, $price);
+
+        $id = $price->getId();
+
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+            $id,
+            'MaterialPrice ID should be a valid UUID v4'
+        );
     }
 }

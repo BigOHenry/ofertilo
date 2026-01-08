@@ -45,6 +45,40 @@
         </div>
     </div>
 
+    <div id="product-card" class="card shadow-sm mt-3">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <div id="product-variants-title">
+                <h2 class="mb-0"><i class="fa-solid fa-fw fa-expand pe-2"></i>{{ 'title.productVariants'|trans }}</h2>
+            </div>
+            <button class="btn btn-primary" data-modal-id="productVariantModal" data-modal-src="{{ path('product_variant_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
+                <i class="fa fa-plus pe-2"></i>{{ 'button.add'|trans }}
+            </button>
+        </div>
+        <div class="card-body">
+            {{ component('tabulator_grid', {
+                id: 'product-variants-table',
+                pagination: false,
+                windowVariable: 'productVariants',
+                apiUrl: path('api_product_variants', {'id': product.id}),
+                showActions: true,
+                rowClickRoute: 'product_variant_detail',
+                editRoute: 'product_variant_edit',
+                deleteRoute: 'product_variant_delete',
+                editModalId: 'productVariantModal',
+                columns: [
+                    { title: 'field.height'|trans, field: "height", headerSort: false},
+                    { title: 'field.width'|trans, field: "width", headerSort: false},
+                    { title: 'field.thickness'|trans, field: "thickness", headerSort: false},
+                ]
+            }) }}
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productVariantModal',
+        title: 'title.productVariant'|trans
+    } %}
+
     {% include 'components/form_modal_frame.html.twig' with {
         modal_id: 'productColorModal',
         title: 'title.product_color'|trans

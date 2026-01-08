@@ -16,12 +16,12 @@ interface MaterialRepositoryInterface
 
     public function findByWoodAndType(Wood $wood, MaterialType $type): ?Material;
 
-    public function findById(int $id): ?Material;
+    public function findById(string $id): ?Material;
 
     /**
      * @throws MaterialNotFoundException
      */
-    public function getById(int $id): Material;
+    public function getById(string $id): Material;
 
     public function save(Material $material): void;
 

@@ -63,7 +63,7 @@ final class WoodController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => CreateWoodCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'woodModal_frame',
-            'form_template' => 'wood/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'wood-form',
@@ -81,7 +81,7 @@ final class WoodController extends BaseController
     #[IsGranted(Role::WRITER->value)]
     public function woodEdit(Request $request, Wood $wood): Response
     {
-        $envelope = $this->bus->dispatch(new GetWoodFormDataQuery((int) $wood->getId()));
+        $envelope = $this->bus->dispatch(new GetWoodFormDataQuery($wood->getId()));
         $formData = $envelope->last(HandledStamp::class)?->getResult();
 
         $form = $this->createForm(WoodFormType::class, data: $formData, options: [
@@ -118,7 +118,7 @@ final class WoodController extends BaseController
         $response = $this->render('components/form_frame.html.twig', [
             'data_class' => EditWoodCommand::class,
             'frame_id' => $request->headers->get('Turbo-Frame') ?? 'woodModal_frame',
-            'form_template' => 'wood/components/_form.html.twig',
+            'form_template' => 'components/_form.html.twig',
             'form_context' => [
                 'form' => $form->createView(),
                 'form_id' => 'wood-form',
@@ -159,7 +159,7 @@ final class WoodController extends BaseController
     public function delete(Wood $wood): JsonResponse
     {
         try {
-            $this->bus->dispatch(DeleteWoodCommand::create((int) $wood->getId()));
+            $this->bus->dispatch(DeleteWoodCommand::create($wood->getId()));
 
             return new JsonResponse(['success' => true]);
         } catch (WoodException $e) {

@@ -20,7 +20,7 @@ final readonly class GetColorsPaginatedGridQueryHandler
     }
 
     /**
-     * @return array{data: list<array{id: int|null, code: int, description: string|null}>}
+     * @return array{data: list<array{id: string, code: int, description: string|null}>}
      */
     public function __invoke(GetColorsPaginatedGridQuery $query): array
     {

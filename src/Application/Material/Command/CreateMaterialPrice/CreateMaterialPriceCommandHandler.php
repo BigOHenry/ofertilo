@@ -19,15 +19,15 @@ final readonly class CreateMaterialPriceCommandHandler
 
     public function __invoke(CreateMaterialPriceCommand $command): void
     {
-        $material = $this->materialService->getById($command->getMaterialId());
+        $material = $this->materialService->getById($command->materialId);
 
-        $errors = MaterialPriceValidator::validate($command->getThickness(), (float) $command->getPrice());
+        $errors = MaterialPriceValidator::validate($command->thickness, (float) $command->price);
 
         if (!empty($errors)) {
             throw MaterialPriceValidationException::withErrors($errors);
         }
 
-        $material->addPrice($command->getThickness(), $command->getPrice());
+        $material->addPrice($command->thickness, $command->price);
 
         $this->materialService->save($material);
     }

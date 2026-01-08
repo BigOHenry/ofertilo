@@ -19,7 +19,7 @@ final readonly class GetOutOfStockColorsGridQueryHandler
     }
 
     /**
-     * @return array{data: array<array{id: int|null, code: int, description: string|null}>}
+     * @return array{data: array<array{id: string, code: int, description: string|null}>}
      */
     public function __invoke(GetOutOfStockColorsGridQuery $query): array
     {

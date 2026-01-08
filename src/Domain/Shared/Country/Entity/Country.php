@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Shared\Country\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'country')]
@@ -14,9 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Country
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(type: 'text', length: 200, unique: true)]
     private string $name;
@@ -32,13 +32,14 @@ class Country
 
     public function __construct(string $name, string $alpha2, string $alpha3, bool $enabled = true)
     {
+        $this->id = Uuid::uuid4()->toString();
         $this->name = $name;
         $this->alpha2 = mb_strtoupper($alpha2);
         $this->alpha3 = mb_strtoupper($alpha3);
         $this->enabled = $enabled;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }

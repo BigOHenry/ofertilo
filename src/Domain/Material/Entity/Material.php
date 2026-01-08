@@ -12,6 +12,7 @@ use App\Domain\Wood\Entity\Wood;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'material')]
@@ -21,9 +22,8 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Material
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\ManyToOne(targetEntity: Wood::class, cascade: ['persist'])]
     private Wood $wood;
@@ -39,12 +39,13 @@ abstract class Material
 
     protected function __construct()
     {
+        $this->id = Uuid::uuid4()->toString();
         $this->prices = new ArrayCollection();
     }
 
     abstract public function getMeasurementType(): MeasurementType;
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -120,7 +121,7 @@ abstract class Material
         };
     }
 
-    public function findPriceById(int $id): ?MaterialPrice
+    public function findPriceById(string $id): ?MaterialPrice
     {
         return $this->prices->filter(
             fn (MaterialPrice $f) => $f->getId() === $id
@@ -137,7 +138,7 @@ abstract class Material
     /**
      * @throws MaterialPriceNotFoundException
      */
-    public function getPriceById(int $id): MaterialPrice
+    public function getPriceById(string $id): MaterialPrice
     {
         return $this->findPriceById($id) ?? throw MaterialPriceNotFoundException::withId($id);
     }

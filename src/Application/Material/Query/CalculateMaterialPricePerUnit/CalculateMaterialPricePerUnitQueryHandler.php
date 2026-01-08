@@ -20,28 +20,28 @@ final readonly class CalculateMaterialPricePerUnitQueryHandler
 
     public function __invoke(CalculateMaterialPricePerUnitQuery $query): float
     {
-        $material = $this->materialApplicationService->findById($query->getMaterialId());
+        $material = $this->materialApplicationService->findById($query->materialId);
 
         if ($material === null) {
-            throw MaterialNotFoundException::withId($query->getMaterialId());
+            throw MaterialNotFoundException::withId($query->materialId);
         }
 
-        $lengthInMeters = $query->getLength() / 1000;
-        $widthInMeters = $query->getWidth() / 1000;
+        $lengthInMeters = $query->length / 1000;
+        $widthInMeters = $query->width / 1000;
 
         if ($material->getMeasurementType() === MeasurementType::VOLUME) {
-            if ($query->getThickness() === null) {
+            if ($query->thickness === null) {
                 throw DeveloperLogicException::invalidArguments('Thickness is required for volume calculation');
             }
 
-            $thicknessInMeters = $query->getThickness() / 1000;
+            $thicknessInMeters = $query->thickness / 1000;
             $volume = $lengthInMeters * $widthInMeters * $thicknessInMeters;
 
-            return round($query->getPrice() / $volume, mode: \RoundingMode::AwayFromZero);
+            return round($query->price / $volume, mode: \RoundingMode::AwayFromZero);
         }
 
         $area = $lengthInMeters * $widthInMeters;
 
-        return round($query->getPrice() / $area, mode: \RoundingMode::AwayFromZero);
+        return round($query->price / $area, mode: \RoundingMode::AwayFromZero);
     }
 }

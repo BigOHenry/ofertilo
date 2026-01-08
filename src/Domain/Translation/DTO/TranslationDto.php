@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Translation\TranslationDto;
+namespace App\Domain\Translation\DTO;
 
 use App\Domain\Translation\Entity\TranslationEntity;
 
 class TranslationDto implements \Serializable
 {
     protected function __construct(
-        private ?int $id,
-        private ?int $objectId,
+        private string $id,
+        private string $objectId,
         private string $objectClass,
         private string $locale,
         private string $field,
@@ -19,7 +19,7 @@ class TranslationDto implements \Serializable
     }
 
     /**
-     * @return array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null}
+     * @return array{id: string, objectId: string, objectClass: string, locale: string, field: string, value: string|null}
      */
     public function __serialize(): array
     {
@@ -34,11 +34,11 @@ class TranslationDto implements \Serializable
     }
 
     /**
-     * @param array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null} $data
+     * @param array{id: string, objectId: string, objectClass: string, locale: string, field: string, value: string|null} $data
      */
     public function __unserialize(array $data): void
     {
-        $this->id = $data['id'] ?? null;
+        $this->id = $data['id'];
         $this->objectId = $data['objectId'];
         $this->objectClass = $data['objectClass'];
         $this->locale = $data['locale'];
@@ -58,7 +58,25 @@ class TranslationDto implements \Serializable
         );
     }
 
-    public function getId(): ?int
+    public static function create(
+        string $id,
+        string $objectId,
+        string $objectClass,
+        string $locale,
+        string $field,
+        ?string $value = null,
+    ): self {
+        return new self(
+            id: $id,
+            objectId: $objectId,
+            objectClass: $objectClass,
+            locale: $locale,
+            field: $field,
+            value: $value
+        );
+    }
+
+    public function getId(): string
     {
         return $this->id;
     }
@@ -68,7 +86,7 @@ class TranslationDto implements \Serializable
         return $this->objectClass;
     }
 
-    public function getObjectId(): ?int
+    public function getObjectId(): string
     {
         return $this->objectId;
     }
@@ -95,7 +113,7 @@ class TranslationDto implements \Serializable
 
     public function unserialize(string $data): void
     {
-        /** @var array{id: int|null, objectId: int|null, objectClass: string, locale: string, field: string, value: string|null} $array */
+        /** @var array{id: string, objectId: string, objectClass: string, locale: string, field: string, value: string|null} $array */
         $array = unserialize($data, ['allowed_classes' => false]);
         $this->__unserialize($array);
     }

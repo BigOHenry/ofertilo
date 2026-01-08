@@ -20,7 +20,7 @@ readonly class WoodApplicationService
         return $this->woodRepository->findByName($name);
     }
 
-    public function findById(int $id): ?Wood
+    public function findById(string $id): ?Wood
     {
         return $this->woodRepository->findById($id);
     }
@@ -36,7 +36,7 @@ readonly class WoodApplicationService
     /**
      * @throws WoodNotFoundException
      */
-    public function getById(int $id): Wood
+    public function getById(string $id): Wood
     {
         return $this->woodRepository->getById($id);
     }

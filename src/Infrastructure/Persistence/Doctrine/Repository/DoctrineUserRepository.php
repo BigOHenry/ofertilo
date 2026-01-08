@@ -21,7 +21,7 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         parent::__construct($registry, User::class);
     }
 
-    public function findById(int $id): ?User
+    public function findById(string $id): ?User
     {
         return $this->find($id);
     }
@@ -31,7 +31,7 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         return $this->findOneBy(['email' => $email]);
     }
 
-    public function getById(int $id): User
+    public function getById(string $id): User
     {
         return $this->findById($id) ?? throw UserNotFoundException::withId($id);
     }

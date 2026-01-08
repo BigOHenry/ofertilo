@@ -1,0 +1,13 @@
+<turbo-stream action="update" target="product-variant-title">
+    <template>
+        {% include 'productVariant/components/_header.html.twig' with { productVariant: productVariant, product: product } %}
+    </template>
+</turbo-stream>
+
+<turbo-stream action="update" target="product-variant-detail">
+    <template>
+        {% include 'productVariant/components/_detail.html.twig' with { productVariant: productVariant } %}
+    </template>
+</turbo-stream>
+
+{% include 'components/stream_modal_cleanup.html.twig' %}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Wood\Command\EditWood;
 
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 
 final readonly class EditWoodCommand
@@ -14,11 +14,11 @@ final readonly class EditWoodCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private int $id,
+        private string $id,
         private string $name,
         private ?string $latinName,
-        private ?int $dryDensity,
-        private ?int $hardness,
+        private int $dryDensity,
+        private int $hardness,
         private bool $enabled,
         private array $translations,
     ) {
@@ -35,7 +35,7 @@ final readonly class EditWoodCommand
         }
 
         return new self(
-            (int) $data['id'],
+            $data['id'],
             $data['name'],
             $data['latinName'],
             $data['dryDensity'],
@@ -45,7 +45,7 @@ final readonly class EditWoodCommand
         );
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -60,12 +60,12 @@ final readonly class EditWoodCommand
         return $this->latinName;
     }
 
-    public function getDryDensity(): ?int
+    public function getDryDensity(): int
     {
         return $this->dryDensity;
     }
 
-    public function getHardness(): ?int
+    public function getHardness(): int
     {
         return $this->hardness;
     }

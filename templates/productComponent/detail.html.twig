@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'title.productComponent'|trans }}{% endblock %}
+
+{% block body %}
+    <div id="product-component-card" class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <div id="product-component-title">
+                {% include 'productComponent/components/_header.html.twig' with { productComponent: productComponent } %}
+            </div>
+            <div>
+                <a class="btn btn-sm btn-primary" data-modal-id="productComponentModal" data-modal-src="{{ path('product_component_edit', {'id': productComponent.id}) }}" data-modal-title="{{ productComponent.dimensionsString }}"><i class="fa-solid fa-fw fa-pen-to-square"></i></a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="product-component-detail">
+                {% include 'productComponent/components/_detail.html.twig' with { productComponent: productComponent } %}
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/form_modal_frame.html.twig' with {
+        modal_id: 'productComponentModal',
+        title: 'title.productComponent'|trans
+    } %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

@@ -20,7 +20,7 @@ readonly class ColorApplicationService
         return $this->colorRepository->findByCode($code);
     }
 
-    public function findById(int $id): ?Color
+    public function findById(string $id): ?Color
     {
         return $this->colorRepository->findById($id);
     }
@@ -36,7 +36,7 @@ readonly class ColorApplicationService
     /**
      * @throws ColorNotFoundException
      */
-    public function getById(int $id): Color
+    public function getById(string $id): Color
     {
         return $this->colorRepository->getById($id);
     }

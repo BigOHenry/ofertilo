@@ -10,7 +10,6 @@ use App\Infrastructure\Service\LocaleService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -18,16 +17,10 @@ use Doctrine\Persistence\Proxy;
 
 #[AsDoctrineListener(event: Events::postLoad)]
 #[AsDoctrineListener(event: Events::preFlush)]
-#[AsDoctrineListener(event: Events::postFlush)]
-class TranslationListener
+readonly class TranslationListener
 {
-    /**
-     * @var array<int, TranslatableInterface>
-     */
-    private array $pendingTranslations = [];
-
     public function __construct(
-        private readonly LocaleService $localeService,
+        private LocaleService $localeService,
     ) {
     }
 
@@ -54,7 +47,7 @@ class TranslationListener
                     continue;
                 }
 
-                if ($entity->getId() !== null && $entity->getTranslations()->isEmpty()) {
+                if ($entity->getTranslations()->isEmpty()) {
                     $this->loadTranslationsForEntity($entity, $em);
                 }
 
@@ -64,7 +57,6 @@ class TranslationListener
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
             if ($entity instanceof TranslatableInterface) {
-                $this->pendingTranslations[spl_object_id($entity)] = $entity;
                 $entity->setDefaultLocale($this->localeService->getCurrentLocale());
             }
         }
@@ -78,44 +70,11 @@ class TranslationListener
         }
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
-    {
-        if (empty($this->pendingTranslations)) {
-            return;
-        }
-
-        $em = $args->getObjectManager();
-        $needsFlush = false;
-
-        foreach ($this->pendingTranslations as $objectId => $entity) {
-            if ($entity->getId() === null) {
-                continue;
-            }
-
-            foreach ($entity->getTranslations() as $translation) {
-                if ($translation->getObjectId() === null || $translation->getObjectId() === 0) {
-                    $translation->setObjectId($entity->getId());
-                    $em->persist($translation);
-                    $needsFlush = true;
-                }
-            }
-        }
-
-        $this->pendingTranslations = [];
-
-        if ($needsFlush) {
-            $em->flush();
-        }
-    }
-
     private function loadTranslationsForEntity(TranslatableInterface $entity, EntityManagerInterface $em): void
     {
         $entity->setDefaultLocale($this->localeService->getCurrentLocale());
 
         $entityId = $entity->getId();
-        if ($entityId === null) {
-            return;
-        }
         $entityClassName = $entity::class;
 
         if ($entity instanceof Proxy && !$entity->__isInitialized()) {
@@ -134,9 +93,6 @@ class TranslationListener
     private function processEntityTranslations(TranslatableInterface $entity, EntityManagerInterface $em): void
     {
         $entityId = $entity->getId();
-        if ($entityId === null) {
-            return;
-        }
 
         $entityClassName = $entity::class;
 
@@ -158,9 +114,6 @@ class TranslationListener
             $key = $translation->getField() . '_' . $translation->getLocale();
             $processedKeys[] = $key;
 
-            if ($translation->getObjectId() === null) {
-                $translation->setObjectId($entityId);
-            }
             if (empty($translation->getObjectClass())) {
                 $translation->setObjectClass($entityClassName);
             }
@@ -178,9 +131,6 @@ class TranslationListener
     private function removeAllTranslations(TranslatableInterface $entity, EntityManagerInterface $em): void
     {
         $entityId = $entity->getId();
-        if ($entityId === null) {
-            return;
-        }
 
         $translationRepo = $em->getRepository(TranslationEntity::class);
         $translations = $translationRepo->findBy([
@@ -195,11 +145,6 @@ class TranslationListener
 
     private function ensureMissingTranslations(TranslatableInterface $entity): void
     {
-        $entityId = $entity->getId();
-        if ($entityId === null) {
-            return;
-        }
-
         $activeLocales = $this->localeService->getSupportedLocales();
 
         $translatableFields = $entity::getTranslatableFields();

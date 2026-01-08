@@ -1,20 +1,52 @@
 {{ form_start(form, {
-  attr: {
-    id: form_id|default(null),
-    class: form_class|default('needs-validation')
-  }
+    attr: {
+        id: form_id|default(null),
+        class: 'needs-validation',
+    }
 }) }}
-    {% if form.vars.errors|length > 0 %}
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          {% for error in form.vars.errors %}
-            <li>{{ error.message }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
 
-  {{ form_widget(form) }}
-<input type="hidden" name="frame_id" value="{{ frame_id }}">
+  {% if form.vars.errors|length > 0 %}
+      <div class="alert alert-danger">
+          <ul class="mb-0">
+              {% for error in form.vars.errors %}
+                  <li>{{ error.message }}</li>
+              {% endfor %}
+          </ul>
+      </div>
+  {% endif %}
+
+  {# Render all fields except translations and save #}
+  {% for child in form.children %}
+      {% if child.vars.name not in ['translations', 'save'] %}
+          {{ form_row(child) }}
+      {% endif %}
+  {% endfor %}
+
+{# Translations section #}
+  {% if form.translations is defined %}
+      <h5 class="mt-4 mb-3">{{ translation_title|default('title.localization')|trans }}</h5>
+      <div class="row">
+          {# Iterate through fields (name, description, short_description) #}
+          {% for fieldForm in form.translations.children %}
+              {# Iterate through locale subforms (cs, en, ...) #}
+              {% for localeForm in fieldForm.children %}
+                  <div class="col-md-6 col-12 mb-3">
+                      {{ form_label(localeForm) }}
+                      {{ form_widget(localeForm, {'attr': {'class': 'form-control'}}) }}
+                      {{ form_errors(localeForm) }}
+                  </div>
+              {% endfor %}
+          {% endfor %}
+      </div>
+  {% endif %}
+
+
+  {% if form.save is defined %}
+      {{ form_row(form.save) }}
+  {% endif %}
+
+  {% if frame_id is defined %}
+      <input type="hidden" name="frame_id" value="{{ frame_id }}">
+  {% endif %}
 
 {{ form_end(form) }}

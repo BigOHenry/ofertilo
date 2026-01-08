@@ -27,9 +27,9 @@ final readonly class CreateMaterialCommandHandler
 
     public function __invoke(CreateMaterialCommand $command): void
     {
-        $wood = $this->woodService->getById($command->getWoodId());
+        $wood = $this->woodService->getById($command->woodId);
 
-        $type = $command->getType();
+        $type = $command->type;
 
         if ($this->materialService->findByWoodAndType($wood, $type)) {
             throw MaterialAlreadyExistsException::withWoodAndType($wood, $type);

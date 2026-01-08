@@ -37,7 +37,7 @@ class DoctrineWoodRepository extends BaseRepository implements WoodRepositoryInt
         return $this->findOneBy(['name' => $name]);
     }
 
-    public function findById(int $id): ?Wood
+    public function findById(string $id): ?Wood
     {
         return $this->findOneBy(['id' => $id]);
     }
@@ -53,7 +53,7 @@ class DoctrineWoodRepository extends BaseRepository implements WoodRepositoryInt
     /**
      * @throws WoodNotFoundException
      */
-    public function getById(int $id): Wood
+    public function getById(string $id): Wood
     {
         return $this->findById($id) ?? throw WoodNotFoundException::withId($id);
     }

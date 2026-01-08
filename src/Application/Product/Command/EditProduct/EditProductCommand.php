@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Product\Command\EditProduct;
 
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -15,8 +15,8 @@ final readonly class EditProductCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private int $id,
-        private ?int $countryId,
+        private string $id,
+        private ?string $countryId,
         private ?UploadedFile $imageFile,
         private bool $enabled,
         private array $translations,
@@ -33,15 +33,15 @@ final readonly class EditProductCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self((int) $data['id'], $data['country']?->getId(), $data['imageFile'], $data['enabled'], $translations);
+        return new self($data['id'], $data['country']?->getId(), $data['imageFile'], $data['enabled'], $translations);
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getCountryId(): ?int
+    public function getCountryId(): ?string
     {
         return $this->countryId;
     }

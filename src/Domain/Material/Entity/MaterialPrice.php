@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Material\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity]
@@ -20,9 +21,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class MaterialPrice
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(type: 'integer', nullable: false)]
     private int $thickness;
@@ -36,6 +36,7 @@ class MaterialPrice
 
     protected function __construct(Material $material, int $thickness, string $price)
     {
+        $this->id = Uuid::uuid4()->toString();
         $this->thickness = $thickness;
         $this->price = $price;
         $this->material = $material;
@@ -46,7 +47,7 @@ class MaterialPrice
         return new self($material, $thickness, $price);
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }

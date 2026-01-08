@@ -11,7 +11,7 @@ class UserNotFoundException extends UserException
         return new self(\sprintf("User with email '%s' not found!", $email));
     }
 
-    public static function withId(int $id): self
+    public static function withId(string $id): self
     {
         return new self(\sprintf("User with  id '%s' not found!", $id));
     }

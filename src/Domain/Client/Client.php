@@ -6,6 +6,7 @@ namespace App\Domain\Client;
 
 use App\Domain\Shared\Country\Entity\Country;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 /**
  * TODO finish Client.
@@ -14,9 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Client
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $id;
 
     #[ORM\Column(length: 400, nullable: true)]
     private ?string $name = null;
@@ -43,7 +43,12 @@ class Client
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    public function getId(): ?int
+    protected function __construct()
+    {
+        $this->id = Uuid::uuid4()->toString();
+    }
+
+    public function getId(): string
     {
         return $this->id;
     }

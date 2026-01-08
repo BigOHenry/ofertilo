@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Product\Command\CreateProduct;
 
 use App\Domain\Product\ValueObject\ProductType;
+use App\Domain\Translation\DTO\TranslationDto;
 use App\Domain\Translation\Entity\TranslationEntity;
-use App\Domain\Translation\TranslationDto\TranslationDto;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -16,10 +16,11 @@ final readonly class CreateProductCommand
      * @param array<int, TranslationDto> $translations
      */
     public function __construct(
-        private ProductType $type,
-        private ?int $countryId,
-        private ?UploadedFile $imageFile, // TODO replace this object
-        private array $translations,
+        public ProductType $type,
+        public ?string $countryId,
+        public string $code,
+        public ?UploadedFile $imageFile,
+        public array $translations,
     ) {
     }
 
@@ -33,29 +34,6 @@ final readonly class CreateProductCommand
             $translations[] = TranslationDto::createTranslationDtoFromEntity($translation);
         }
 
-        return new self($data['type'], $data['country']?->getId(), $data['imageFile'], $translations);
-    }
-
-    /**
-     * @return array<int, TranslationDto>
-     */
-    public function getTranslations(): array
-    {
-        return $this->translations;
-    }
-
-    public function getImageFile(): ?UploadedFile
-    {
-        return $this->imageFile;
-    }
-
-    public function getCountryId(): ?int
-    {
-        return $this->countryId;
-    }
-
-    public function getType(): ProductType
-    {
-        return $this->type;
+        return new self($data['type'], $data['country']?->getId(), $data['code'], $data['imageFile'], $translations);
     }
 }
