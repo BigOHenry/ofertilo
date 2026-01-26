@@ -6,7 +6,7 @@ namespace App\Application\Color\Query\GetOutOfStockColorsGrid;
 
 final readonly class GetOutOfStockColorsGridQuery
 {
-    protected function __construct()
+    private function __construct()
     {
     }
 

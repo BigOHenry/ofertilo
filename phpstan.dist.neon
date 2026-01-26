@@ -10,3 +10,5 @@ parameters:
         - public/
         - src/
         - tests/
+    excludePaths:
+            - config/reference.php

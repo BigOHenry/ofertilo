@@ -6,7 +6,7 @@ namespace App\Application\Material\Query\GetMaterialPricesGrid;
 
 final readonly class GetMaterialPricesGridQuery
 {
-    protected function __construct(public string $materialId)
+    private function __construct(public string $materialId)
     {
     }
 

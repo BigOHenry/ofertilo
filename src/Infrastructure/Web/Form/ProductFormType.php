@@ -51,7 +51,7 @@ class ProductFormType extends AbstractType
                 'label' => 'field.country',
                 'class' => Country::class,
                 'choice_label' => 'name',
-                'query_builder' => function (EntityRepository $er) {
+                'query_builder' => static function (EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                               ->where('c.enabled = :enabled')
                               ->setParameter('enabled', true)

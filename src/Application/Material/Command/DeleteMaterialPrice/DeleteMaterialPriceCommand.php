@@ -6,7 +6,7 @@ namespace App\Application\Material\Command\DeleteMaterialPrice;
 
 final readonly class DeleteMaterialPriceCommand
 {
-    protected function __construct(
+    private function __construct(
         public string $materialId,
         public string $priceId,
     ) {

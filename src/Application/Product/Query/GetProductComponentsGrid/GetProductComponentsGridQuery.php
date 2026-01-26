@@ -8,7 +8,7 @@ use App\Domain\Product\Entity\ProductVariant;
 
 final readonly class GetProductComponentsGridQuery
 {
-    protected function __construct(public string $productVariantId)
+    private function __construct(public string $productVariantId)
     {
     }
 

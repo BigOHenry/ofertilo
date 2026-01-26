@@ -262,14 +262,14 @@ abstract class Product implements TranslatableInterface
     public function findProductColorByColor(Color $color): ?ProductColor
     {
         return $this->productColors->filter(
-            fn (ProductColor $f) => $f->getColor() === $color
+            static fn (ProductColor $f) => $f->getColor() === $color
         )->first() ?: null;
     }
 
     public function findProductColorById(string $id): ?ProductColor
     {
         return $this->productColors->filter(
-            fn (ProductColor $f) => $f->getId() === $id
+            static fn (ProductColor $f) => $f->getId() === $id
         )->first() ?: null;
     }
 
@@ -321,7 +321,7 @@ abstract class Product implements TranslatableInterface
     public function findProductVariantByDimensions(int $height, int $width, ?int $thickness = null): ?ProductVariant
     {
         return $this->productVariants->filter(
-            fn (ProductVariant $ps) => $ps->getHeight() === $height
+            static fn (ProductVariant $ps) => $ps->getHeight() === $height
                 && $ps->getWidth() === $width
                 && $ps->getThickness() === $thickness
         )->first() ?: null;
@@ -330,7 +330,7 @@ abstract class Product implements TranslatableInterface
     public function findProductVariantById(string $id): ?ProductVariant
     {
         return $this->productVariants->filter(
-            fn (ProductVariant $ps) => $ps->getId() === $id
+            static fn (ProductVariant $ps) => $ps->getId() === $id
         )->first() ?: null;
     }
 }

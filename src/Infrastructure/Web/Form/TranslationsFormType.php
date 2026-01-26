@@ -43,7 +43,7 @@ final class TranslationsFormType extends AbstractType implements DataMapperInter
         // Add locale fields only in PRE_SET_DATA, when the data is available
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) use ($translatableFields, $supportedLocales, $translator): void {
+            static function (FormEvent $event) use ($translatableFields, $supportedLocales, $translator): void {
                 $form = $event->getForm();
                 /** @var TranslationEntity[]|null $translations */
                 $translations = $event->getData();

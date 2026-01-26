@@ -17,7 +17,9 @@ use App\Domain\Product\ValueObject\ProductType;
 use App\Domain\Shared\Country\Entity\Country;
 use App\Domain\Shared\File\Entity\File;
 use App\Domain\Shared\File\ValueObject\FileType;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 final readonly class CreateProductCommandHandler
 {
     public function __construct(
