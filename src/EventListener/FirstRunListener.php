@@ -53,7 +53,7 @@ readonly class FirstRunListener
 
         $userRepository = $this->userRepository;
         // Check if there is a superAdministrator
-        $is_installed = $this->cache->get('ofertilo.first_run_done', function () use ($userRepository) {
+        $is_installed = $this->cache->get('ofertilo.first_run_done', static function () use ($userRepository) {
             return $userRepository->hasSuperAdmin();
         });
 

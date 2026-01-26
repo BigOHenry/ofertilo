@@ -6,7 +6,7 @@ namespace App\Application\Wood\Command\DeleteWood;
 
 final readonly class DeleteWoodCommand
 {
-    protected function __construct(
+    private function __construct(
         private string $id,
     ) {
     }

@@ -6,7 +6,7 @@ namespace App\Application\Product\Command\DeleteProduct;
 
 final readonly class DeleteProductCommand
 {
-    protected function __construct(
+    private function __construct(
         private string $id,
     ) {
     }

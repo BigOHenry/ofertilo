@@ -30,12 +30,12 @@ class ProductColorFormType extends AbstractType
                 'label' => 'field.color',
                 'class' => Color::class,
                 'choice_label' => 'code',
-                'query_builder' => function (EntityRepository $repository) use ($product, $color): QueryBuilder {
+                'query_builder' => static function (EntityRepository $repository) use ($product, $color): QueryBuilder {
                     $qb = $repository->createQueryBuilder('c');
 
                     if ($product && $product->getId()) {
                         $assignedColorIds = $product->getProductColors()->map(
-                            fn ($pc) => $pc->getColor()->getId()
+                            static fn ($pc) => $pc->getColor()->getId()
                         )->toArray();
 
                         if ($color !== null) {

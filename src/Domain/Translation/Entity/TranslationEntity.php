@@ -21,7 +21,7 @@ class TranslationEntity
     private string $object_class;
 
     #[ORM\Column(nullable: false)]
-    private string $object_id;
+    private ?string $object_id = null;
 
     #[ORM\Column(length: 2, nullable: false)]
     private string $locale;
@@ -52,7 +52,7 @@ class TranslationEntity
         $this->object_class = $objectClass;
     }
 
-    public function getObjectId(): string
+    public function getObjectId(): ?string
     {
         return $this->object_id;
     }

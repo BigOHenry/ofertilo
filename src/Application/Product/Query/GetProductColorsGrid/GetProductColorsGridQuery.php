@@ -6,7 +6,7 @@ namespace App\Application\Product\Query\GetProductColorsGrid;
 
 final readonly class GetProductColorsGridQuery
 {
-    protected function __construct(public string $productId)
+    private function __construct(public string $productId)
     {
     }
 

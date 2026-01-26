@@ -13,7 +13,7 @@ class ProductValidator extends Validator
 {
     public const int CODE_MIN_LENGTH = 4;
     public const int CODE_MAX_LENGTH = 100;
-    public const int NAME_MIN_LENGTH = 10;
+    public const int NAME_MIN_LENGTH = 8;
     public const int NAME_MAX_LENGTH = 300;
     public const null DESCRIPTION_MIN_LENGTH = null;
     public const int DESCRIPTION_MAX_LENGTH = 21000;

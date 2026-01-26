@@ -10,7 +10,7 @@ class TranslationDto implements \Serializable
 {
     protected function __construct(
         private string $id,
-        private string $objectId,
+        private ?string $objectId,
         private string $objectClass,
         private string $locale,
         private string $field,
@@ -19,7 +19,7 @@ class TranslationDto implements \Serializable
     }
 
     /**
-     * @return array{id: string, objectId: string, objectClass: string, locale: string, field: string, value: string|null}
+     * @return array{id: string, objectId: string|null, objectClass: string, locale: string, field: string, value: string|null}
      */
     public function __serialize(): array
     {
@@ -86,7 +86,7 @@ class TranslationDto implements \Serializable
         return $this->objectClass;
     }
 
-    public function getObjectId(): string
+    public function getObjectId(): ?string
     {
         return $this->objectId;
     }

@@ -6,7 +6,7 @@ namespace App\Application\Color\Command\DeleteColor;
 
 final readonly class DeleteColorCommand
 {
-    protected function __construct(
+    private function __construct(
         private string $id,
     ) {
     }

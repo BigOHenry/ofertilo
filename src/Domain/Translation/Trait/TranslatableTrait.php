@@ -64,6 +64,10 @@ trait TranslatableTrait
         $this->initializeTranslations();
 
         foreach ($this->translations as $t) {
+            if ($t->getObjectId() === null) {
+                $t->setObjectId($this->getId());
+            }
+
             if ($t->getField() === $field && $t->getLocale() === $locale) {
                 $t->setValue($value);
 

@@ -124,14 +124,14 @@ abstract class Material
     public function findPriceById(string $id): ?MaterialPrice
     {
         return $this->prices->filter(
-            fn (MaterialPrice $f) => $f->getId() === $id
+            static fn (MaterialPrice $f) => $f->getId() === $id
         )->first() ?: null;
     }
 
     public function findPriceByThickness(int $thickness): ?MaterialPrice
     {
         return $this->prices->filter(
-            fn (MaterialPrice $f) => $f->getThickness() === $thickness
+            static fn (MaterialPrice $f) => $f->getThickness() === $thickness
         )->first() ?: null;
     }
 

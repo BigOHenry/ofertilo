@@ -65,7 +65,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;
@@ -104,7 +104,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;
@@ -143,7 +143,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;
@@ -182,7 +182,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;
@@ -271,7 +271,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;
@@ -313,7 +313,7 @@ final class CreateMaterialCommandHandlerTest extends TestCase
         $this->materialService
             ->expects($this->once())
             ->method('save')
-            ->willReturnCallback(function (Material $material) use (&$savedMaterial): void {
+            ->willReturnCallback(static function (Material $material) use (&$savedMaterial): void {
                 $savedMaterial = $material;
             })
         ;

@@ -6,7 +6,7 @@ namespace App\Application\Product\Query\GetProductVariantsGrid;
 
 final readonly class GetProductVariantsGridQuery
 {
-    protected function __construct(private string $productId)
+    private function __construct(private string $productId)
     {
     }
 

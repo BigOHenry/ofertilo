@@ -6,7 +6,7 @@ namespace App\Application\Material\Command\DeleteMaterial;
 
 final readonly class DeleteMaterialCommand
 {
-    protected function __construct(
+    private function __construct(
         private string $id,
     ) {
     }
