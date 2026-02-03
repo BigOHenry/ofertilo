@@ -55,20 +55,28 @@
             headerSort: false,
             width: 120,
             hozAlign: "center",
+            responsive: 1
         });
         {% endif %}
-
-        console.log(window.APP_LOCALE);
-        console.log(window.TabulatorLangs);
 
         const table = new window.Tabulator("#{{ id }}", {
             locale: "{{ app.request.locale }}",
             langs: window.TabulatorLangs,
+            responsiveLayout: "collapse",
+            rowHeader: {
+                formatter: "responsiveCollapse",
+                width: 40,
+                minWidth: 40,
+                hozAlign: "center",
+                resizable: false,
+                headerSort: false
+            },
+            responsiveLayoutCollapseStartOpen: false,
             {% if pagination %}
             pagination: true,
             paginationMode: "remote",
             paginationSize: {{ paginationSize }},
-            paginationCounter: "pages",
+            paginationCounter: "rows",
             {% endif %}
 
             {% if sortMode %}
@@ -77,8 +85,8 @@
 
             ajaxURL: "{{ apiUrl }}",
             height: "{{ this.getHeight() }}",
-            layout: "{{ layout }}",
-
+            layout: window.innerWidth > 768 ? "fitColumns" : "fitDataFill",
+            layoutColumnsOnNewData: true,
             columns: columns,
 
             ajaxURLGenerator: function(url, config, params) {
@@ -106,7 +114,7 @@
 
         {% if rowClickRoute %}
         table.on("rowClick", function(e, row) {
-            if (e.target.closest('.btn') || e.target.closest('button')) {
+            if (e.target.closest('.btn') || e.target.closest('button') || e.target.closest('.tabulator-row-handle')) {
                 return;
             }
 

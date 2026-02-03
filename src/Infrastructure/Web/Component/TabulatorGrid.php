@@ -16,7 +16,6 @@ final class TabulatorGrid
     public bool $pagination = true;
     public bool $sortMode = true;
     public ?string $height = 'auto';
-    public string $layout = 'fitColumns';
     public array $ajaxParams = []; /** @phpstan-ignore-line */
     public ?string $windowVariable = null;
     public bool $showActions = false;

@@ -26,6 +26,11 @@ security:
                 csrf_token_id: authenticate
 #                always_use_default_target_path: true
                 default_target_path: app_home_index
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 5184000  # 60 dní v sekundách (60 * 24 * 60 * 60)
+                path: /
+                always_remember_me: true
             two_factor:
                 auth_form_path: 2fa_login
                 check_path: 2fa_login_check

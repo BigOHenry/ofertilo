@@ -97,3 +97,8 @@ form:
 
 currency:
   czk: 'Kč'
+
+login:
+  trusted_device: "Důvěřovat tomuto zařízení"
+  enter_verification_code: "Zadejte ověřovací kód"
+  remember_me: "Zůstat přihlášený"
