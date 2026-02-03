@@ -22,7 +22,7 @@
 
                     <form action="{{ path('2fa_login_check') }}" method="post">
                         <div class="mb-3">
-                            <label for="_auth_code" class="form-label">Zadejte ověřovací kód:</label>
+                            <label for="_auth_code" class="form-label">{{ 'login.enter_verification_code'|trans }}:</label>
                             <input type="text"
                                    id="_auth_code"
                                    name="_auth_code"
@@ -31,6 +31,10 @@
                                    maxlength="6"
                                    autofocus
                                    required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="checkbox" id="trusted" name="_trusted" value="1">
+                            <label for="trusted">{{ 'login.trusted_device'|trans }}</label>
                         </div>
                         {% if isCsrfProtectionEnabled %}
                             <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">

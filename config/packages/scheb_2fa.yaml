@@ -9,7 +9,13 @@ scheb_two_factor:
         template: 'security/2fa.html.twig'
 #        parameters:
 #            image: 'https://my-service/img/logo.png'
-
+    trusted_device:
+        enabled: true
+        lifetime: 5184000
+        extend_lifetime: true
+        cookie_name: trusted_device
+        cookie_secure: true
+        cookie_same_site: "lax"
     # The service which is used to persist data in the user object. By default Doctrine is used. If your entity is
     # managed by something else (e.g. an API), you have to implement a custom persister
     persister: scheb_two_factor.persister.doctrine
