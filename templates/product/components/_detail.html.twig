@@ -1,11 +1,16 @@
 <div class="row">
-    <div class="col-12"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }}</span></div>
-    <div class="col-12"><label class="fw-semibold">{{ 'field.country'|trans }}:</label> <span>{{ product.country.name|default('') }}</span></div>
-    <div class="col-12"><label class="fw-semibold">{{ 'field.code'|trans }}:</label> <span>{{ product.code }}</span></div>
-    <div class="col-12"><label class="fw-semibold">{{ 'field.shortDescription'|trans }}:</label> <span>{{ product.shortDescription(app.request.locale) }}</span></div>
-    <div class="col-12"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ product.description(app.request.locale) }}</span></div>
+    <div class="col-md-7 col-12">
+        <div class="row">
+            <div class="col-12"><label class="fw-semibold">{{ 'field.type'|trans }}:</label> <span>{{ ('product.type.' ~ product.type.value)|trans({}, 'enum') }}</span></div>
+            <div class="col-12"><label class="fw-semibold">{{ 'field.country'|trans }}:</label> <span>{{ product.country.name|default('') }}</span></div>
+            <div class="col-12"><label class="fw-semibold">{{ 'field.code'|trans }}:</label> <span>{{ product.code }}</span></div>
+            <div class="col-12"><label class="fw-semibold">{{ 'field.shortDescription'|trans }}:</label> <span>{{ product.shortDescription(app.request.locale) }}</span></div>
+            <div class="col-12"><label class="fw-semibold">{{ 'field.description'|trans }}:</label> <span>{{ product.description(app.request.locale) }}</span></div>
+        </div>
+    </div>
+
     {% if product.hasImage %}
-        <div class="col-12">
+        <div class="col-md-5 col-12">
             <img src="{{ file_url(product.imageFile) }}" alt="{{ product.name }}" class="img-thumbnail img-fluid">
         </div>
     {% endif %}

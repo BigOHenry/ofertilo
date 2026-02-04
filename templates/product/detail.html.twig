@@ -12,12 +12,12 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-xxl-4 col-md-12">
+                <div class="col-md-5 col-12">
                     <div id="product-detail">
                         {% include 'product/components/_detail.html.twig' with { product: product } %}
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-md-7 col-12">
                     <div class="row">
                         <div class="d-flex flex-row justify-content-end pb-2">
                             <button class="btn btn-primary" data-modal-id="productColorModal" data-modal-src="{{ path('product_color_new', {'id': product.id}) }}" data-modal-title="{{ 'title.new_product_color'|trans }}">
