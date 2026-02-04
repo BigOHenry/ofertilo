@@ -16,7 +16,7 @@ final readonly class GetProductComponentsGridQueryHandler
     }
 
     /**
-     * @return list<array{id: string, quantity: int, length: int|null, width: int|null, thickness: int, atypicalShape: bool}>
+     * @return list<array{id: string, quantity: int, dimensions: string, atypicalShape: bool}>
      */
     public function __invoke(GetProductComponentsGridQuery $query): array
     {
@@ -27,14 +27,12 @@ final readonly class GetProductComponentsGridQueryHandler
             $data[] = [
                 'id' => $productComponent->getId(),
                 'quantity' => $productComponent->getQuantity(),
-                'length' => $productComponent->getLength(),
-                'width' => $productComponent->getWidth(),
-                'thickness' => $productComponent->getThickness(),
+                'dimensions' => $productComponent->getDimensions(),
                 'atypicalShape' => $productComponent->getShapeDescription() !== null || $productComponent->getBlueprintFile() !== null,
             ];
         }
 
-        usort($data, static fn ($a, $b) => $a['length'] <=> $b['length']);
+        usort($data, static fn ($a, $b) => $a['dimensions'] <=> $b['dimensions']);
 
         return $data;
     }
