@@ -61,6 +61,7 @@ field:
   shortDescription: "Krátký popis"
   shapeDescription: "Popis atypického tvaru"
   quantity: "Počet kusů"
+  dimensions: "Rozměry"
   blueprintFile: "Plánek atypického tvaru"
   atypicalShape: "Atypický tvar"
 

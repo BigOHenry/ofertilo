@@ -25,10 +25,10 @@
                     deleteRoute: 'product_delete',
                     editModalId: 'productModal',
                     columns: [
-                        { title: 'field.type'|trans, field: "type", sorter: "string" },
-                        { title: 'field.name'|trans, field: "name", sorter: "string" },
-                        { title: 'field.country'|trans, field: "country", sorter: "string" },
-                        { title: 'field.enabled'|trans, field: "enabled", formatter:"tickCross", sorter:"boolean"},
+                        { title: 'field.type'|trans, field: "type", sorter: "string", responsive: 1 },
+                        { title: 'field.name'|trans, field: "name", sorter: "string", responsive: 0 },
+                        { title: 'field.country'|trans, field: "country", sorter: "string", responsive: 2 },
+                        { title: 'field.enabled'|trans, field: "enabled", formatter:"tickCross", sorter:"boolean", responsive: 3},
                     ]
                 }) }}
             </div>

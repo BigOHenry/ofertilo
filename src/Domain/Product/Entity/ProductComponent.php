@@ -190,6 +190,11 @@ class ProductComponent
         return implode(' ', $parts);
     }
 
+    public function getDimensions(): string
+    {
+        return \sprintf('%s×%s×%s', $this->width, $this->length, $this->thickness);
+    }
+
     /* @phpstan-ignore-next-line */
     private function calculateVolume(): ?float
     {

@@ -26,11 +26,11 @@ class ProductComponentFormType extends AbstractType
             ->add('quantity', IntegerType::class, [
                 'label' => 'field.quantity',
             ])
-            ->add('length', IntegerType::class, [
-                'label' => 'field.length',
-            ])
             ->add('width', IntegerType::class, [
                 'label' => 'field.width',
+            ])
+            ->add('length', IntegerType::class, [
+                'label' => 'field.length',
             ])
             ->add('thickness', IntegerType::class, [
                 'label' => 'field.thickness',
