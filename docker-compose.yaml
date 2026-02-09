@@ -10,6 +10,11 @@ services:
       - .:/var/www/app
     networks:
       - woodflag_proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
 
   database:
     image: library/postgres:18.1-alpine
@@ -29,6 +34,11 @@ services:
         start_period: 60s
     networks:
       - woodflag_proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
 
 networks:
   woodflag_proxy:
